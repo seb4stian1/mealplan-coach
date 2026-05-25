@@ -650,12 +650,51 @@ const PORTION_DATA = {
 async function init() {
   document.getElementById('kw-display').textContent = getKW();
   updateWeekNav();
-  await loadPlan();
-  try { await withTimeout(loadChecked(), 2000); } catch(e) { checkedItems = {}; }
-  try { await withTimeout(loadBetrag(), 2000); } catch(e) {}
+
+  // 1. Sofort Fallback rendern — kein Warten auf Supabase
+  planData = FALLBACK;
+  setBadge('📦 Fallback','orange');
+  renderWeek();
+  renderShop();
+  renderRecipes();
+  renderMealprepTab();
   renderMakros();
   renderSupps();
   initDiary();
+
+  // 2. Supabase im Hintergrund — UI ist schon fertig
+  loadFromSupabaseInBackground();
+}
+
+async function loadFromSupabaseInBackground() {
+  try {
+    const sb = getSB();
+    if (!sb) return;
+
+    // Plan laden
+    const { data, error } = await withTimeout(
+      sb.from('weekly_plan')
+        .select('*').eq('week_number',viewKW).eq('year',viewYear)
+        .order('created_at',{ascending:false}).limit(1),
+      5000
+    );
+    if (!error && data && data.length > 0) {
+      planData = data[0].plan_data;
+      setBadge('✅ Live KW '+viewKW,'green');
+      renderWeek();
+      renderShop();
+      renderRecipes();
+      renderMealprepTab();
+    }
+
+    // Reste, checked, betrag parallel
+    loadReste().catch(()=>{});
+    loadChecked().then(()=>renderShop()).catch(()=>{});
+    loadBetrag().catch(()=>{});
+    loadDiaryHistory().catch(()=>{});
+  } catch(e) {
+    // Supabase nicht erreichbar — Fallback bleibt
+  }
 }
 
 window.addEventListener('load', function() {
@@ -679,13 +718,13 @@ async function changeWeek(dir) {
   if (viewKW < 1) { viewKW = 52; viewYear--; }
   if (viewKW > 52) { viewKW = 1; viewYear++; }
   updateWeekNav();
-  checkedItems = {}; planData = null;
-  document.getElementById('woche-content').innerHTML = '<div class="loading-overlay"><div class="spinner"></div><span>Lade...</span></div>';
-  document.getElementById('shop-list').innerHTML = '<div class="loading-overlay"><div class="spinner"></div></div>';
-  await loadPlan();
-  await loadChecked();
-  await loadBetrag();
+  checkedItems = {}; planData = FALLBACK;
+  renderWeek();
+  renderShop();
+  renderRecipes();
+  renderMealprepTab();
   initDiary();
+  loadFromSupabaseInBackground();
 }
 
 // ══════════════════════════════════
@@ -1254,8 +1293,4 @@ async function loadDiaryHistory() {
     hist.innerHTML = data.map(e => `
       <div class="diary-entry-card">
         <div class="diary-entry-day">${days[e.day_index]}</div>
-        ${e.entry_data.q1 ? `<div class="diary-entry-row"><span>😋</span><span>${qs[0].label.replace(/^[^ ]+ /,'')}: <strong>${e.entry_data.q1}</strong></span></div>` : ''}
-        ${e.entry_data.q2 ? `<div class="diary-entry-row"><span>🍽</span><span>${qs[1].label.replace(/^[^ ]+ /,'')}: <strong>${e.entry_data.q2}</strong></span></div>` : ''}
-        ${e.entry_data.q3 ? `<div class="diary-entry-row"><span>🍫</span><span>${qs[2].label.replace(/^[^ ]+ /,'')}: <strong>${e.entry_data.q3}</strong></span></div>` : ''}
-        ${e.entry_data.q4 ? `<div class="diary-entry-row"><span>⚡</span><span>${qs[3].label.replace(/^[^ ]+ /,'')}: <strong>${e.entry_data.q4}</strong></span></div>` : ''}
-        ${e.entry_data.q5 ? `<div class="diary-entry-row"><span>💪</span><span>${qs[4].label.replace(/^[^ ]+ /,'')}: <strong>${e.entry_data.q5}</strong></span></div>` : ''}
+        ${e.entry_data.q1 ? `<div class="diary-entry-row"><span>😋</span><span>${qs[0].label.replace(/^[^ ]+ /,'')}: <strong>
