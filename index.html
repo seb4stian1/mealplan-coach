@@ -29,13 +29,7 @@ function doLogout() {
   sessionStorage.removeItem('mp_auth');
   location.reload();
 }
-// Auto-show app if already authenticated this session
-document.addEventListener('DOMContentLoaded', function(){
-  if(sessionStorage.getItem('mp_auth') === '1'){
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-  }
-});
+// Auto-show handled by window.onload in main script (needs CDN loaded first)
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -442,7 +436,13 @@ document.addEventListener('DOMContentLoaded', function(){
 // ══════════════════════════════════
 const SUPA_URL = 'https://ncqtzzbqdelvabirmaev.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jcXR6emJxZGVsdmFiaXJtYWV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDU1ODIsImV4cCI6MjA5NTMyMTU4Mn0.LXmHpw3ErePvlB6wo-uQlQQQq16AzWIXkwCYr8QZRSs';
-const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+let sb = null;
+function getSB() {
+  if (!sb) {
+    try { sb = supabase.createClient(SUPA_URL, SUPA_KEY); } catch(e) { sb = null; }
+  }
+  return sb;
+}
 
 // ══════════════════════════════════
 // STATE
@@ -581,9 +581,13 @@ async function init() {
   renderSupps();
   initDiary();
 }
-// Auto-init if already authenticated
+// Auto-init if already authenticated — use window.onload so CDN is guaranteed loaded
 if (sessionStorage.getItem('mp_auth') === '1') {
-  document.addEventListener('DOMContentLoaded', init);
+  window.addEventListener('load', function() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    init();
+  });
 }
 
 // ══════════════════════════════════
@@ -615,7 +619,7 @@ async function changeWeek(dir) {
 // ══════════════════════════════════
 async function loadPlan() {
   try {
-    const { data, error } = await sb.from('weekly_plan')
+    const { data, error } = await getSB().from('weekly_plan')
       .select('*').eq('week_number',viewKW).eq('year',viewYear)
       .order('created_at',{ascending:false}).limit(1);
     if (!error && data && data.length > 0) {
@@ -641,7 +645,7 @@ function setBadge(t,type){ const b=document.getElementById('sync-badge'); b.text
 // ══════════════════════════════════
 async function loadReste() {
   try {
-    const { data } = await sb.from('reste').select('*').eq('week_number',viewKW).eq('year',viewYear).limit(1);
+    const { data } = await getSB().from('reste').select('*').eq('week_number',viewKW).eq('year',viewYear).limit(1);
     if (data && data.length > 0) {
       const saved = data[0].items || [];
       document.querySelectorAll('.reste-tag').forEach(t => {
@@ -660,9 +664,9 @@ async function saveReste() {
   const items=[...document.querySelectorAll('.reste-tag.selected')].map(t=>t.dataset.val);
   const kommentar=document.getElementById('reste-kommentar').value.trim();
   try {
-    const {data:ex}=await sb.from('reste').select('id').eq('week_number',viewKW).eq('year',viewYear).limit(1);
-    if(ex&&ex.length>0) await sb.from('reste').update({items,kommentar,updated_at:new Date().toISOString()}).eq('id',ex[0].id);
-    else await sb.from('reste').insert({week_number:viewKW,year:viewYear,items,kommentar});
+    const {data:ex}=await getSB().from('reste').select('id').eq('week_number',viewKW).eq('year',viewYear).limit(1);
+    if(ex&&ex.length>0) await getSB().from('reste').update({items,kommentar,updated_at:new Date().toISOString()}).eq('id',ex[0].id);
+    else await getSB().from('reste').insert({week_number:viewKW,year:viewYear,items,kommentar});
     status.textContent='✅ Gespeichert'; status.style.color='var(--green-med)';
   } catch(e){ status.textContent='❌ Fehler'; status.style.color='var(--red)'; }
   btn.disabled=false; btn.textContent='Speichern ✓';
@@ -676,16 +680,16 @@ const catColors={protein:"#ffebee",kh:"#fff9c4",gemuese:"#e8f5e9",milch:"#e3f2fd
 
 async function loadChecked() {
   try {
-    const {data}=await sb.from('shopping_checked').select('*').eq('week_number',viewKW).eq('year',viewYear).limit(1);
+    const {data}=await getSB().from('shopping_checked').select('*').eq('week_number',viewKW).eq('year',viewYear).limit(1);
     if(data&&data.length>0) checkedItems=data[0].checked_items||{};
     else checkedItems={};
   } catch(e){ checkedItems={}; }
 }
 async function saveChecked() {
   try {
-    const {data:ex}=await sb.from('shopping_checked').select('id').eq('week_number',viewKW).eq('year',viewYear).limit(1);
-    if(ex&&ex.length>0) await sb.from('shopping_checked').update({checked_items:checkedItems,updated_at:new Date().toISOString()}).eq('id',ex[0].id);
-    else await sb.from('shopping_checked').insert({week_number:viewKW,year:viewYear,checked_items:checkedItems});
+    const {data:ex}=await getSB().from('shopping_checked').select('id').eq('week_number',viewKW).eq('year',viewYear).limit(1);
+    if(ex&&ex.length>0) await getSB().from('shopping_checked').update({checked_items:checkedItems,updated_at:new Date().toISOString()}).eq('id',ex[0].id);
+    else await getSB().from('shopping_checked').insert({week_number:viewKW,year:viewYear,checked_items:checkedItems});
   } catch(e){}
 }
 
@@ -784,6 +788,4 @@ function addCustomReste(){
 
 // ══════════════════════════════════
 // RECIPES
-// ══════════════════════════════════
-function renderRecipes(){
-  document.getElementById
+// ═══════════════════�                              
