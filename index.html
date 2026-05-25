@@ -651,8 +651,8 @@ async function init() {
   document.getElementById('kw-display').textContent = getKW();
   updateWeekNav();
   await loadPlan();
-  await loadChecked();
-  await loadBetrag();
+  try { await withTimeout(loadChecked(), 2000); } catch(e) { checkedItems = {}; }
+  try { await withTimeout(loadBetrag(), 2000); } catch(e) {}
   renderMakros();
   renderSupps();
   initDiary();
@@ -691,19 +691,29 @@ async function changeWeek(dir) {
 // ══════════════════════════════════
 // LOAD PLAN
 // ══════════════════════════════════
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
+  ]);
+}
+
 async function loadPlan() {
   try {
     const sb = getSB();
     if (sb) {
-      const { data, error } = await sb.from('weekly_plan')
-        .select('*').eq('week_number',viewKW).eq('year',viewYear)
-        .order('created_at',{ascending:false}).limit(1);
+      const { data, error } = await withTimeout(
+        sb.from('weekly_plan')
+          .select('*').eq('week_number',viewKW).eq('year',viewYear)
+          .order('created_at',{ascending:false}).limit(1),
+        3000
+      );
       if (!error && data && data.length > 0) {
         planData = data[0].plan_data;
         setBadge('✅ Live KW '+viewKW,'green');
       } else {
         planData = FALLBACK;
-        setBadge('📦 Fallback KW'+viewKW,'orange');
+        setBadge('📦 Fallback','orange');
       }
     } else {
       planData = FALLBACK;
@@ -713,7 +723,7 @@ async function loadPlan() {
     planData = FALLBACK;
     setBadge('⚠️ Offline','orange');
   }
-  await loadReste();
+  try { await withTimeout(loadReste(), 2000); } catch(e) {}
   renderWeek();
   renderShop();
   renderRecipes();
@@ -1249,11 +1259,3 @@ async function loadDiaryHistory() {
         ${e.entry_data.q3 ? `<div class="diary-entry-row"><span>🍫</span><span>${qs[2].label.replace(/^[^ ]+ /,'')}: <strong>${e.entry_data.q3}</strong></span></div>` : ''}
         ${e.entry_data.q4 ? `<div class="diary-entry-row"><span>⚡</span><span>${qs[3].label.replace(/^[^ ]+ /,'')}: <strong>${e.entry_data.q4}</strong></span></div>` : ''}
         ${e.entry_data.q5 ? `<div class="diary-entry-row"><span>💪</span><span>${qs[4].label.replace(/^[^ ]+ /,'')}: <strong>${e.entry_data.q5}</strong></span></div>` : ''}
-        ${e.entry_data.notiz ? `<div class="diary-entry-row"><span>📝</span><span>${e.entry_data.notiz}</span></div>` : ''}
-      </div>`).join('');
-  } catch(err) { hist.innerHTML = ''; }
-}
-
-// ══════════════════════════════════
-// TABS
-// ═════════�
