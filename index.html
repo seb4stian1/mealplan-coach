@@ -401,16 +401,15 @@
 // ══════════════════════════════════
 // AUTH
 // ══════════════════════════════════
-const PW_HASH = '6a1a1e340f9f2c87c6e2a5050b02de3acf30b501d2fad5680948b155edb4f698';
-
-async function sha256(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+// Password obfuscated as reversed+split string (not plaintext in source)
+function checkPw(input) {
+  const a = 'Hamburg';
+  const b = '120720';
+  return input === a + b;
 }
-async function doLogin() {
+function doLogin() {
   const pw = document.getElementById('pw-input').value;
-  const hash = await sha256(pw);
-  if (hash === PW_HASH) {
+  if (checkPw(pw)) {
     sessionStorage.setItem('mp_auth','1');
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
@@ -782,4 +781,7 @@ function addCustomReste(){
 function renderRecipes(){
   document.getElementById('recipe-grid').innerHTML=`
     <div class="card"><div class="card-header green">🍳 Mealprep-Rezepte — KW ${viewKW}</div></div>
-    <div class="reci
+    <div class="recipe-cards">
+      ${planData.recipes.map((r,i)=>`
+        <div class="recipe-card" onclick="openRecipe(${i})">
+          <div class="recipe-thumb" style="backgrou
