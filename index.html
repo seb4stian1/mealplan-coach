@@ -4,6 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🥗 Meal Plan Coach</title>
+<script>
+// LOGIN runs immediately, before any other script loads
+(function(){
+  const stored = sessionStorage.getItem('mp_auth');
+  if(stored === '1') {
+    document.addEventListener('DOMContentLoaded', function(){
+      var ls = document.getElementById('login-screen');
+      var app = document.getElementById('app');
+      if(ls) ls.style.display = 'none';
+      if(app) app.style.display = 'block';
+    });
+  }
+})();
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
@@ -403,18 +417,25 @@
 // ══════════════════════════════════
 // Password obfuscated as reversed+split string (not plaintext in source)
 function doLogin() {
-  const pw = document.getElementById('pw-input').value;
-  const expected = ['H','a','m','b','u','r','g','1','2','0','7','2','0'].join('');
-  if (pw === expected) {
-    sessionStorage.setItem('mp_auth','1');
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    init();
-  } else {
-    document.getElementById('login-error').textContent = 'Eingabe: "' + pw + '" (' + pw.length + ' Zeichen)';
-    document.getElementById('pw-input').focus();
+  try {
+    var pw = document.getElementById('pw-input').value;
+    var expected = ['H','a','m','b','u','r','g','1','2','0','7','2','0'].join('');
+    var errEl = document.getElementById('login-error');
+    if (pw === expected) {
+      sessionStorage.setItem('mp_auth','1');
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      init();
+    } else {
+      errEl.textContent = 'Falsches Passwort (Eingabe: "' + pw + '", ' + pw.length + ' Zeichen)';
+      document.getElementById('pw-input').focus();
+    }
+  } catch(e) {
+    document.getElementById('login-error').textContent = 'Fehler: ' + e.message;
   }
 }
+// Remove auto-init on page load since login handles it
+
 function doLogout() {
   sessionStorage.removeItem('mp_auth');
   location.reload();
@@ -766,17 +787,4 @@ function addCustomReste(){
   const tag=document.createElement('div');
   tag.className='reste-tag selected'; tag.dataset.val=val; tag.textContent=val;
   tag.onclick=()=>tag.classList.toggle('selected');
-  document.querySelector('.reste-grid').appendChild(tag);
-  inp.value='';
-}
-
-// ══════════════════════════════════
-// RECIPES
-// ══════════════════════════════════
-function renderRecipes(){
-  document.getElementById('recipe-grid').innerHTML=`
-    <div class="card"><div class="card-header green">🍳 Mealprep-Rezepte — KW ${viewKW}</div></div>
-    <div class="recipe-cards">
-      ${planData.recipes.map((r,i)=>`
-        <div class="recipe-card" onclick="openRecipe(${i})">
-          <div class="recipe-thumb" style="background:${r.color}">${r.emoji}</div>
+  document.querySelector('.reste-grid').
