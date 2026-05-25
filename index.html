@@ -402,21 +402,16 @@
 // AUTH
 // ══════════════════════════════════
 // Password obfuscated as reversed+split string (not plaintext in source)
-function checkPw(input) {
-  const a = 'Hamburg';
-  const b = '120720';
-  return input === a + b;
-}
 function doLogin() {
   const pw = document.getElementById('pw-input').value;
-  if (checkPw(pw)) {
+  const expected = ['H','a','m','b','u','r','g','1','2','0','7','2','0'].join('');
+  if (pw === expected) {
     sessionStorage.setItem('mp_auth','1');
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     init();
   } else {
-    document.getElementById('login-error').textContent = 'Falsches Passwort';
-    document.getElementById('pw-input').value = '';
+    document.getElementById('login-error').textContent = 'Eingabe: "' + pw + '" (' + pw.length + ' Zeichen)';
     document.getElementById('pw-input').focus();
   }
 }
@@ -784,4 +779,4 @@ function renderRecipes(){
     <div class="recipe-cards">
       ${planData.recipes.map((r,i)=>`
         <div class="recipe-card" onclick="openRecipe(${i})">
-          <div class="recipe-thumb" style="backgrou
+          <div class="recipe-thumb" style="background:${r.color}">${r.emoji}</div>
