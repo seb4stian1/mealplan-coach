@@ -4,9 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>🥗 Meal Plan Coach</title>
-
 <script>
-// ── AUTH — early, before any CDN ──
 function doLogin() {
   try {
     var pw = document.getElementById('pw-input').value;
@@ -32,291 +30,215 @@ function doLogout() {
 }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-:root {
-  --green-dark:#1a5e20;--green-med:#2e7d32;--green-light:#e8f5e9;--green-bright:#4caf50;
-  --orange:#e65100;--orange-light:#fff3e0;--blue-light:#e3f2fd;--blue:#1565c0;
-  --purple:#6a1b9a;--purple-light:#f3e5f5;
-  --yellow:#fff9c4;--red:#b71c1c;--red-light:#ffebee;
-  --grey:#f5f5f5;--grey-dark:#757575;--white:#ffffff;
-  --shadow:0 2px 8px rgba(0,0,0,0.12);--radius:12px;
-}
+:root{--gd:#1a5e20;--gm:#2e7d32;--gl:#e8f5e9;--gb:#4caf50;--or:#e65100;--ol:#fff3e0;--bl:#e3f2fd;--b:#1565c0;--pu:#6a1b9a;--pl:#f3e5f5;--ye:#fff9c4;--re:#b71c1c;--gr:#f5f5f5;--grd:#757575;--wh:#ffffff;--sh:0 2px 8px rgba(0,0,0,0.12);--ra:12px;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f0;color:#1a1a1a;min-height:100vh;font-size:15px;}
-
-/* LOGIN */
-#login-screen{position:fixed;inset:0;background:linear-gradient(135deg,var(--green-dark),#0a3d0f);display:flex;align-items:center;justify-content:center;z-index:9999;}
-.login-box{background:white;border-radius:20px;padding:36px 28px;width:320px;max-width:92vw;box-shadow:0 20px 60px rgba(0,0,0,0.4);text-align:center;}
-.login-logo{font-size:2.8rem;margin-bottom:8px;}
-.login-title{font-size:1.2rem;font-weight:700;color:var(--green-dark);margin-bottom:3px;}
-.login-sub{font-size:0.8rem;color:var(--grey-dark);margin-bottom:24px;}
-.login-input{width:100%;border:2px solid #e0e0e0;border-radius:10px;padding:13px 16px;font-size:1.1rem;text-align:center;letter-spacing:3px;outline:none;transition:border-color 0.2s;font-family:inherit;}
-.login-input:focus{border-color:var(--green-med);}
-.login-btn{width:100%;margin-top:14px;padding:14px;background:var(--green-med);color:white;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;}
-.login-error{color:var(--red);font-size:0.8rem;margin-top:10px;min-height:20px;}
-
-/* APP */
+#login-screen{position:fixed;inset:0;background:linear-gradient(135deg,var(--gd),#0a3d0f);display:flex;align-items:center;justify-content:center;z-index:9999;}
+.lbox{background:white;border-radius:20px;padding:36px 28px;width:320px;max-width:92vw;box-shadow:0 20px 60px rgba(0,0,0,0.4);text-align:center;}
+.llogo{font-size:2.8rem;margin-bottom:8px;}
+.ltitle{font-size:1.2rem;font-weight:700;color:var(--gd);margin-bottom:3px;}
+.lsub{font-size:0.8rem;color:var(--grd);margin-bottom:24px;}
+.linput{width:100%;border:2px solid #e0e0e0;border-radius:10px;padding:13px 16px;font-size:1.1rem;text-align:center;letter-spacing:3px;outline:none;font-family:inherit;}
+.linput:focus{border-color:var(--gm);}
+.lbtn{width:100%;margin-top:14px;padding:14px;background:var(--gm);color:white;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;}
+.lerr{color:var(--re);font-size:0.8rem;margin-top:10px;min-height:20px;}
 #app{display:none;}
-header{background:linear-gradient(135deg,var(--green-dark),var(--green-med));color:white;padding:14px 16px;}
-.header-top{display:flex;align-items:center;justify-content:space-between;}
+header{background:linear-gradient(135deg,var(--gd),var(--gm));color:white;padding:14px 16px;}
+.htop{display:flex;align-items:center;justify-content:space-between;}
 header h1{font-size:1.15rem;font-weight:700;}
 header p{font-size:0.75rem;opacity:0.85;margin-top:2px;}
-.logout-btn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;border-radius:8px;padding:6px 12px;font-size:0.75rem;cursor:pointer;font-family:inherit;white-space:nowrap;}
-.header-meta{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+.logoutb{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;border-radius:8px;padding:6px 12px;font-size:0.75rem;cursor:pointer;font-family:inherit;}
+.hmeta{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
 .badge{background:rgba(255,255,255,0.2);border-radius:20px;padding:3px 10px;font-size:0.72rem;font-weight:600;}
-.badge.orange{background:rgba(230,81,0,0.6);}
-.badge.green{background:rgba(46,125,50,0.7);}
-
-/* WEEK NAV */
-.week-nav{display:flex;align-items:center;justify-content:space-between;background:white;border-bottom:1px solid #e0e0e0;padding:8px 12px;gap:8px;}
-.week-nav-btn{background:none;border:2px solid var(--green-med);border-radius:8px;padding:7px 14px;font-size:0.82rem;font-weight:700;color:var(--green-dark);cursor:pointer;font-family:inherit;min-width:70px;}
-.week-nav-btn:disabled{opacity:0.3;cursor:not-allowed;}
-.week-nav-label{font-size:0.88rem;font-weight:700;color:var(--green-dark);text-align:center;}
-.week-nav-sub{font-size:0.7rem;color:var(--grey-dark);text-align:center;}
-
-/* TABS */
-nav{background:var(--white);border-bottom:2px solid var(--green-light);position:sticky;top:0;z-index:100;box-shadow:var(--shadow);}
+.badge.or{background:rgba(230,81,0,0.6);}
+.badge.gn{background:rgba(46,125,50,0.7);}
+.wnav{display:flex;align-items:center;justify-content:space-between;background:white;border-bottom:1px solid #e0e0e0;padding:8px 12px;gap:8px;}
+.wnavb{background:none;border:2px solid var(--gm);border-radius:8px;padding:7px 14px;font-size:0.82rem;font-weight:700;color:var(--gd);cursor:pointer;font-family:inherit;min-width:70px;}
+.wnavb:disabled{opacity:0.3;cursor:not-allowed;}
+nav{background:white;border-bottom:2px solid var(--gl);position:sticky;top:0;z-index:100;box-shadow:var(--sh);}
 .tabs{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;}
-.tab{flex:1;min-width:60px;padding:11px 4px;text-align:center;font-size:0.7rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;color:var(--grey-dark);white-space:nowrap;}
-.tab.active{border-bottom-color:var(--green-bright);color:var(--green-dark);background:var(--green-light);}
-
+.tab{flex:1;min-width:58px;padding:11px 3px;text-align:center;font-size:0.68rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;color:var(--grd);white-space:nowrap;}
+.tab.active{border-bottom-color:var(--gb);color:var(--gd);background:var(--gl);}
 main{max-width:680px;margin:0 auto;padding:12px 12px 80px;}
 .section{display:none;}.section.active{display:block;}
-
-/* CARDS */
-.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden;}
-.card-header{padding:11px 14px;font-weight:700;font-size:0.88rem;display:flex;align-items:center;gap:8px;}
-.card-header.green{background:var(--green-dark);color:white;}
-.card-body{padding:12px 14px;}
-
-/* LOADING */
-.loading-overlay{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:14px;color:var(--grey-dark);}
-.spinner{width:32px;height:32px;border:4px solid var(--green-light);border-top-color:var(--green-med);border-radius:50%;animation:spin 0.8s linear infinite;}
+.card{background:white;border-radius:var(--ra);box-shadow:var(--sh);margin-bottom:12px;overflow:hidden;}
+.ch{padding:11px 14px;font-weight:700;font-size:0.88rem;display:flex;align-items:center;gap:8px;}
+.ch.gn{background:var(--gd);color:white;}
+.cb{padding:12px 14px;}
+.spin-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:14px;color:var(--grd);}
+.spinner{width:32px;height:32px;border:4px solid var(--gl);border-top-color:var(--gm);border-radius:50%;animation:spin 0.8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-
-/* WEEK */
-.rotation-banner{background:linear-gradient(90deg,var(--green-dark),var(--green-med));color:white;border-radius:10px;padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
-.rotation-title{font-size:0.85rem;font-weight:700;}
-.rotation-sub{font-size:0.7rem;opacity:0.85;margin-top:2px;}
-.rot-badge{padding:3px 9px;border-radius:14px;font-size:0.7rem;font-weight:700;border:2px solid rgba(255,255,255,0.35);}
-.rot-badge.active{background:rgba(255,255,255,0.25);border-color:rgba(255,255,255,0.8);}
-
-.week-grid{display:flex;flex-direction:column;gap:8px;}
-.day-card{border-radius:10px;overflow:hidden;border:1px solid #e0e0e0;background:white;}
-.day-header{padding:9px 12px;font-weight:700;font-size:0.88rem;display:flex;align-items:center;justify-content:space-between;}
-.day-header.training{background:var(--blue-light);border-left:4px solid var(--blue);}
-.day-header.mealprep{background:var(--orange-light);border-left:4px solid var(--orange);}
-.day-header.rest{background:var(--grey);border-left:4px solid #bdbdbd;}
-.day-pills{display:flex;gap:4px;flex-wrap:wrap;}
+.rbanner{background:linear-gradient(90deg,var(--gd),var(--gm));color:white;border-radius:10px;padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.rtitle{font-size:0.85rem;font-weight:700;}
+.rsub{font-size:0.7rem;opacity:0.85;margin-top:2px;}
+.rbadge{padding:3px 9px;border-radius:14px;font-size:0.7rem;font-weight:700;border:2px solid rgba(255,255,255,0.35);}
+.rbadge.active{background:rgba(255,255,255,0.25);border-color:rgba(255,255,255,0.8);}
+.wgrid{display:flex;flex-direction:column;gap:8px;}
+.dcard{border-radius:10px;overflow:hidden;border:1px solid #e0e0e0;background:white;}
+.dhead{padding:9px 12px;font-weight:700;font-size:0.88rem;display:flex;align-items:center;justify-content:space-between;}
+.dhead.tr{background:var(--bl);border-left:4px solid var(--b);}
+.dhead.mp{background:var(--ol);border-left:4px solid var(--or);}
+.dhead.rs{background:var(--gr);border-left:4px solid #bdbdbd;}
+.dpills{display:flex;gap:4px;flex-wrap:wrap;}
 .pill{font-size:0.65rem;padding:2px 7px;border-radius:10px;font-weight:600;}
-.pill.training{background:var(--blue);color:white;}
-.pill.mealprep{background:var(--orange);color:white;}
-.meal-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px 10px;}
-.meal-slot{background:var(--grey);border-radius:8px;padding:7px 9px;}
-.meal-label{font-size:0.62rem;font-weight:700;color:var(--grey-dark);text-transform:uppercase;margin-bottom:2px;}
-.meal-name{font-size:0.78rem;font-weight:600;line-height:1.3;}
-.meal-kcal{font-size:0.65rem;color:#888;margin-top:3px;}
-
-/* RESTE */
-.reste-section{background:white;border-radius:10px;border:1px solid #e0e0e0;padding:12px;margin-bottom:10px;}
-.reste-section h3{font-size:0.85rem;font-weight:700;color:var(--green-dark);margin-bottom:8px;}
-.reste-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
-.reste-tag{padding:5px 11px;border-radius:20px;border:2px solid #e0e0e0;font-size:0.78rem;cursor:pointer;background:#fafafa;user-select:none;}
-.reste-tag.selected{border-color:var(--green-med);background:var(--green-light);color:var(--green-dark);font-weight:600;}
-.reste-custom{display:flex;gap:6px;margin-bottom:8px;}
-.kommentar-input{width:100%;border:2px solid #e0e0e0;border-radius:8px;padding:9px 12px;font-size:0.82rem;font-family:inherit;resize:vertical;min-height:60px;outline:none;}
-.kommentar-input:focus{border-color:var(--green-med);}
-.save-row{display:flex;align-items:center;gap:10px;}
-.save-status{font-size:0.78rem;}
-
-/* BUTTONS */
+.pill.tr{background:var(--b);color:white;}
+.pill.mp{background:var(--or);color:white;}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px 10px;}
+.mslot{background:var(--gr);border-radius:8px;padding:7px 9px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.mslot:active{background:#d0ebd1;}
+.mlabel{font-size:0.62rem;font-weight:700;color:var(--grd);text-transform:uppercase;margin-bottom:2px;}
+.mname{font-size:0.78rem;font-weight:600;line-height:1.3;}
+.mkcal{font-size:0.65rem;color:#888;margin-top:3px;}
+.rsec{background:white;border-radius:10px;border:1px solid #e0e0e0;padding:12px;margin-bottom:10px;}
+.rsec h3{font-size:0.85rem;font-weight:700;color:var(--gd);margin-bottom:8px;}
+.rgrid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+.rtag{padding:5px 11px;border-radius:20px;border:2px solid #e0e0e0;font-size:0.78rem;cursor:pointer;background:#fafafa;user-select:none;}
+.rtag.sel{border-color:var(--gm);background:var(--gl);color:var(--gd);font-weight:600;}
+.rcustom{display:flex;gap:6px;margin-bottom:8px;}
+.kinput{width:100%;border:2px solid #e0e0e0;border-radius:8px;padding:9px 12px;font-size:0.82rem;font-family:inherit;resize:vertical;min-height:60px;outline:none;}
+.kinput:focus{border-color:var(--gm);}
+.srow{display:flex;align-items:center;gap:10px;}
+.sstatus{font-size:0.78rem;}
 .btn{padding:9px 16px;border-radius:8px;border:none;font-size:0.82rem;font-weight:700;cursor:pointer;font-family:inherit;}
-.btn.primary{background:var(--green-med);color:white;}
-.btn.secondary{background:white;border:2px solid var(--green-med);color:var(--green-dark);}
-
-/* SHOPPING */
-.shop-header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
-.prog-bar-bg{height:8px;background:#e0e0e0;border-radius:4px;flex:1;min-width:80px;}
-.prog-bar{height:100%;background:var(--green-bright);border-radius:4px;transition:width 0.3s;}
-.prog-text{font-size:0.78rem;font-weight:700;color:var(--green-dark);}
-.filter-btns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
-.filter-btn{padding:5px 11px;border-radius:20px;border:2px solid #e0e0e0;font-size:0.72rem;font-weight:600;cursor:pointer;background:white;font-family:inherit;}
-.filter-btn.active{border-color:var(--green-med);background:var(--green-light);color:var(--green-dark);}
-.shop-cat{margin-bottom:10px;}
-.shop-cat-header{font-size:0.78rem;font-weight:700;padding:7px 12px;border-radius:8px 8px 0 0;}
-.shop-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #f0f0f0;background:white;cursor:pointer;-webkit-tap-highlight-color:transparent;}
-.shop-item:last-child{border-bottom:none;border-radius:0 0 8px 8px;}
-.shop-item.checked{opacity:0.5;}
-.shop-item.checked .shop-name{text-decoration:line-through;}
-.shop-checkbox{width:22px;height:22px;border-radius:6px;border:2px solid #ccc;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;background:white;}
-.shop-item.checked .shop-checkbox{background:var(--green-med);border-color:var(--green-med);color:white;}
-.shop-name{flex:1;font-size:0.82rem;font-weight:600;}
-.shop-note{font-size:0.68rem;color:#888;font-weight:400;}
-.shop-amount{font-size:0.75rem;color:#666;white-space:nowrap;}
-.shop-betrag-row{background:white;border-radius:10px;border:1px solid #e0e0e0;padding:12px;margin-top:10px;display:flex;align-items:center;gap:10px;}
-.shop-betrag-row label{font-size:0.82rem;font-weight:700;color:var(--green-dark);white-space:nowrap;}
-.betrag-input{flex:1;border:2px solid #e0e0e0;border-radius:8px;padding:8px 12px;font-size:0.9rem;font-family:inherit;outline:none;}
-.betrag-input:focus{border-color:var(--green-med);}
-
-/* RECIPES */
-.recipe-cards{display:flex;flex-direction:column;gap:10px;}
-.recipe-card{display:flex;gap:12px;background:white;border-radius:10px;padding:12px;border:1px solid #e0e0e0;cursor:pointer;-webkit-tap-highlight-color:transparent;}
-.recipe-thumb{width:56px;height:56px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;}
-.recipe-info{flex:1;}
-.recipe-title{font-size:0.88rem;font-weight:700;margin-bottom:3px;}
-.recipe-badge{font-size:0.65rem;background:var(--green-light);color:var(--green-dark);padding:2px 8px;border-radius:10px;font-weight:600;}
-.recipe-makros{display:flex;gap:8px;margin-top:6px;}
-.recipe-makro{text-align:center;background:var(--grey);border-radius:6px;padding:3px 7px;}
-.recipe-makro span:first-child{display:block;font-size:0.8rem;font-weight:700;}
-.recipe-makro span:last-child{display:block;font-size:0.6rem;color:#888;}
-.detail-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500;display:flex;align-items:flex-end;justify-content:center;}
-.detail-modal{background:white;border-radius:20px 20px 0 0;width:100%;max-width:680px;max-height:85vh;overflow-y:auto;padding:20px;}
-.detail-modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
-.close-btn{background:var(--grey);border:none;border-radius:50%;width:32px;height:32px;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.section-label{font-size:0.72rem;font-weight:700;color:var(--grey-dark);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 6px;}
-.portion-compare{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
-.portion-box{border-radius:10px;padding:10px;border:2px solid #e0e0e0;}
-.portion-box.seb{border-color:var(--blue);background:var(--blue-light);}
-.portion-box.fr{border-color:var(--orange);background:var(--orange-light);}
-.portion-name{font-size:0.72rem;font-weight:700;margin-bottom:4px;}
-.portion-gram{font-size:0.82rem;font-weight:700;}
-.portion-makro{font-size:0.68rem;color:#555;margin-top:3px;}
-.ingredient-table{width:100%;border-collapse:collapse;font-size:0.8rem;}
-.ingredient-table th{background:var(--green-light);padding:6px 8px;text-align:left;font-size:0.72rem;}
-.ingredient-table td{padding:5px 8px;border-bottom:1px solid #f0f0f0;}
-.steps-list{padding-left:18px;font-size:0.82rem;line-height:1.7;}
-
-/* PORTIONEN */
-.person-toggle{display:flex;gap:8px;margin-bottom:12px;}
-.person-btn{flex:1;padding:10px;border-radius:10px;border:2px solid #e0e0e0;font-size:0.82rem;font-weight:700;cursor:pointer;font-family:inherit;background:white;}
-.person-btn.seb.active{border-color:var(--blue);background:var(--blue-light);color:var(--blue);}
-.person-btn.fr.active{border-color:var(--orange);background:var(--orange-light);color:var(--orange);}
-
-/* MAKROS */
-.makro-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
-.makro-card{border-radius:10px;padding:12px;border:2px solid #e0e0e0;}
-.makro-name{font-size:0.85rem;font-weight:700;margin-bottom:2px;}
-.makro-ziel{font-size:0.68rem;color:#666;margin-bottom:8px;}
-.makro-row{display:flex;justify-content:space-between;font-size:0.75rem;padding:3px 0;border-bottom:1px solid rgba(0,0,0,0.06);}
-.makro-row:last-child{border-bottom:none;font-weight:700;}
-
-/* DIARY */
-.diary-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
-.diary-person-toggle{display:flex;gap:6px;}
-.diary-person-btn{padding:6px 14px;border-radius:20px;border:2px solid #e0e0e0;font-size:0.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:white;}
-.diary-person-btn.seb.active{border-color:var(--blue);background:var(--blue-light);color:var(--blue);}
-.diary-person-btn.fr.active{border-color:var(--orange);background:var(--orange-light);color:var(--orange);}
-.diary-day-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;-webkit-overflow-scrolling:touch;}
-.diary-day-tab{padding:7px 14px;border-radius:20px;border:2px solid #e0e0e0;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:inherit;background:white;white-space:nowrap;flex-shrink:0;}
-.diary-day-tab.active{border-color:var(--green-med);background:var(--green-light);color:var(--green-dark);}
-.diary-q{margin-bottom:12px;}
-.diary-q label{display:block;font-size:0.82rem;font-weight:700;margin-bottom:5px;color:var(--green-dark);}
-.diary-q-sub{font-size:0.72rem;color:#888;margin-bottom:5px;}
-.diary-scale{display:flex;gap:5px;}
-.diary-scale-btn{flex:1;padding:8px 4px;border-radius:8px;border:2px solid #e0e0e0;font-size:0.78rem;font-weight:600;cursor:pointer;font-family:inherit;background:white;text-align:center;}
-.diary-scale-btn.active{border-color:var(--green-med);background:var(--green-light);color:var(--green-dark);}
-.diary-input{width:100%;border:2px solid #e0e0e0;border-radius:8px;padding:9px 12px;font-size:0.82rem;font-family:inherit;outline:none;}
-.diary-input:focus{border-color:var(--green-med);}
-.diary-entry-card{background:white;border-radius:10px;border:1px solid #e0e0e0;padding:12px;margin-bottom:8px;}
-.diary-entry-day{font-size:0.82rem;font-weight:700;color:var(--green-dark);margin-bottom:6px;}
-.diary-entry-row{display:flex;gap:8px;font-size:0.78rem;padding:3px 0;border-bottom:1px solid #f5f5f5;}
-.diary-entry-row:last-child{border-bottom:none;}
-.diary-entry-row span:first-child{flex-shrink:0;width:18px;}
-
-/* SUPPS */
-.supp-card{background:white;border-radius:10px;padding:12px;margin-bottom:8px;display:flex;gap:12px;border:1px solid #e0e0e0;}
-.supp-emoji{font-size:1.8rem;flex-shrink:0;}
-.supp-name{font-size:0.88rem;font-weight:700;margin-bottom:2px;}
-.supp-dose{font-size:0.75rem;color:#555;margin-bottom:3px;}
-.supp-benefit{font-size:0.72rem;color:#777;}
-.supp-brand{font-size:0.7rem;background:var(--grey);border-radius:6px;padding:3px 8px;display:inline-block;margin-top:4px;}
-.warning-box{background:#fff3e0;border:2px solid var(--orange);border-radius:10px;padding:12px 14px;font-size:0.78rem;line-height:1.6;margin-top:8px;}
-
-/* MEAL SLOT — interactive */
-.meal-slot{cursor:pointer;transition:background 0.15s;-webkit-tap-highlight-color:transparent;}
-.meal-slot:active{background:#d0ebd1;}
-
-/* MEAL DETAIL SHEET */
-.meal-detail-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
-.meal-detail-title{font-size:1rem;font-weight:700;}
-.meal-detail-persons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
-.meal-detail-person{border-radius:10px;padding:12px;border:2px solid #e0e0e0;}
-.meal-detail-person.seb{border-color:var(--blue);background:var(--blue-light);}
-.meal-detail-person.fr{border-color:var(--orange);background:var(--orange-light);}
-.meal-detail-pname{font-size:0.72rem;font-weight:700;margin-bottom:6px;}
-.meal-detail-ingredient{display:flex;justify-content:space-between;font-size:0.8rem;padding:3px 0;border-bottom:1px solid rgba(0,0,0,0.07);}
-.meal-detail-ingredient:last-child{border-bottom:none;}
-.meal-detail-ingredient .amt{font-weight:700;color:var(--green-dark);}
-.meal-detail-macro{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
-.meal-detail-macro span{background:white;border-radius:6px;padding:3px 8px;font-size:0.72rem;font-weight:700;}
-
-/* MEALPREP TAB */
-.mp-recipe-card{background:white;border-radius:12px;border:1px solid #e0e0e0;margin-bottom:12px;overflow:hidden;}
-.mp-recipe-header{padding:12px 14px;display:flex;align-items:center;gap:10px;}
-.mp-recipe-emoji{font-size:1.8rem;}
-.mp-recipe-title{font-weight:700;font-size:0.92rem;}
-.mp-recipe-sub{font-size:0.72rem;color:#888;margin-top:2px;}
-.mp-portion-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 12px 12px;}
-.mp-portion-box{border-radius:10px;padding:10px;border:2px solid #e0e0e0;}
-.mp-portion-box.seb{border-color:var(--blue);background:var(--blue-light);}
-.mp-portion-box.fr{border-color:var(--orange);background:var(--orange-light);}
-.mp-portion-name{font-size:0.72rem;font-weight:700;margin-bottom:5px;}
-.mp-portion-row{display:flex;justify-content:space-between;font-size:0.78rem;padding:2px 0;}
-.mp-portion-row .mp-amt{font-weight:700;color:var(--green-dark);}
-.mp-steps{padding:0 12px 12px;}
-.mp-steps-title{font-size:0.72rem;font-weight:700;color:var(--grey-dark);text-transform:uppercase;margin-bottom:6px;}
-.mp-steps ol{padding-left:16px;font-size:0.8rem;line-height:1.8;}
-.mp-total-banner{background:var(--green-light);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.82rem;}
-.mp-total-banner strong{color:var(--green-dark);}
-
-/* INPUT */
-input[type=text], textarea {
-  -webkit-appearance:none;
-  appearance:none;
-}
+.btn.pr{background:var(--gm);color:white;}
+.btn.se{background:white;border:2px solid var(--gm);color:var(--gd);}
+.shophr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+.pbb{height:8px;background:#e0e0e0;border-radius:4px;flex:1;min-width:80px;}
+.pb{height:100%;background:var(--gb);border-radius:4px;transition:width 0.3s;}
+.ptxt{font-size:0.78rem;font-weight:700;color:var(--gd);}
+.fbtns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.fbtn{padding:5px 11px;border-radius:20px;border:2px solid #e0e0e0;font-size:0.72rem;font-weight:600;cursor:pointer;background:white;font-family:inherit;}
+.fbtn.active{border-color:var(--gm);background:var(--gl);color:var(--gd);}
+.scat{margin-bottom:10px;}
+.scath{font-size:0.78rem;font-weight:700;padding:7px 12px;border-radius:8px 8px 0 0;}
+.sitem{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #f0f0f0;background:white;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.sitem:last-child{border-bottom:none;border-radius:0 0 8px 8px;}
+.sitem.chk{opacity:0.5;}
+.sitem.chk .sname{text-decoration:line-through;}
+.schk{width:22px;height:22px;border-radius:6px;border:2px solid #ccc;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;background:white;}
+.sitem.chk .schk{background:var(--gm);border-color:var(--gm);color:white;}
+.sname{flex:1;font-size:0.82rem;font-weight:600;}
+.snote{font-size:0.68rem;color:#888;font-weight:400;}
+.samt{font-size:0.75rem;color:#666;white-space:nowrap;}
+.betrow{background:white;border-radius:10px;border:1px solid #e0e0e0;padding:12px;margin-top:10px;display:flex;align-items:center;gap:10px;}
+.betrow label{font-size:0.82rem;font-weight:700;color:var(--gd);white-space:nowrap;}
+.betinp{flex:1;border:2px solid #e0e0e0;border-radius:8px;padding:8px 12px;font-size:0.9rem;font-family:inherit;outline:none;}
+.betinp:focus{border-color:var(--gm);}
+.rcards{display:flex;flex-direction:column;gap:10px;}
+.rcard{display:flex;gap:12px;background:white;border-radius:10px;padding:12px;border:1px solid #e0e0e0;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.rthumb{width:56px;height:56px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;}
+.rinfo{flex:1;}
+.rtitlec{font-size:0.88rem;font-weight:700;margin-bottom:3px;}
+.rbadgec{font-size:0.65rem;background:var(--gl);color:var(--gd);padding:2px 8px;border-radius:10px;font-weight:600;}
+.rmakros{display:flex;gap:8px;margin-top:6px;}
+.rmak{text-align:center;background:var(--gr);border-radius:6px;padding:3px 7px;}
+.rmak span:first-child{display:block;font-size:0.8rem;font-weight:700;}
+.rmak span:last-child{display:block;font-size:0.6rem;color:#888;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500;display:flex;align-items:flex-end;justify-content:center;}
+.sheet{background:white;border-radius:20px 20px 0 0;width:100%;max-width:680px;max-height:85vh;overflow-y:auto;padding:20px;}
+.shdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.shtitle{font-size:1rem;font-weight:700;}
+.closeb{background:var(--gr);border:none;border-radius:50%;width:32px;height:32px;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.slabel{font-size:0.72rem;font-weight:700;color:var(--grd);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 6px;}
+.pcmp{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.pbox{border-radius:10px;padding:10px;border:2px solid #e0e0e0;}
+.pbox.sb{border-color:var(--b);background:var(--bl);}
+.pbox.fr{border-color:var(--or);background:var(--ol);}
+.pname{font-size:0.72rem;font-weight:700;margin-bottom:4px;}
+.pingr{display:flex;justify-content:space-between;font-size:0.78rem;padding:3px 0;border-bottom:1px solid rgba(0,0,0,0.07);}
+.pingr:last-of-type{border-bottom:none;}
+.pingr .amt{font-weight:700;color:var(--gd);}
+.pmacro{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap;}
+.pmacro span{background:white;border-radius:6px;padding:3px 7px;font-size:0.7rem;font-weight:700;}
+.itab{width:100%;border-collapse:collapse;font-size:0.8rem;}
+.itab th{background:var(--gl);padding:6px 8px;text-align:left;font-size:0.72rem;}
+.itab td{padding:5px 8px;border-bottom:1px solid #f0f0f0;}
+.steps{padding-left:18px;font-size:0.82rem;line-height:1.7;}
+.mpcard{background:white;border-radius:12px;border:1px solid #e0e0e0;margin-bottom:12px;overflow:hidden;}
+.mpch{padding:12px 14px;display:flex;align-items:center;gap:10px;}
+.mpem{font-size:1.8rem;}
+.mptitle{font-weight:700;font-size:0.92rem;}
+.mpsub{font-size:0.72rem;color:#888;margin-top:2px;}
+.mppg{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 12px 12px;}
+.mppb{border-radius:10px;padding:10px;border:2px solid #e0e0e0;}
+.mppb.sb{border-color:var(--b);background:var(--bl);}
+.mppb.fr{border-color:var(--or);background:var(--ol);}
+.mppn{font-size:0.72rem;font-weight:700;margin-bottom:5px;}
+.mppr{display:flex;justify-content:space-between;font-size:0.78rem;padding:2px 0;}
+.mppr .ma{font-weight:700;color:var(--gd);}
+.mptot{background:var(--gl);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.82rem;}
+.ptog{display:flex;gap:8px;margin-bottom:12px;}
+.pbtn{flex:1;padding:10px;border-radius:10px;border:2px solid #e0e0e0;font-size:0.82rem;font-weight:700;cursor:pointer;font-family:inherit;background:white;}
+.pbtn.sb.active{border-color:var(--b);background:var(--bl);color:var(--b);}
+.pbtn.fr.active{border-color:var(--or);background:var(--ol);color:var(--or);}
+.mcards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.mcard{border-radius:10px;padding:12px;border:2px solid #e0e0e0;}
+.mcname{font-size:0.85rem;font-weight:700;margin-bottom:2px;}
+.mcziel{font-size:0.68rem;color:#666;margin-bottom:8px;}
+.mcrow{display:flex;justify-content:space-between;font-size:0.75rem;padding:3px 0;border-bottom:1px solid rgba(0,0,0,0.06);}
+.mcrow:last-child{border-bottom:none;}
+.dhead2{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+.dptog{display:flex;gap:6px;}
+.dpbtn{padding:6px 14px;border-radius:20px;border:2px solid #e0e0e0;font-size:0.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:white;}
+.dpbtn.sb.active{border-color:var(--b);background:var(--bl);color:var(--b);}
+.dpbtn.fr.active{border-color:var(--or);background:var(--ol);color:var(--or);}
+.ddtabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;-webkit-overflow-scrolling:touch;}
+.ddtab{padding:7px 14px;border-radius:20px;border:2px solid #e0e0e0;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:inherit;background:white;white-space:nowrap;flex-shrink:0;}
+.ddtab.active{border-color:var(--gm);background:var(--gl);color:var(--gd);}
+.dq{margin-bottom:12px;}
+.dq label{display:block;font-size:0.82rem;font-weight:700;margin-bottom:3px;color:var(--gd);}
+.dqsub{font-size:0.72rem;color:#888;margin-bottom:5px;}
+.dscale{display:flex;gap:5px;}
+.dsbtn{flex:1;padding:8px 4px;border-radius:8px;border:2px solid #e0e0e0;font-size:0.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:white;text-align:center;}
+.dsbtn.active{border-color:var(--gm);background:var(--gl);color:var(--gd);}
+.dinp{width:100%;border:2px solid #e0e0e0;border-radius:8px;padding:9px 12px;font-size:0.82rem;font-family:inherit;outline:none;}
+.dinp:focus{border-color:var(--gm);}
+.decard{background:white;border-radius:10px;border:1px solid #e0e0e0;padding:12px;margin-bottom:8px;}
+.deday{font-size:0.82rem;font-weight:700;color:var(--gd);margin-bottom:6px;}
+.derow{display:flex;gap:8px;font-size:0.78rem;padding:3px 0;border-bottom:1px solid #f5f5f5;}
+.derow:last-child{border-bottom:none;}
+.derow span:first-child{flex-shrink:0;width:18px;}
+.suppcard{background:white;border-radius:10px;padding:12px;margin-bottom:8px;display:flex;gap:12px;border:1px solid #e0e0e0;}
+.suppem{font-size:1.8rem;flex-shrink:0;}
+.suppname{font-size:0.88rem;font-weight:700;margin-bottom:2px;}
+.suppdose{font-size:0.75rem;color:#555;margin-bottom:3px;}
+.suppben{font-size:0.72rem;color:#777;}
+.suppbrand{font-size:0.7rem;background:var(--gr);border-radius:6px;padding:3px 8px;display:inline-block;margin-top:4px;}
+.warnbox{background:#fff3e0;border:2px solid var(--or);border-radius:10px;padding:12px 14px;font-size:0.78rem;line-height:1.6;margin-top:8px;}
 </style>
 </head>
 <body>
-
-<!-- LOGIN -->
 <div id="login-screen">
-  <div class="login-box">
-    <div class="login-logo">🥗</div>
-    <div class="login-title">Meal Plan Coach</div>
-    <div class="login-sub">Sebastian & Enna</div>
-    <input class="login-input" type="password" id="pw-input" placeholder="Passwort" onkeydown="if(event.key==='Enter')doLogin()">
-    <button class="login-btn" onclick="doLogin()">Einloggen →</button>
-    <div class="login-error" id="login-error"></div>
+  <div class="lbox">
+    <div class="llogo">🥗</div>
+    <div class="ltitle">Meal Plan Coach</div>
+    <div class="lsub">Sebastian &amp; Enna</div>
+    <input class="linput" type="password" id="pw-input" placeholder="Passwort" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="lbtn" onclick="doLogin()">Einloggen →</button>
+    <div class="lerr" id="login-error"></div>
   </div>
 </div>
-
-<!-- APP -->
 <div id="app">
 <header>
-  <div class="header-top">
-    <div>
-      <h1>🥗 Meal Plan Coach</h1>
-      <p>Sebastian & Enna</p>
-    </div>
-    <button class="logout-btn" onclick="doLogout()">Abmelden</button>
+  <div class="htop">
+    <div><h1>🥗 Meal Plan Coach</h1><p>Sebastian &amp; Enna</p></div>
+    <button class="logoutb" onclick="doLogout()">Abmelden</button>
   </div>
-  <div class="header-meta">
+  <div class="hmeta">
     <span class="badge">KW <span id="kw-display">—</span></span>
-    <span class="badge orange">⚡ Mi + Sa Mealprep</span>
-    <span class="badge" id="sync-badge">🔄 Lade...</span>
+    <span class="badge or">⚡ Mi + Sa Mealprep</span>
+    <span class="badge" id="sync-badge">⏳ Lädt...</span>
   </div>
 </header>
-
-<div class="week-nav">
-  <button class="week-nav-btn" id="prev-week-btn" onclick="changeWeek(-1)">← Zurück</button>
+<div class="wnav">
+  <button class="wnavb" id="prev-btn" onclick="changeWeek(-1)">← Zurück</button>
   <div style="text-align:center;">
-    <div class="week-nav-label" id="week-nav-label">KW —</div>
-    <div class="week-nav-sub" id="week-nav-sub">Lade...</div>
+    <div style="font-size:0.88rem;font-weight:700;color:var(--gd);" id="wlabel">KW —</div>
+    <div style="font-size:0.7rem;color:var(--grd);" id="wsub">—</div>
   </div>
-  <button class="week-nav-btn" id="next-week-btn" onclick="changeWeek(1)">Vor →</button>
+  <button class="wnavb" id="next-btn" onclick="changeWeek(1)">Vor →</button>
 </div>
-
 <nav>
   <div class="tabs">
     <div class="tab active" onclick="showTab('woche',this)">📅 Woche</div>
@@ -328,969 +250,511 @@ input[type=text], textarea {
     <div class="tab" onclick="showTab('supps',this)">💊 Supps</div>
   </div>
 </nav>
-
 <main>
 
 <div id="tab-woche" class="section active">
-  <div id="woche-content"><div class="loading-overlay"><div class="spinner"></div><span>Lade Wochenplan...</span></div></div>
+  <div id="woche-content"><div class="spin-wrap"><div class="spinner"></div><span>Lade...</span></div></div>
 </div>
 
 <div id="tab-einkauf" class="section">
-  <div class="card">
-    <div class="card-body">
-      <div class="shop-header-row">
-        <span style="font-size:0.78rem;font-weight:700;color:var(--green-dark);">Abgehakt</span>
-        <div class="prog-bar-bg"><div class="prog-bar" id="prog-bar" style="width:0%"></div></div>
-        <span class="prog-text" id="prog-pct">0%</span>
-        <span style="font-size:0.75rem;color:#888;" id="prog-count">0/0</span>
-        <button class="btn secondary" onclick="resetShop()" style="padding:5px 10px;font-size:0.72rem;">Reset</button>
-      </div>
+  <div class="card"><div class="cb">
+    <div class="shophr">
+      <span style="font-size:0.78rem;font-weight:700;color:var(--gd);">Abgehakt</span>
+      <div class="pbb"><div class="pb" id="prog-bar" style="width:0%"></div></div>
+      <span class="ptxt" id="prog-pct">0%</span>
+      <span style="font-size:0.75rem;color:#888;" id="prog-count">0/0</span>
+      <button class="btn se" onclick="resetShop()" style="padding:5px 10px;font-size:0.72rem;">Reset</button>
     </div>
+  </div></div>
+  <div class="fbtns">
+    <button class="fbtn active" data-cat="all" onclick="filterCat(this)">Alle</button>
+    <button class="fbtn" data-cat="protein" onclick="filterCat(this)">🥩 Protein</button>
+    <button class="fbtn" data-cat="kh" onclick="filterCat(this)">🌾 KH</button>
+    <button class="fbtn" data-cat="gemuese" onclick="filterCat(this)">🥦 Gemüse</button>
+    <button class="fbtn" data-cat="milch" onclick="filterCat(this)">🥛 Milch</button>
+    <button class="fbtn" data-cat="fette" onclick="filterCat(this)">🧴 Sonst.</button>
   </div>
-  <div class="filter-btns">
-    <button class="filter-btn active" data-cat="all" onclick="filterCat(this)">Alle</button>
-    <button class="filter-btn" data-cat="protein" onclick="filterCat(this)">🥩 Protein</button>
-    <button class="filter-btn" data-cat="kh" onclick="filterCat(this)">🌾 KH</button>
-    <button class="filter-btn" data-cat="gemuese" onclick="filterCat(this)">🥦 Gemüse</button>
-    <button class="filter-btn" data-cat="milch" onclick="filterCat(this)">🥛 Milch</button>
-    <button class="filter-btn" data-cat="fette" onclick="filterCat(this)">🧴 Sonst.</button>
-  </div>
-  <div id="shop-list"><div class="loading-overlay"><div class="spinner"></div></div></div>
-  <div class="shop-betrag-row">
+  <div id="shop-list"></div>
+  <div class="betrow">
     <label>💶 Ausgegeben:</label>
-    <input class="betrag-input" type="number" id="betrag-input" placeholder="0.00" step="0.01" min="0" oninput="saveBetrag()">
+    <input class="betinp" type="number" id="betrag-input" placeholder="0.00" step="0.01" min="0" oninput="saveBetrag()">
     <span style="font-size:0.82rem;font-weight:700;">€</span>
   </div>
   <div class="card" style="margin-top:10px;">
-    <div class="card-header green">📝 Einkaufs-Notizen</div>
-    <div class="card-body">
-      <div style="font-size:0.75rem;color:#888;margin-bottom:6px;">Was wurde ersetzt, nicht gekauft oder war ausverkauft?</div>
-      <textarea class="kommentar-input" id="shop-notiz" placeholder="z.B. 'Walnüsse → Cashews', 'Putenbrust nicht da → Hähnchenbrust', 'Lachsfilet TK statt frisch'..." style="min-height:80px;" oninput="saveShopNotiz()"></textarea>
+    <div class="ch gn">📝 Einkaufs-Notizen</div>
+    <div class="cb">
+      <div style="font-size:0.75rem;color:#888;margin-bottom:6px;">Was wurde ersetzt oder war ausverkauft?</div>
+      <textarea class="kinput" id="shop-notiz" placeholder="z.B. 'Walnüsse → Cashews', 'Lachs TK statt frisch'..." style="min-height:70px;" oninput="saveShopNotiz()"></textarea>
       <div style="font-size:0.7rem;color:#aaa;margin-top:4px;" id="shop-notiz-status"></div>
     </div>
   </div>
 </div>
 
 <div id="tab-rezepte" class="section">
-  <div id="recipe-grid"><div class="loading-overlay"><div class="spinner"></div></div></div>
-  <div id="recipe-modal" class="detail-overlay" style="display:none;" onclick="maybeCloseModal(event)">
-    <div class="detail-modal" id="recipe-modal-inner"></div>
+  <div id="recipe-grid"></div>
+  <div id="recipe-modal" class="overlay" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
+    <div class="sheet" id="recipe-modal-inner"></div>
   </div>
 </div>
 
 <div id="tab-mealprep" class="section">
-  <div style="display:flex;gap:8px;margin-bottom:12px;">
-    <button class="person-btn seb active" id="mp-mi-btn" onclick="switchMealprepDay('mi',this)" style="flex:1;">⚡ Mittwoch</button>
-    <button class="person-btn fr" id="mp-sa-btn" onclick="switchMealprepDay('sa',this)" style="flex:1;">⚡ Samstag</button>
+  <div class="ptog">
+    <button class="pbtn sb active" id="mp-mi-btn" onclick="switchMP('mi',this)">⚡ Mittwoch</button>
+    <button class="pbtn fr" id="mp-sa-btn" onclick="switchMP('sa',this)">⚡ Samstag</button>
   </div>
-  <div id="mealprep-content"><div class="loading-overlay"><div class="spinner"></div></div></div>
-</div>
-
-<!-- Meal detail bottom sheet -->
-<div id="meal-detail-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:600;" onclick="closeMealDetail()">
-  <div id="meal-detail-sheet" style="position:absolute;bottom:0;left:0;right:0;max-width:680px;margin:0 auto;background:white;border-radius:20px 20px 0 0;padding:20px;max-height:80vh;overflow-y:auto;" onclick="event.stopPropagation()">
-    <div id="meal-detail-inner"></div>
-  </div>
+  <div id="mealprep-content"></div>
 </div>
 
 <div id="tab-tagebuch" class="section">
-  <div class="diary-header">
-    <strong style="font-size:0.95rem;">📔 Meal-Tagebuch</strong>
-    <div class="diary-person-toggle">
-      <button class="diary-person-btn seb active" onclick="switchDiaryPerson('seb',this)">👨 Seb</button>
-      <button class="diary-person-btn fr" onclick="switchDiaryPerson('fr',this)">👩 Enna</button>
+  <div class="dhead2">
+    <strong style="font-size:0.95rem;">📔 Tagebuch</strong>
+    <div class="dptog">
+      <button class="dpbtn sb active" onclick="switchDP('seb',this)">👨 Seb</button>
+      <button class="dpbtn fr" onclick="switchDP('fr',this)">👩 Enna</button>
     </div>
   </div>
-  <div class="diary-day-tabs" id="diary-day-tabs"></div>
-  <div id="diary-form-container"></div>
-  <div style="margin-top:16px;">
-    <div style="font-size:0.78rem;font-weight:700;color:var(--grey-dark);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Diese Woche</div>
-    <div id="diary-history"></div>
-  </div>
+  <div class="ddtabs" id="diary-day-tabs"></div>
+  <div id="diary-form"></div>
+  <div style="margin-top:16px;"><div style="font-size:0.78rem;font-weight:700;color:var(--grd);margin-bottom:8px;text-transform:uppercase;">Diese Woche</div>
+  <div id="diary-history"></div></div>
 </div>
 
 <div id="tab-makros" class="section">
-  <div class="makro-cards" id="makro-cards"></div>
+  <div class="mcards" id="makro-cards"></div>
   <div class="card">
-    <div class="card-header green">📋 Tagesstruktur</div>
-    <div class="card-body" style="overflow-x:auto;">
-      <table style="width:100%;font-size:0.78rem;border-collapse:collapse;min-width:300px;">
-        <tr style="background:var(--green-light);"><th style="padding:7px;text-align:left;">Mahlzeit</th><th style="padding:7px;">Zeit</th><th style="padding:7px;">Seb</th><th style="padding:7px;">Enna</th></tr>
-        <tr><td style="padding:6px 7px;">☕ Shake</td><td style="text-align:center;">07–08</td><td style="text-align:center;">~380</td><td style="text-align:center;">~295</td></tr>
+    <div class="ch gn">📋 Tagesstruktur</div>
+    <div class="cb" style="overflow-x:auto;">
+      <table style="width:100%;font-size:0.78rem;border-collapse:collapse;min-width:280px;">
+        <tr style="background:var(--gl);"><th style="padding:7px;text-align:left;">Mahlzeit</th><th style="padding:7px;">Zeit</th><th style="padding:7px;">Seb</th><th style="padding:7px;">Enna</th></tr>
+        <tr><td style="padding:6px 7px;">☕ Shake</td><td style="text-align:center;">07–08</td><td style="text-align:center;">~370</td><td style="text-align:center;">~285</td></tr>
         <tr style="background:#fafafa;"><td style="padding:6px 7px;">🥗 Mittag</td><td style="text-align:center;">12–13</td><td style="text-align:center;">~550</td><td style="text-align:center;">~420</td></tr>
-        <tr><td style="padding:6px 7px;">🍽 Abend</td><td style="text-align:center;">18:30</td><td style="text-align:center;">~800</td><td style="text-align:center;">~650</td></tr>
-        <tr style="background:#fafafa;"><td style="padding:6px 7px;">🍎 Snack (Training)</td><td style="text-align:center;">post</td><td style="text-align:center;">~230</td><td style="text-align:center;">~190</td></tr>
-        <tr style="background:var(--yellow);font-weight:700;"><td style="padding:6px 7px;">Ruhetag gesamt</td><td></td><td style="text-align:center;">1.730</td><td style="text-align:center;">1.365</td></tr>
-        <tr style="background:var(--blue-light);font-weight:700;"><td style="padding:6px 7px;">Trainingstag gesamt</td><td></td><td style="text-align:center;">1.960</td><td style="text-align:center;">1.555</td></tr>
+        <tr><td style="padding:6px 7px;">🍽 Abend</td><td style="text-align:center;">18:30</td><td style="text-align:center;">~750</td><td style="text-align:center;">~550</td></tr>
+        <tr style="background:#fafafa;"><td style="padding:6px 7px;">🍎 Snack (Training)</td><td style="text-align:center;">post</td><td style="text-align:center;">~120</td><td style="text-align:center;">~90</td></tr>
+        <tr style="background:var(--ye);font-weight:700;"><td style="padding:6px 7px;">Ruhetag</td><td></td><td style="text-align:center;">1.670</td><td style="text-align:center;">1.255</td></tr>
+        <tr style="background:var(--bl);font-weight:700;"><td style="padding:6px 7px;">Trainingstag</td><td></td><td style="text-align:center;">1.790</td><td style="text-align:center;">1.345</td></tr>
       </table>
     </div>
   </div>
 </div>
 
 <div id="tab-supps" class="section">
-  <div class="card"><div class="card-header green">💊 Nur Tropfen / Pulver / Flüssig</div></div>
+  <div class="card"><div class="ch gn">💊 Nur Tropfen / Pulver / Flüssig</div></div>
   <div id="supp-list"></div>
-  <div class="warning-box"><strong>⚠️ Schienbeinkantensyndrom:</strong> Täglich Faszienrollen (Waden), Wadendehnungen 3×30 Sek., Tibialis-Stärkung (Zehenanheben 3×20). Laufschuhe prüfen. Keine Besserung nach 4 Wochen → Physiotherapeut.</div>
+  <div class="warnbox"><strong>⚠️ Schienbeinkantensyndrom:</strong> Täglich Faszienrollen (Waden), Wadendehnungen 3×30 Sek., Tibialis-Stärkung (Zehenanheben 3×20). Laufschuhe prüfen. Keine Besserung nach 4 Wochen → Physio.</div>
 </div>
 
 </main>
 </div>
 
+<!-- Meal detail overlay -->
+<div id="meal-overlay" class="overlay" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
+  <div class="sheet" id="meal-inner"></div>
+</div>
+
 <script>
-// ══════════════════════════════════
-// SUPABASE — lazy init
-// ══════════════════════════════════
-const SUPA_URL = 'https://ncqtzzbqdelvabirmaev.supabase.co';
-const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jcXR6emJxZGVsdmFiaXJtYWV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDU1ODIsImV4cCI6MjA5NTMyMTU4Mn0.LXmHpw3ErePvlB6wo-uQlQQQq16AzWIXkwCYr8QZRSs';
-let _sb = null;
-function getSB() {
-  if (!_sb) { try { _sb = supabase.createClient(SUPA_URL, SUPA_KEY); } catch(e) { return null; } }
-  return _sb;
-}
+// SUPABASE
+const SURL='https://ncqtzzbqdelvabirmaev.supabase.co';
+const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jcXR6emJxZGVsdmFiaXJtYWV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDU1ODIsImV4cCI6MjA5NTMyMTU4Mn0.LXmHpw3ErePvlB6wo-uQlQQQq16AzWIXkwCYr8QZRSs';
+let _sb=null;
+function getSB(){if(!_sb){try{_sb=supabase.createClient(SURL,SKEY);}catch(e){return null;}}return _sb;}
 
-// ══════════════════════════════════
 // STATE
-// ══════════════════════════════════
-let planData = null;
-let checkedItems = {};
-let currentFilter = 'all';
-let currentMealprepDay = 'mi';
-let diaryPerson = 'seb';
-let diaryDay = 0;
-let diaryState = {}; // {q1,q2,q3,q4,q5,notiz}
-let viewKW = getKW();
-let viewYear = getYear();
+let planData=null, checkedItems={}, currentFilter='all', mpDay='mi', dpPerson='seb', dpDay=0, dpState={};
+let viewKW=getKW(), viewYear=getYear();
 
-// ══════════════════════════════════
 // UTILS
-// ══════════════════════════════════
-function getKW(d) {
-  d = d || new Date();
-  const jan4 = new Date(d.getFullYear(),0,4);
-  const startKW1 = new Date(jan4);
-  startKW1.setDate(jan4.getDate() - ((jan4.getDay()||7)-1));
-  const diff = d - startKW1;
-  return Math.floor(diff / (7*86400000)) + 1;
-}
-function getYear(d){ return (d||new Date()).getFullYear(); }
-function kwToDateRange(kw,year) {
-  const jan4 = new Date(year,0,4);
-  const s = new Date(jan4);
-  s.setDate(jan4.getDate() - ((jan4.getDay()||7)-1) + (kw-1)*7);
-  const e = new Date(s); e.setDate(s.getDate()+6);
-  return `${s.getDate()}.${s.getMonth()+1}. – ${e.getDate()}.${e.getMonth()+1}.${e.getFullYear()}`;
-}
+function getKW(d){d=d||new Date();const j=new Date(d.getFullYear(),0,4);const s=new Date(j);s.setDate(j.getDate()-((j.getDay()||7)-1));return Math.max(1,Math.floor((d-s)/(7*86400000))+1);}
+function getYear(d){return(d||new Date()).getFullYear();}
+function kwRange(kw,y){const j=new Date(y,0,4);const s=new Date(j);s.setDate(j.getDate()-((j.getDay()||7)-1)+(kw-1)*7);const e=new Date(s);e.setDate(s.getDate()+6);return s.getDate()+'.'+(s.getMonth()+1)+'. – '+e.getDate()+'.'+(e.getMonth()+1)+'.'+e.getFullYear();}
+function setBadge(t,c){const b=document.getElementById('sync-badge');b.textContent=t;b.className='badge'+(c?' '+c:'');}
+function showTab(n,el){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById('tab-'+n).classList.add('active');el.classList.add('active');}
 
-// ══════════════════════════════════
-// FALLBACK DATA — KW22 2026
-// Reste vorhanden: Paprika, Zucchini, Hähnchenschenkel, Hähnchenbrust, Hack
-// Di+Mi mittag frisch kochen, Mi Mealprep, Sa Mealprep, 4x Training
-// ══════════════════════════════════
-const FALLBACK = {
+// FALLBACK DATA
+const FB={
   weekData:[
-    {day:"Montag",type:"rest",meals:{shake:"Protein Shake",mittag:"Hähnchenbrust-Reste + Reis + Paprika",abend:"Hack-Pfanne mit Zucchini (Reste)",snack:"Lf. Joghurt + Beeren"},mealprep:false},
-    {day:"Dienstag",type:"training",meals:{shake:"Protein Shake",mittag:"Hähnchenschenkel + Süßkartoffeln (frisch)",abend:"Hähnchenschenkel + Süßkartoffeln (frisch)",snack:"Lf. Joghurt"},mealprep:false},
-    {day:"Mittwoch",type:"both",meals:{shake:"Protein Shake",mittag:"Lachs + Reis + Brokkoli (Mealprep)",abend:"Lachs + Reis + Brokkoli (Mealprep)",snack:"Lf. Joghurt + Beeren"},mealprep:true},
-    {day:"Donnerstag",type:"rest",meals:{shake:"Protein Shake",mittag:"Lachs + Reis + Brokkoli (Mealprep)",abend:"Putenbrust + Linsen-Curry (Mealprep)",snack:"Reiswaffel"},mealprep:false},
-    {day:"Freitag",type:"training",meals:{shake:"Protein Shake",mittag:"Putenbrust + Linsen-Curry (Mealprep)",abend:"Bolognese + Vollkorn-Pasta",snack:"Lf. Joghurt"},mealprep:false},
-    {day:"Samstag",type:"training",meals:{shake:"Protein Shake",mittag:"Thai-Hähnchen-Bowl (Mealprep)",abend:"Thai-Hähnchen-Bowl (Mealprep)",snack:"Lf. Joghurt"},mealprep:true},
-    {day:"Sonntag",type:"training",meals:{shake:"Protein Shake",mittag:"Süßkartoffel-Rinderhack (Mealprep)",abend:"Süßkartoffel-Rinderhack (Mealprep)",snack:"Lf. Joghurt + Beeren"},mealprep:false},
+    {day:'Montag',type:'rest',meals:{shake:'Protein Shake',mittag:'Hähnchenbrust + Reis + Paprika (Reste)',abend:'Hack-Pfanne mit Zucchini (Reste)',snack:'Lf. Joghurt'},mp:false},
+    {day:'Dienstag',type:'training',meals:{shake:'Protein Shake',mittag:'Hähnchenschenkel + Süßkartoffeln (frisch)',abend:'Hähnchenschenkel + Süßkartoffeln (frisch)',snack:'Lf. Joghurt'},mp:false},
+    {day:'Mittwoch',type:'both',meals:{shake:'Protein Shake',mittag:'Lachs + Reis + Brokkoli (Mealprep)',abend:'Lachs + Reis + Brokkoli (Mealprep)',snack:'Lf. Joghurt'},mp:true},
+    {day:'Donnerstag',type:'rest',meals:{shake:'Protein Shake',mittag:'Lachs + Reis + Brokkoli (Mealprep)',abend:'Putenbrust + Linsen-Curry (Mealprep)',snack:'Reiswaffel'},mp:false},
+    {day:'Freitag',type:'training',meals:{shake:'Protein Shake',mittag:'Putenbrust + Linsen-Curry (Mealprep)',abend:'Bolognese + Vollkorn-Pasta',snack:'Lf. Joghurt'},mp:false},
+    {day:'Samstag',type:'training',meals:{shake:'Protein Shake',mittag:'Thai-Hähnchen-Bowl (Mealprep)',abend:'Thai-Hähnchen-Bowl (Mealprep)',snack:'Lf. Joghurt'},mp:true},
+    {day:'Sonntag',type:'training',meals:{shake:'Protein Shake',mittag:'Süßkartoffel-Rinderhack (Mealprep)',abend:'Süßkartoffel-Rinderhack (Mealprep)',snack:'Lf. Joghurt'},mp:false},
   ],
   shopData:[
-    {cat:"protein",name:"Hähnchenbrustfilet",amount:"800g roh",note:"Di+Mi frisch"},
-    {cat:"protein",name:"Putenbrust",amount:"1,0 kg roh",note:"Mealprep Mi"},
-    {cat:"protein",name:"Lachsfilet",amount:"1,3 kg roh",note:"TK günstiger"},
-    {cat:"protein",name:"Rinderhackfleisch 20%",amount:"1,1 kg roh",note:"Fr+Sa Mealprep"},
-    {cat:"protein",name:"Eier (Freiland)",amount:"6 Stück",note:""},
-    {cat:"protein",name:"Whey Protein Isolat (lf.)",amount:"~250g anteilig",note:"laktosefrei!"},
-    {cat:"kh",name:"Basmati-Reis",amount:"1,0 kg roh",note:""},
-    {cat:"kh",name:"Süßkartoffeln",amount:"1,2 kg roh",note:"Di frisch + Mealprep"},
-    {cat:"kh",name:"Vollkorn-Pasta",amount:"400g",note:"Fr Abend"},
-    {cat:"kh",name:"Rote Linsen (trocken)",amount:"400g roh",note:"Mealprep Mi"},
-    {cat:"kh",name:"Reiswaffeln",amount:"1 Packung",note:"Snack"},
-    {cat:"kh",name:"Bananen",amount:"6 Stück",note:"Shake"},
-    {cat:"gemuese",name:"Brokkoli",amount:"900g roh",note:"Mealprep Mi"},
-    {cat:"gemuese",name:"Blattspinat TK",amount:"300g",note:""},
-    {cat:"gemuese",name:"Zwiebeln",amount:"300g roh",note:""},
-    {cat:"gemuese",name:"Knoblauch + Ingwer",amount:"je 1 Stück",note:""},
-    {cat:"gemuese",name:"Beeren TK",amount:"500g",note:"Shake + Snack"},
-    {cat:"gemuese",name:"Äpfel",amount:"4 Stück",note:"Snack"},
-    {cat:"gemuese",name:"Limetten",amount:"2 Stück",note:"Thai-Bowl"},
-    {cat:"milch",name:"Laktosefreie Milch (1,5%)",amount:"2 Liter",note:"Shakes!"},
-    {cat:"milch",name:"Alpro Sojajoghurt Natur",amount:"3× 400g",note:""},
-    {cat:"milch",name:"Laktosefreier Quark",amount:"500g",note:""},
-    {cat:"milch",name:"Laktosefreier griech. Joghurt",amount:"2× 500g",note:""},
-    {cat:"milch",name:"Kokosmilch light",amount:"2× 400ml",note:"Thai+Curry"},
-    {cat:"fette",name:"Olivenöl kaltgepresst",amount:"500ml",note:""},
-    {cat:"fette",name:"Kokosöl",amount:"300ml",note:""},
-    {cat:"fette",name:"Sojasoße / Tamari",amount:"1 Flasche",note:""},
-    {cat:"fette",name:"Walnüsse",amount:"150g",note:"Snack"},
+    {cat:'protein',name:'Hähnchenbrustfilet',amount:'800g roh',note:'Di+Mi frisch'},
+    {cat:'protein',name:'Putenbrust',amount:'1,0 kg roh',note:'Mealprep Mi'},
+    {cat:'protein',name:'Lachsfilet',amount:'1,3 kg roh',note:'TK günstiger'},
+    {cat:'protein',name:'Rinderhackfleisch 20%',amount:'1,1 kg roh',note:'Fr+Sa Mealprep'},
+    {cat:'protein',name:'Eier (Freiland)',amount:'6 Stück',note:''},
+    {cat:'protein',name:'Whey Protein Isolat (lf.)',amount:'~250g anteilig',note:'laktosefrei!'},
+    {cat:'kh',name:'Basmati-Reis',amount:'1,0 kg roh',note:''},
+    {cat:'kh',name:'Süßkartoffeln',amount:'1,2 kg roh',note:''},
+    {cat:'kh',name:'Vollkorn-Pasta',amount:'400g',note:'Fr Abend'},
+    {cat:'kh',name:'Rote Linsen (trocken)',amount:'400g roh',note:'Mealprep Mi'},
+    {cat:'kh',name:'Reiswaffeln',amount:'1 Packung',note:'Snack'},
+    {cat:'kh',name:'Bananen',amount:'4 Stück',note:'optional Shake'},
+    {cat:'gemuese',name:'Brokkoli',amount:'900g roh',note:'Mealprep Mi'},
+    {cat:'gemuese',name:'Blattspinat TK',amount:'300g',note:''},
+    {cat:'gemuese',name:'Zwiebeln',amount:'300g roh',note:''},
+    {cat:'gemuese',name:'Knoblauch + Ingwer',amount:'je 1 Stück',note:''},
+    {cat:'gemuese',name:'Beeren TK',amount:'500g',note:'Snack'},
+    {cat:'gemuese',name:'Äpfel',amount:'4 Stück',note:'Snack'},
+    {cat:'gemuese',name:'Limetten',amount:'2 Stück',note:''},
+    {cat:'milch',name:'Laktosefreie Milch 1,5%',amount:'2,5 Liter',note:'Shakes!'},
+    {cat:'milch',name:'Lf. griech. Joghurt',amount:'2× 500g',note:''},
+    {cat:'milch',name:'Lf. Quark',amount:'500g',note:''},
+    {cat:'milch',name:'Alpro Sojajoghurt',amount:'2× 400g',note:''},
+    {cat:'milch',name:'Kokosmilch light',amount:'2× 400ml',note:''},
+    {cat:'fette',name:'Olivenöl kaltgepresst',amount:'500ml',note:''},
+    {cat:'fette',name:'Kokosöl',amount:'300ml',note:''},
+    {cat:'fette',name:'Sojasoße / Tamari',amount:'1 Flasche',note:''},
+    {cat:'fette',name:'Walnüsse',amount:'150g',note:'Snack'},
   ],
   recipes:[
-    {emoji:"🐟",title:"Lachs + Reis + Brokkoli",day:"Mealprep Mittwoch",color:"#e8f5e9",
-     makros:{kcal:720,p:57,k:64,f:23},
-     portionen:{seb:{gram:"600g roh → ~490g gegart",kcal:"~720 kcal",p:"~57g P",k:"~64g KH",f:"~23g F"},fr:{gram:"420g roh → ~345g gegart",kcal:"~505 kcal",p:"~41g P",k:"~45g KH",f:"~16g F"}},
-     zutaten:[["Lachsfilet","1.300g roh","TK aufgetaut"],["Basmati-Reis","550g roh","ergibt ~1.350g gegart"],["Brokkoli","900g roh",""],["Olivenöl","30g",""],["Sojasoße/Tamari","30ml",""],["Knoblauch, Ingwer, Zitrone","nach Geschmack",""]],
-     steps:["Reis kochen (Wasser 1:1,8)","Lachs marinieren (Sojasoße, Knoblauch, Ingwer), 200°C 12–15 Min.","Brokkoli 7 Min. dämpfen","In 4 Boxen portionieren (2× Sebastian, 2× Enna)"]},
-    {emoji:"🥩",title:"Putenbrust + Linsen-Curry",day:"Mealprep Mittwoch",color:"#fce4ec",
-     makros:{kcal:690,p:61,k:59,f:17},
-     portionen:{seb:{gram:"560g roh → ~500g gegart",kcal:"~690 kcal",p:"~61g P",k:"~59g KH",f:"~17g F"},fr:{gram:"390g roh → ~350g gegart",kcal:"~485 kcal",p:"~44g P",k:"~42g KH",f:"~12g F"}},
-     zutaten:[["Putenbrust","1.000g roh",""],["Rote Linsen (trocken)","400g roh","ergibt ~1kg gegart"],["Kokosmilch light","400ml",""],["Zwiebeln","120g roh",""],["Kokosöl","20g",""],["Curry, Kurkuma, Garam Masala","je 5g",""]],
-     steps:["Pute anbraten, beiseitelegen","Zwiebeln + Gewürze anschwitzen","Linsen + Kokosmilch + 400ml Wasser, 15 Min. köcheln","Pute dazu, portionieren (4 Boxen)"]},
-    {emoji:"🍗",title:"Thai-Hähnchen-Rice-Bowl",day:"Mealprep Samstag",color:"#e3f2fd",
-     makros:{kcal:685,p:60,k:74,f:13},
-     portionen:{seb:{gram:"650g roh → ~520g gegart",kcal:"~685 kcal",p:"~60g P",k:"~74g KH",f:"~13g F"},fr:{gram:"460g roh → ~370g gegart",kcal:"~480 kcal",p:"~43g P",k:"~52g KH",f:"~9g F"}},
-     zutaten:[["Hähnchenbrustfilet","800g roh",""],["Basmati-Reis","450g roh",""],["Paprika rot/gelb","300g roh","keine Tomaten!"],["Zucchini","300g roh",""],["Olivenöl","30g",""],["Kokosmilch light","200ml",""],["Knoblauch, Ingwer, Limette","nach Geschmack",""]],
-     steps:["Reis kochen","Hähnchen würzen, 200°C 20 Min. oder Pfanne","Gemüse würfeln, 8 Min. anbraten","Kokosmilch + Limette, 3 Min.","In 4 Boxen portionieren"]},
-    {emoji:"🥔",title:"Süßkartoffel-Rinderhack",day:"Mealprep Samstag",color:"#fff3e0",
-     makros:{kcal:730,p:44,k:60,f:29},
-     portionen:{seb:{gram:"580g roh → ~480g gegart",kcal:"~730 kcal",p:"~44g P",k:"~60g KH",f:"~29g F"},fr:{gram:"410g roh → ~340g gegart",kcal:"~515 kcal",p:"~31g P",k:"~43g KH",f:"~21g F"}},
-     zutaten:[["Rinderhackfleisch 20%","1.100g roh",""],["Süßkartoffeln","1.200g roh",""],["Blattspinat TK","300g",""],["Zwiebeln","150g roh",""],["Kokosöl","30g",""],["Paprika, Cumin, Zimt","je 5g",""]],
-     steps:["Süßkartoffeln würfeln, 200°C 25 Min. rösten","Hack + Zwiebeln krümelig braten","Spinat + Gewürze, 5 Min.","Alles mischen, in 4 Boxen portionieren"]},
+    {emoji:'🐟',title:'Lachs + Reis + Brokkoli',day:'Mealprep Mittwoch',color:'#e8f5e9',makros:{kcal:720,p:57,k:64,f:23},
+     portionen:{seb:{gram:'600g roh → ~490g gegart',kcal:'~720 kcal',p:'~57g P',k:'~64g KH',f:'~23g F'},fr:{gram:'420g roh → ~345g gegart',kcal:'~505 kcal',p:'~41g P',k:'~45g KH',f:'~16g F'}},
+     zutaten:[['Lachsfilet','1.300g roh','TK aufgetaut'],['Basmati-Reis','550g roh','→ ~1.350g gegart'],['Brokkoli','900g roh',''],['Olivenöl','30g',''],['Sojasoße','30ml',''],['Knoblauch, Ingwer','nach Geschmack','']],
+     steps:['Reis kochen (1:1,8 Wasser)','Lachs marinieren, 200°C 12–15 Min.','Brokkoli 7 Min. dämpfen','In 4 Boxen portionieren (2× Seb, 2× Enna)']},
+    {emoji:'🥩',title:'Putenbrust + Linsen-Curry',day:'Mealprep Mittwoch',color:'#fce4ec',makros:{kcal:690,p:61,k:59,f:17},
+     portionen:{seb:{gram:'560g roh → ~500g gegart',kcal:'~690 kcal',p:'~61g P',k:'~59g KH',f:'~17g F'},fr:{gram:'390g roh → ~350g gegart',kcal:'~485 kcal',p:'~44g P',k:'~42g KH',f:'~12g F'}},
+     zutaten:[['Putenbrust','1.000g roh',''],['Rote Linsen','400g roh','→ ~1kg gegart'],['Kokosmilch light','400ml',''],['Zwiebeln','120g roh',''],['Kokosöl','20g',''],['Curry, Kurkuma','je 5g','']],
+     steps:['Pute anbraten, beiseite','Gewürze + Zwiebeln anschwitzen','Linsen + Kokosmilch + 400ml Wasser, 15 Min.','Pute dazu, 4 Boxen füllen']},
+    {emoji:'🍗',title:'Thai-Hähnchen-Bowl',day:'Mealprep Samstag',color:'#e3f2fd',makros:{kcal:685,p:60,k:74,f:13},
+     portionen:{seb:{gram:'650g roh → ~520g gegart',kcal:'~685 kcal',p:'~60g P',k:'~74g KH',f:'~13g F'},fr:{gram:'460g roh → ~370g gegart',kcal:'~480 kcal',p:'~43g P',k:'~52g KH',f:'~9g F'}},
+     zutaten:[['Hähnchenbrustfilet','800g roh',''],['Basmati-Reis','450g roh',''],['Paprika + Zucchini','300g roh','keine Tomaten!'],['Olivenöl','30g',''],['Kokosmilch light','200ml',''],['Knoblauch, Limette','nach Geschmack','']],
+     steps:['Reis kochen','Hähnchen 200°C 20 Min.','Gemüse 8 Min. anbraten','Kokosmilch + Limette, 3 Min.','4 Boxen füllen']},
+    {emoji:'🥔',title:'Süßkartoffel-Rinderhack',day:'Mealprep Samstag',color:'#fff3e0',makros:{kcal:730,p:44,k:60,f:29},
+     portionen:{seb:{gram:'580g roh → ~480g gegart',kcal:'~730 kcal',p:'~44g P',k:'~60g KH',f:'~29g F'},fr:{gram:'410g roh → ~340g gegart',kcal:'~515 kcal',p:'~31g P',k:'~43g KH',f:'~21g F'}},
+     zutaten:[['Rinderhack 20%','1.100g roh',''],['Süßkartoffeln','1.200g roh',''],['Blattspinat TK','300g',''],['Zwiebeln','150g roh',''],['Kokosöl','30g',''],['Paprika, Cumin, Zimt','je 5g','']],
+     steps:['Süßkartoffeln 200°C 25 Min.','Hack + Zwiebeln braten','Spinat + Gewürze 5 Min.','Mischen, 4 Boxen füllen']},
   ]
 };
 
-// ── MEAL DETAILS: exact ingredients per person per meal type ──
-// key = meals.shake / meals.mittag value (matched by substring)
-const MEAL_DETAILS = {
-  'Protein Shake': {
-    emoji:'☕', title:'Protein Shake',
-    seb:{ ingredients:[['Whey Protein Isolat (lf.)','40g'],['Laktosefreie Milch 1,5%','400ml']], macro:{kcal:'~370 kcal',p:'~38g P',k:'~18g KH',f:'~8g F'} },
-    fr: { ingredients:[['Whey Protein Isolat (lf.)','30g'],['Laktosefreie Milch 1,5%','350ml']], macro:{kcal:'~285 kcal',p:'~29g P',k:'~16g KH',f:'~7g F'} },
-    note:'Beide: einfach in Shaker schütteln — fertig.'
-  },
-  'Lachs + Reis + Brokkoli': {
-    emoji:'🐟', title:'Lachs + Reis + Brokkoli',
-    seb:{ ingredients:[['Lachsfilet (roh)','280g'],['Basmati-Reis (roh)','120g → ~290g gegart'],['Brokkoli (roh)','200g']], macro:{kcal:'~720 kcal',p:'~57g P',k:'~64g KH',f:'~23g F'} },
-    fr: { ingredients:[['Lachsfilet (roh)','190g'],['Basmati-Reis (roh)','85g → ~205g gegart'],['Brokkoli (roh)','140g']], macro:{kcal:'~505 kcal',p:'~41g P',k:'~45g KH',f:'~16g F'} },
-    note:'Aus Mealprep-Box. Erwärmen 2–3 Min. Mikrowelle oder Pfanne.'
-  },
-  'Putenbrust + Linsen-Curry': {
-    emoji:'🥩', title:'Putenbrust + Linsen-Curry',
-    seb:{ ingredients:[['Putenbrust (roh)','240g'],['Rote Linsen (trocken)','90g → ~230g gegart'],['Kokosmilch-Sauce','~80ml']], macro:{kcal:'~690 kcal',p:'~61g P',k:'~59g KH',f:'~17g F'} },
-    fr: { ingredients:[['Putenbrust (roh)','165g'],['Rote Linsen (trocken)','65g → ~160g gegart'],['Kokosmilch-Sauce','~60ml']], macro:{kcal:'~485 kcal',p:'~44g P',k:'~42g KH',f:'~12g F'} },
-    note:'Aus Mealprep-Box. Erwärmen 2–3 Min. Mikrowelle oder Pfanne.'
-  },
-  'Thai-Hähnchen-Bowl': {
-    emoji:'🍗', title:'Thai-Hähnchen-Bowl',
-    seb:{ ingredients:[['Hähnchenbrustfilet (roh)','200g'],['Basmati-Reis (roh)','110g → ~265g gegart'],['Paprika + Zucchini (roh)','130g'],['Kokosmilch-Sauce','~50ml']], macro:{kcal:'~685 kcal',p:'~60g P',k:'~74g KH',f:'~13g F'} },
-    fr: { ingredients:[['Hähnchenbrustfilet (roh)','140g'],['Basmati-Reis (roh)','80g → ~190g gegart'],['Paprika + Zucchini (roh)','90g'],['Kokosmilch-Sauce','~40ml']], macro:{kcal:'~480 kcal',p:'~43g P',k:'~52g KH',f:'~9g F'} },
-    note:'Aus Mealprep-Box. Erwärmen 2–3 Min. Mikrowelle oder Pfanne.'
-  },
-  'Süßkartoffel-Rinderhack': {
-    emoji:'🥔', title:'Süßkartoffel-Rinderhack',
-    seb:{ ingredients:[['Rinderhack 20% (roh)','230g'],['Süßkartoffeln (roh)','280g'],['Blattspinat TK','60g']], macro:{kcal:'~730 kcal',p:'~44g P',k:'~60g KH',f:'~29g F'} },
-    fr: { ingredients:[['Rinderhack 20% (roh)','160g'],['Süßkartoffeln (roh)','200g'],['Blattspinat TK','45g']], macro:{kcal:'~515 kcal',p:'~31g P',k:'~43g KH',f:'~21g F'} },
-    note:'Aus Mealprep-Box. Erwärmen 2–3 Min. Mikrowelle oder Pfanne.'
-  },
-  'Hähnchenschenkel + Süßkartoffeln': {
-    emoji:'🍗', title:'Hähnchenschenkel + Süßkartoffeln (frisch)',
-    seb:{ ingredients:[['Hähnchenschenkel (roh)','350g'],['Süßkartoffeln (roh)','300g'],['Olivenöl','10g'],['Gewürze','nach Geschmack']], macro:{kcal:'~720 kcal',p:'~55g P',k:'~58g KH',f:'~24g F'} },
-    fr: { ingredients:[['Hähnchenschenkel (roh)','240g'],['Süßkartoffeln (roh)','210g'],['Olivenöl','8g'],['Gewürze','nach Geschmack']], macro:{kcal:'~505 kcal',p:'~40g P',k:'~41g KH',f:'~17g F'} },
-    note:'200°C, 30–35 Min. Ofen. Süßkartoffeln gleichzeitig rösten.'
-  },
-  'Hack-Pfanne mit Zucchini': {
-    emoji:'🥩', title:'Hack-Pfanne mit Zucchini (Reste)',
-    seb:{ ingredients:[['Rinderhack (Reste)','~200g'],['Zucchini (Reste)','~150g'],['Paprika (Reste)','~100g'],['Olivenöl','10g']], macro:{kcal:'~580 kcal',p:'~40g P',k:'~15g KH',f:'~38g F'} },
-    fr: { ingredients:[['Rinderhack (Reste)','~140g'],['Zucchini (Reste)','~110g'],['Paprika (Reste)','~70g'],['Olivenöl','8g']], macro:{kcal:'~410 kcal',p:'~28g P',k:'~11g KH',f:'~27g F'} },
-    note:'Reste aufbrauchen — Mengen je nach Vorrat anpassen.'
-  },
-  'Hähnchenbrust-Reste': {
-    emoji:'🍗', title:'Hähnchenbrust + Reis + Paprika (Reste)',
-    seb:{ ingredients:[['Hähnchenbrust (Reste)','~200g'],['Reis (Reste, gegart)','~200g'],['Paprika (Reste)','~100g']], macro:{kcal:'~530 kcal',p:'~50g P',k:'~55g KH',f:'~8g F'} },
-    fr: { ingredients:[['Hähnchenbrust (Reste)','~140g'],['Reis (Reste, gegart)','~140g'],['Paprika (Reste)','~70g']], macro:{kcal:'~375 kcal',p:'~36g P',k:'~39g KH',f:'~6g F'} },
-    note:'Reste aufbrauchen — kalt oder kurz erwärmt.'
-  },
-  'Bolognese + Vollkorn-Pasta': {
-    emoji:'🍝', title:'Bolognese + Vollkorn-Pasta',
-    seb:{ ingredients:[['Rinderhack 20% (roh)','220g'],['Vollkorn-Pasta (trocken)','130g → ~310g gegart'],['Zwiebel + Knoblauch','50g'],['Passata','150g']], macro:{kcal:'~780 kcal',p:'~52g P',k:'~72g KH',f:'~28g F'} },
-    fr: { ingredients:[['Rinderhack 20% (roh)','155g'],['Vollkorn-Pasta (trocken)','90g → ~215g gegart'],['Zwiebel + Knoblauch','35g'],['Passata','100g']], macro:{kcal:'~550 kcal',p:'~37g P',k:'~50g KH',f:'~20g F'} },
-    note:'Frisch kochen. Pasta al dente (8 Min.). Sauce 15 Min. köcheln.'
-  },
-  'Lf. Joghurt': {
-    emoji:'🍦', title:'Lf. Joghurt (Snack)',
-    seb:{ ingredients:[['Lf. griech. Joghurt','200g']], macro:{kcal:'~120 kcal',p:'~16g P',k:'~5g KH',f:'~3g F'} },
-    fr: { ingredients:[['Lf. griech. Joghurt','150g']], macro:{kcal:'~90 kcal',p:'~12g P',k:'~4g KH',f:'~2g F'} },
-    note:'Optional an Ruhetagen. Trainingstag: als Post-Workout Snack.'
-  },
-  'Reiswaffel': {
-    emoji:'🍘', title:'Reiswaffel (Snack)',
-    seb:{ ingredients:[['Reiswaffeln','2 Stück (26g)']], macro:{kcal:'~100 kcal',p:'~2g P',k:'~22g KH',f:'~1g F'} },
-    fr: { ingredients:[['Reiswaffeln','2 Stück (26g)']], macro:{kcal:'~100 kcal',p:'~2g P',k:'~22g KH',f:'~1g F'} },
-    note:'Leichter Snack für Ruhetage.'
-  },
+// MEAL DETAILS — for slot tap
+const MD={
+  'Protein Shake':{emoji:'☕',title:'Protein Shake',seb:{ing:[['Whey Protein Isolat (lf.)','40g'],['Laktosefreie Milch 1,5%','400ml']],mac:{kcal:'~370 kcal',p:'~36g P',k:'~18g KH',f:'~8g F'}},fr:{ing:[['Whey Protein Isolat (lf.)','30g'],['Laktosefreie Milch 1,5%','350ml']],mac:{kcal:'~285 kcal',p:'~27g P',k:'~16g KH',f:'~7g F'}},note:'Shaker schütteln — fertig.'},
+  'Lachs + Reis + Brokkoli':{emoji:'🐟',title:'Lachs + Reis + Brokkoli',seb:{ing:[['Lachsfilet (roh)','280g'],['Basmati-Reis (roh)','120g'],['Brokkoli (roh)','200g']],mac:{kcal:'~720 kcal',p:'~57g P',k:'~64g KH',f:'~23g F'}},fr:{ing:[['Lachsfilet (roh)','190g'],['Basmati-Reis (roh)','85g'],['Brokkoli (roh)','140g']],mac:{kcal:'~505 kcal',p:'~41g P',k:'~45g KH',f:'~16g F'}},note:'Aus Mealprep-Box. 2–3 Min. Mikrowelle.'},
+  'Putenbrust + Linsen-Curry':{emoji:'🥩',title:'Putenbrust + Linsen-Curry',seb:{ing:[['Putenbrust (roh)','240g'],['Rote Linsen (tr.)','90g'],['Kokosmilch-Sauce','~80ml']],mac:{kcal:'~690 kcal',p:'~61g P',k:'~59g KH',f:'~17g F'}},fr:{ing:[['Putenbrust (roh)','165g'],['Rote Linsen (tr.)','65g'],['Kokosmilch-Sauce','~60ml']],mac:{kcal:'~485 kcal',p:'~44g P',k:'~42g KH',f:'~12g F'}},note:'Aus Mealprep-Box. 2–3 Min. Mikrowelle.'},
+  'Thai-Hähnchen-Bowl':{emoji:'🍗',title:'Thai-Hähnchen-Bowl',seb:{ing:[['Hähnchenbrustfilet (roh)','200g'],['Basmati-Reis (roh)','110g'],['Paprika+Zucchini (roh)','130g'],['Kokosmilch-Sauce','~50ml']],mac:{kcal:'~685 kcal',p:'~60g P',k:'~74g KH',f:'~13g F'}},fr:{ing:[['Hähnchenbrustfilet (roh)','140g'],['Basmati-Reis (roh)','80g'],['Paprika+Zucchini (roh)','90g'],['Kokosmilch-Sauce','~40ml']],mac:{kcal:'~480 kcal',p:'~43g P',k:'~52g KH',f:'~9g F'}},note:'Aus Mealprep-Box. 2–3 Min. Mikrowelle.'},
+  'Süßkartoffel-Rinderhack':{emoji:'🥔',title:'Süßkartoffel-Rinderhack',seb:{ing:[['Rinderhack 20% (roh)','230g'],['Süßkartoffeln (roh)','280g'],['Blattspinat TK','60g']],mac:{kcal:'~730 kcal',p:'~44g P',k:'~60g KH',f:'~29g F'}},fr:{ing:[['Rinderhack 20% (roh)','160g'],['Süßkartoffeln (roh)','200g'],['Blattspinat TK','45g']],mac:{kcal:'~515 kcal',p:'~31g P',k:'~43g KH',f:'~21g F'}},note:'Aus Mealprep-Box. 2–3 Min. Mikrowelle.'},
+  'Hähnchenschenkel + Süßkartoffeln':{emoji:'🍗',title:'Hähnchenschenkel + Süßkartoffeln',seb:{ing:[['Hähnchenschenkel (roh)','350g'],['Süßkartoffeln (roh)','300g'],['Olivenöl','10g']],mac:{kcal:'~720 kcal',p:'~55g P',k:'~58g KH',f:'~24g F'}},fr:{ing:[['Hähnchenschenkel (roh)','240g'],['Süßkartoffeln (roh)','210g'],['Olivenöl','8g']],mac:{kcal:'~505 kcal',p:'~40g P',k:'~41g KH',f:'~17g F'}},note:'200°C, 30–35 Min. Ofen.'},
+  'Hack-Pfanne mit Zucchini':{emoji:'🥩',title:'Hack-Pfanne (Reste)',seb:{ing:[['Rinderhack (Reste)','~200g'],['Zucchini (Reste)','~150g'],['Paprika (Reste)','~100g']],mac:{kcal:'~580 kcal',p:'~40g P',k:'~15g KH',f:'~38g F'}},fr:{ing:[['Rinderhack (Reste)','~140g'],['Zucchini (Reste)','~110g'],['Paprika (Reste)','~70g']],mac:{kcal:'~410 kcal',p:'~28g P',k:'~11g KH',f:'~27g F'}},note:'Reste aufbrauchen — Mengen anpassen.'},
+  'Hähnchenbrust + Reis + Paprika':{emoji:'🍗',title:'Hähnchenbrust + Reis + Paprika (Reste)',seb:{ing:[['Hähnchenbrust (Reste)','~200g'],['Reis gegart (Reste)','~200g'],['Paprika (Reste)','~100g']],mac:{kcal:'~530 kcal',p:'~50g P',k:'~55g KH',f:'~8g F'}},fr:{ing:[['Hähnchenbrust (Reste)','~140g'],['Reis gegart (Reste)','~140g'],['Paprika (Reste)','~70g']],mac:{kcal:'~375 kcal',p:'~36g P',k:'~39g KH',f:'~6g F'}},note:'Reste kalt oder kurz erwärmt.'},
+  'Bolognese + Vollkorn-Pasta':{emoji:'🍝',title:'Bolognese + Vollkorn-Pasta',seb:{ing:[['Rinderhack 20% (roh)','220g'],['Vollkorn-Pasta (tr.)','130g'],['Passata','150g'],['Zwiebel+Knoblauch','50g']],mac:{kcal:'~780 kcal',p:'~52g P',k:'~72g KH',f:'~28g F'}},fr:{ing:[['Rinderhack 20% (roh)','155g'],['Vollkorn-Pasta (tr.)','90g'],['Passata','100g'],['Zwiebel+Knoblauch','35g']],mac:{kcal:'~550 kcal',p:'~37g P',k:'~50g KH',f:'~20g F'}},note:'Pasta 8 Min. al dente. Sauce 15 Min. köcheln.'},
+  'Lf. Joghurt':{emoji:'🍦',title:'Lf. Joghurt (Snack)',seb:{ing:[['Lf. griech. Joghurt','200g']],mac:{kcal:'~120 kcal',p:'~16g P',k:'~5g KH',f:'~3g F'}},fr:{ing:[['Lf. griech. Joghurt','150g']],mac:{kcal:'~90 kcal',p:'~12g P',k:'~4g KH',f:'~2g F'}},note:'Post-Workout oder Ruhetag-Snack.'},
+  'Reiswaffel':{emoji:'🍘',title:'Reiswaffel (Snack)',seb:{ing:[['Reiswaffeln','2 Stück (26g)']],mac:{kcal:'~100 kcal',p:'~2g P',k:'~22g KH',f:'~1g F'}},fr:{ing:[['Reiswaffeln','2 Stück (26g)']],mac:{kcal:'~100 kcal',p:'~2g P',k:'~22g KH',f:'~1g F'}},note:'Leichter Ruhetag-Snack.'},
 };
 
-const PORTION_DATA = {
-  seb:{
-    shake:{gram:"~480ml gesamt",kcal:"~380 kcal",note:"40g Protein-Pulver + 300ml lf. Milch 1,5% + 120g Banane"},
-    mittag_mealprep:{gram:"~490–520g gegart",kcal:"~550 kcal",note:"Mealprep-Box Sebastian"},
-    mittag_frisch:{gram:"je nach Rezept",kcal:"~500–550 kcal",note:"Di+Mi frisch gekocht"},
-    abend_r1:{gram:"~490g gegart (600g roh)",kcal:"~720 kcal",note:"Lachs+Reis+Brokkoli"},
-    abend_r2:{gram:"~500g gegart (560g roh)",kcal:"~690 kcal",note:"Pute+Linsen-Curry"},
-    abend_r3:{gram:"~520g gegart (650g roh)",kcal:"~685 kcal",note:"Thai-Hähnchen-Bowl"},
-    abend_r4:{gram:"~480g gegart (580g roh)",kcal:"~730 kcal",note:"Süßkartoffel-Hack"},
-    snack:{gram:"200g Joghurt oder 2 Reiswaffeln + Obst",kcal:"~230 kcal",note:"Post-Workout"},
-  },
-  fr:{
-    shake:{gram:"~450ml gesamt",kcal:"~295 kcal",note:"32g Protein-Pulver + 300ml lf. Milch 1,5% + 100g Beeren"},
-    mittag_mealprep:{gram:"~345–370g gegart",kcal:"~420 kcal",note:"Mealprep-Box Enna"},
-    mittag_frisch:{gram:"je nach Rezept",kcal:"~350–400 kcal",note:"Di+Mi frisch gekocht"},
-    abend_r1:{gram:"~345g gegart (420g roh)",kcal:"~505 kcal",note:"Lachs+Reis+Brokkoli"},
-    abend_r2:{gram:"~350g gegart (390g roh)",kcal:"~485 kcal",note:"Pute+Linsen-Curry"},
-    abend_r3:{gram:"~370g gegart (460g roh)",kcal:"~480 kcal",note:"Thai-Hähnchen-Bowl"},
-    abend_r4:{gram:"~340g gegart (410g roh)",kcal:"~515 kcal",note:"Süßkartoffel-Hack"},
-    snack:{gram:"150g Joghurt oder Reiswaffel + Obst",kcal:"~190 kcal",note:"Post-Workout"},
-  }
-};
+function findMD(name){
+  for(const[k,v]of Object.entries(MD)){if(name.includes(k))return v;}
+  return null;
+}
 
-// ══════════════════════════════════
 // INIT
-// ══════════════════════════════════
-async function init() {
-  document.getElementById('kw-display').textContent = getKW();
-  updateWeekNav();
-
-  // 1. Sofort Fallback rendern — kein Warten auf Supabase
-  planData = FALLBACK;
-  setBadge('📦 Fallback','orange');
-  renderWeek();
-  renderShop();
-  renderRecipes();
-  renderMealprepTab();
-  renderMakros();
-  renderSupps();
-  initDiary();
-
-  // 2. Supabase im Hintergrund — UI ist schon fertig
-  loadFromSupabaseInBackground();
+function init(){
+  document.getElementById('kw-display').textContent=getKW();
+  updateNav();
+  // Sofort Fallback rendern
+  planData=FB;
+  setBadge('📦 Fallback','or');
+  renderAll();
+  // Supabase im Hintergrund
+  loadSupabase();
 }
 
-async function loadFromSupabaseInBackground() {
-  try {
-    const sb = getSB();
-    if (!sb) return;
-
-    // Plan laden
-    const { data, error } = await withTimeout(
-      sb.from('weekly_plan')
-        .select('*').eq('week_number',viewKW).eq('year',viewYear)
-        .order('created_at',{ascending:false}).limit(1),
-      5000
-    );
-    if (!error && data && data.length > 0) {
-      planData = data[0].plan_data;
-      setBadge('✅ Live KW '+viewKW,'green');
-      renderWeek();
-      renderShop();
-      renderRecipes();
-      renderMealprepTab();
-    }
-
-    // Reste, checked, betrag parallel
-    loadReste().catch(()=>{});
-    loadChecked().then(()=>renderShop()).catch(()=>{});
-    loadBetrag().catch(()=>{});
-    loadDiaryHistory().catch(()=>{});
-  } catch(e) {
-    // Supabase nicht erreichbar — Fallback bleibt
-  }
-}
-
-window.addEventListener('load', function() {
-  if (sessionStorage.getItem('mp_auth') === '1') {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
+window.addEventListener('load',function(){
+  if(sessionStorage.getItem('mp_auth')==='1'){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').style.display='block';
     init();
   }
 });
 
-// ══════════════════════════════════
-// WEEK NAV
-// ══════════════════════════════════
-function updateWeekNav() {
-  document.getElementById('week-nav-label').textContent = `KW ${viewKW} / ${viewYear}`;
-  document.getElementById('week-nav-sub').textContent = kwToDateRange(viewKW, viewYear);
-  document.getElementById('next-week-btn').disabled = (viewKW >= getKW() && viewYear >= getYear());
-}
-async function changeWeek(dir) {
-  viewKW += dir;
-  if (viewKW < 1) { viewKW = 52; viewYear--; }
-  if (viewKW > 52) { viewKW = 1; viewYear++; }
-  updateWeekNav();
-  checkedItems = {}; planData = FALLBACK;
+function renderAll(){
   renderWeek();
   renderShop();
   renderRecipes();
-  renderMealprepTab();
+  renderMP();
+  renderMakros();
+  renderSupps();
   initDiary();
-  loadFromSupabaseInBackground();
 }
 
-// ══════════════════════════════════
-// LOAD PLAN
-// ══════════════════════════════════
-function withTimeout(promise, ms) {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
-  ]);
-}
-
-async function loadPlan() {
-  try {
-    const sb = getSB();
-    if (sb) {
-      const { data, error } = await withTimeout(
-        sb.from('weekly_plan')
-          .select('*').eq('week_number',viewKW).eq('year',viewYear)
-          .order('created_at',{ascending:false}).limit(1),
-        3000
-      );
-      if (!error && data && data.length > 0) {
-        planData = data[0].plan_data;
-        setBadge('✅ Live KW '+viewKW,'green');
-      } else {
-        planData = FALLBACK;
-        setBadge('📦 Fallback','orange');
+async function loadSupabase(){
+  try{
+    const sb=getSB();if(!sb)return;
+    const p=new Promise((res,rej)=>setTimeout(()=>rej('timeout'),5000));
+    const q=sb.from('weekly_plan').select('*').eq('week_number',viewKW).eq('year',viewYear).order('created_at',{ascending:false}).limit(1);
+    const{data,error}=await Promise.race([q,p.then(()=>{throw new Error('timeout')})]);
+    if(!error&&data&&data.length>0){
+      planData=data[0].plan_data;
+      setBadge('✅ Live KW'+viewKW,'gn');
+      renderWeek();renderShop();renderRecipes();renderMP();
+    }
+    // load rest in background
+    sb.from('reste').select('*').eq('week_number',viewKW).eq('year',viewYear).limit(1).then(({data})=>{
+      if(data&&data.length>0){
+        (data[0].items||[]).forEach(v=>{document.querySelectorAll('.rtag').forEach(t=>{if(t.dataset.val===v)t.classList.add('sel');});});
+        const k=document.getElementById('reste-kommentar');if(k)k.value=data[0].kommentar||'';
       }
-    } else {
-      planData = FALLBACK;
-      setBadge('⚠️ Offline','orange');
-    }
-  } catch(e) {
-    planData = FALLBACK;
-    setBadge('⚠️ Offline','orange');
-  }
-  try { await withTimeout(loadReste(), 2000); } catch(e) {}
-  renderWeek();
-  renderShop();
-  renderRecipes();
-  renderMealprepTab();
-}
-function setBadge(t,type){
-  const b = document.getElementById('sync-badge');
-  b.textContent = t;
-  b.className = 'badge ' + (type==='green' ? 'green' : 'orange');
+    }).catch(()=>{});
+    sb.from('shopping_checked').select('*').eq('week_number',viewKW).eq('year',viewYear).limit(1).then(({data})=>{
+      if(data&&data.length>0){
+        checkedItems=data[0].checked_items||{};
+        if(data[0].betrag){const e=document.getElementById('betrag-input');if(e)e.value=data[0].betrag;}
+        if(data[0].notiz){const e=document.getElementById('shop-notiz');if(e)e.value=data[0].notiz;}
+        renderShop();
+      }
+    }).catch(()=>{});
+    sb.from('diary_entries').select('*').eq('week_number',viewKW).eq('year',viewYear).eq('person',dpPerson).order('day_index',{ascending:true}).then(({data})=>{renderDiaryHistory(data);}).catch(()=>{});
+  }catch(e){}
 }
 
-// ══════════════════════════════════
-// RESTE
-// ══════════════════════════════════
-async function loadReste() {
-  try {
-    const sb = getSB(); if(!sb) return;
-    const { data } = await sb.from('reste').select('*').eq('week_number',viewKW).eq('year',viewYear).limit(1);
-    if (data && data.length > 0) {
-      const saved = data[0].items || [];
-      document.querySelectorAll('.reste-tag').forEach(t => {
-        if (saved.includes(t.dataset.val)) t.classList.add('selected');
-      });
-      const k = document.getElementById('reste-kommentar');
-      if (k) k.value = data[0].kommentar || '';
-    }
-  } catch(e) {}
+// NAV
+function updateNav(){
+  document.getElementById('wlabel').textContent='KW '+viewKW+' / '+viewYear;
+  document.getElementById('wsub').textContent=kwRange(viewKW,viewYear);
+  document.getElementById('next-btn').disabled=(viewKW>=getKW()&&viewYear>=getYear());
 }
-async function saveReste() {
-  const btn = document.getElementById('save-reste-btn');
-  const status = document.getElementById('reste-save-status');
-  btn.disabled = true; btn.textContent = 'Speichert...';
-  const items = [...document.querySelectorAll('.reste-tag.selected')].map(t => t.dataset.val);
-  const kommentar = document.getElementById('reste-kommentar').value.trim();
-  try {
-    const sb = getSB(); if(!sb) throw new Error('Offline');
-    const {data:ex} = await sb.from('reste').select('id').eq('week_number',viewKW).eq('year',viewYear).limit(1);
-    if (ex && ex.length > 0) await sb.from('reste').update({items,kommentar,updated_at:new Date().toISOString()}).eq('id',ex[0].id);
+function changeWeek(d){
+  viewKW+=d;if(viewKW<1){viewKW=52;viewYear--;}if(viewKW>52){viewKW=1;viewYear++;}
+  checkedItems={};updateNav();planData=FB;setBadge('📦 Fallback','or');
+  renderAll();loadSupabase();
+}
+
+// WEEK
+function renderWeek(){
+  const wd=planData.weekData;
+  const ri=['Hähnchenbrust','Lachs','Reis (gekocht)','Putenbrust','Süßkartoffeln','Brokkoli','Linsen','Pasta','Hack','Paprika','Zucchini'];
+  document.getElementById('woche-content').innerHTML=
+    '<div class="rbanner"><div><div class="rtitle">📅 KW '+viewKW+' / '+viewYear+'</div><div class="rsub">'+kwRange(viewKW,viewYear)+'</div></div><div style="display:flex;gap:5px;"><div class="rbadge active">A</div><div class="rbadge">B</div><div class="rbadge">C</div></div></div>'+
+    '<div class="rsec"><h3>🥡 Reste für nächste Woche</h3><div class="rgrid">'+ri.map(r=>'<div class="rtag" data-val="'+r+'" onclick="this.classList.toggle(\'sel\')">'+r+'</div>').join('')+'</div>'+
+    '<div class="rcustom"><input type="text" class="dinp" id="reste-custom" placeholder="Andere Reste..."><button class="btn se" onclick="addReste()" style="white-space:nowrap;">+ Add</button></div>'+
+    '<textarea class="kinput" id="reste-kommentar" placeholder="Kommentar für Claude (mehr asiatisch, keine Linsen...)"></textarea>'+
+    '<div class="srow" style="margin-top:8px;"><button class="btn pr" id="save-reste-btn" onclick="saveReste()">Speichern ✓</button><span class="sstatus" id="reste-status"></span></div></div>'+
+    '<div class="wgrid">'+wd.map(d=>{
+      const tc=(d.type==='training'||d.type==='both')?'tr':(d.mp?'mp':'rs');
+      const pills=(d.type==='training'||d.type==='both'?'<span class="pill tr">💪 Training</span>':'')+(d.mp?'<span class="pill mp">⚡ Mealprep</span>':'');
+      const slots=[{l:'☕ Shake',v:d.meals.shake},{l:'🥗 Mittag',v:d.meals.mittag},{l:'🍽 Abend',v:d.meals.abend},{l:'🍎 Snack',v:d.meals.snack}];
+      return '<div class="dcard"><div class="dhead '+tc+'"><strong>'+d.day+'</strong><div class="dpills">'+pills+'</div></div><div class="mgrid">'+
+        slots.map(s=>{
+          const det=findMD(s.v);
+          const kl=det?det.seb.mac.kcal.replace('~','')+' · Enna '+det.fr.mac.kcal.replace('~',''):'Tippen für Details';
+          return '<div class="mslot" onclick="openMD(\''+s.v.replace(/'/g,"\\'")+'\')">' +
+            '<div class="mlabel">'+s.l+' <span style="font-size:0.55rem;color:#bbb;">▶</span></div>'+
+            '<div class="mname">'+s.v+'</div><div class="mkcal">'+kl+'</div></div>';
+        }).join('')+'</div></div>';
+    }).join('')+'</div>';
+}
+function addReste(){const i=document.getElementById('reste-custom');const v=i.value.trim();if(!v)return;const t=document.createElement('div');t.className='rtag sel';t.dataset.val=v;t.textContent=v;t.onclick=()=>t.classList.toggle('sel');document.querySelector('.rgrid').appendChild(t);i.value='';}
+async function saveReste(){
+  const btn=document.getElementById('save-reste-btn'),st=document.getElementById('reste-status');
+  btn.disabled=true;btn.textContent='Speichert...';
+  const items=[...document.querySelectorAll('.rtag.sel')].map(t=>t.dataset.val);
+  const kommentar=document.getElementById('reste-kommentar').value.trim();
+  try{const sb=getSB();if(!sb)throw new Error('Offline');
+    const{data:ex}=await sb.from('reste').select('id').eq('week_number',viewKW).eq('year',viewYear).limit(1);
+    if(ex&&ex.length>0)await sb.from('reste').update({items,kommentar,updated_at:new Date().toISOString()}).eq('id',ex[0].id);
     else await sb.from('reste').insert({week_number:viewKW,year:viewYear,items,kommentar});
-    status.textContent = '✅ Gespeichert'; status.style.color = 'var(--green-med)';
-  } catch(e) { status.textContent = '❌ '+e.message; status.style.color = 'var(--red)'; }
-  btn.disabled = false; btn.textContent = 'Speichern ✓';
-  setTimeout(() => { status.textContent = ''; }, 3000);
+    st.textContent='✅ Gespeichert';st.style.color='var(--gm)';
+  }catch(e){st.textContent='❌ '+e.message;st.style.color='var(--re)';}
+  btn.disabled=false;btn.textContent='Speichern ✓';setTimeout(()=>{st.textContent='';},3000);
 }
 
-// ══════════════════════════════════
-// SHOPPING
-// ══════════════════════════════════
-const catLabels = {protein:"🥩 Protein",kh:"🌾 KH & Hülsenfrüchte",gemuese:"🥦 Gemüse & Obst",milch:"🥛 Milch & Alternativen",fette:"🧴 Öle & Sonstiges"};
-const catColors = {protein:"#ffebee",kh:"#fff9c4",gemuese:"#e8f5e9",milch:"#e3f2fd",fette:"#fff3e0"};
-
-async function loadChecked() {
-  try {
-    const sb = getSB(); if(!sb){checkedItems={};return;}
-    const {data} = await sb.from('shopping_checked').select('*').eq('week_number',viewKW).eq('year',viewYear).limit(1);
-    checkedItems = (data && data.length > 0) ? (data[0].checked_items || {}) : {};
-  } catch(e) { checkedItems = {}; }
-}
-async function saveChecked() {
-  try {
-    const sb = getSB(); if(!sb) return;
-    const {data:ex} = await sb.from('shopping_checked').select('id').eq('week_number',viewKW).eq('year',viewYear).limit(1);
-    if (ex && ex.length > 0) await sb.from('shopping_checked').update({checked_items:checkedItems,updated_at:new Date().toISOString()}).eq('id',ex[0].id);
-    else await sb.from('shopping_checked').insert({week_number:viewKW,year:viewYear,checked_items:checkedItems});
-  } catch(e) {}
-}
-async function loadBetrag() {
-  try {
-    const sb = getSB(); if(!sb) return;
-    const {data} = await sb.from('shopping_checked').select('betrag,notiz').eq('week_number',viewKW).eq('year',viewYear).limit(1);
-    if (data && data.length > 0) {
-      const el = document.getElementById('betrag-input');
-      if (el && data[0].betrag) el.value = data[0].betrag;
-      const nel = document.getElementById('shop-notiz');
-      if (nel && data[0].notiz) nel.value = data[0].notiz;
-    }
-  } catch(e) {}
-}
-async function saveBetrag() {
-  try {
-    const sb = getSB(); if(!sb) return;
-    const val = parseFloat(document.getElementById('betrag-input').value) || null;
-    const {data:ex} = await sb.from('shopping_checked').select('id').eq('week_number',viewKW).eq('year',viewYear).limit(1);
-    if (ex && ex.length > 0) await sb.from('shopping_checked').update({betrag:val,updated_at:new Date().toISOString()}).eq('id',ex[0].id);
-    else await sb.from('shopping_checked').insert({week_number:viewKW,year:viewYear,checked_items:{},betrag:val});
-  } catch(e) {}
-}
-let shopNotizTimer = null;
-function saveShopNotiz() {
-  clearTimeout(shopNotizTimer);
-  shopNotizTimer = setTimeout(async () => {
-    try {
-      const sb = getSB(); if(!sb) return;
-      const notiz = document.getElementById('shop-notiz').value.trim();
-      const {data:ex} = await sb.from('shopping_checked').select('id').eq('week_number',viewKW).eq('year',viewYear).limit(1);
-      if (ex && ex.length > 0) await sb.from('shopping_checked').update({notiz,updated_at:new Date().toISOString()}).eq('id',ex[0].id);
-      else await sb.from('shopping_checked').insert({week_number:viewKW,year:viewYear,checked_items:{},notiz});
-      const s = document.getElementById('shop-notiz-status');
-      if (s) { s.textContent = '✅ Gespeichert'; setTimeout(()=>{ s.textContent=''; },2000); }
-    } catch(e) {}
-  }, 800);
+// MEAL DETAIL
+function openMD(name){
+  const d=findMD(name);if(!d)return;
+  document.getElementById('meal-inner').innerHTML=
+    '<div class="shdr"><div class="shtitle">'+d.emoji+' '+d.title+'</div><button class="closeb" onclick="document.getElementById(\'meal-overlay\').style.display=\'none\'">×</button></div>'+
+    '<div class="pcmp">'+
+    '<div class="pbox sb"><div class="pname">👨 Sebastian</div>'+d.seb.ing.map(i=>'<div class="pingr"><span>'+i[0]+'</span><span class="amt">'+i[1]+'</span></div>').join('')+'<div class="pmacro"><span>'+d.seb.mac.kcal+'</span><span>'+d.seb.mac.p+'</span><span>'+d.seb.mac.k+'</span><span>'+d.seb.mac.f+'</span></div></div>'+
+    '<div class="pbox fr"><div class="pname">👩 Enna</div>'+d.fr.ing.map(i=>'<div class="pingr"><span>'+i[0]+'</span><span class="amt">'+i[1]+'</span></div>').join('')+'<div class="pmacro"><span>'+d.fr.mac.kcal+'</span><span>'+d.fr.mac.p+'</span><span>'+d.fr.mac.k+'</span><span>'+d.fr.mac.f+'</span></div></div>'+
+    '</div>'+
+    (d.note?'<div style="background:var(--gl);border-radius:8px;padding:9px 12px;font-size:0.78rem;color:var(--gd);">💡 '+d.note+'</div>':'');
+  document.getElementById('meal-overlay').style.display='flex';
 }
 
-function renderShop() {
-  const items = planData.shopData;
-  const cats = {};
-  items.forEach((item,idx) => {
-    if (currentFilter !== 'all' && item.cat !== currentFilter) return;
-    if (!cats[item.cat]) cats[item.cat] = [];
-    cats[item.cat].push({...item, idx});
+// SHOP
+const CL={protein:'🥩 Protein',kh:'🌾 KH & Hülsenfrüchte',gemuese:'🥦 Gemüse & Obst',milch:'🥛 Milch & Alternativen',fette:'🧴 Öle & Sonstiges'};
+const CC={protein:'#ffebee',kh:'#fff9c4',gemuese:'#e8f5e9',milch:'#e3f2fd',fette:'#fff3e0'};
+function renderShop(){
+  const cats={};
+  planData.shopData.forEach((item,idx)=>{
+    if(currentFilter!=='all'&&item.cat!==currentFilter)return;
+    if(!cats[item.cat])cats[item.cat]=[];
+    cats[item.cat].push({...item,idx});
   });
-  document.getElementById('shop-list').innerHTML = Object.entries(cats).map(([cat,citems]) => `
-    <div class="shop-cat">
-      <div class="shop-cat-header" style="background:${catColors[cat]}">${catLabels[cat]}</div>
-      ${citems.map(item => `
-        <div class="shop-item ${checkedItems[item.idx]?'checked':''}" onclick="toggleItem(${item.idx})">
-          <div class="shop-checkbox">${checkedItems[item.idx]?'✓':''}</div>
-          <div class="shop-name">${item.name}${item.note?`<div class="shop-note">${item.note}</div>`:''}</div>
-          <div class="shop-amount">${item.amount}</div>
-        </div>`).join('')}
-    </div>`).join('');
-  updateProgress();
+  document.getElementById('shop-list').innerHTML=Object.entries(cats).map(([cat,items])=>
+    '<div class="scat"><div class="scath" style="background:'+CC[cat]+'">'+CL[cat]+'</div>'+
+    items.map(item=>'<div class="sitem'+(checkedItems[item.idx]?' chk':'')+'" onclick="toggleItem('+item.idx+')">'+
+      '<div class="schk">'+(checkedItems[item.idx]?'✓':'')+'</div>'+
+      '<div class="sname">'+item.name+(item.note?'<div class="snote">'+item.note+'</div>':'')+'</div>'+
+      '<div class="samt">'+item.amount+'</div></div>').join('')+'</div>'
+  ).join('');
+  const total=planData.shopData.length,done=Object.values(checkedItems).filter(Boolean).length,pct=total?Math.round(done/total*100):0;
+  document.getElementById('prog-bar').style.width=pct+'%';
+  document.getElementById('prog-pct').textContent=pct+'%';
+  document.getElementById('prog-count').textContent=done+'/'+total;
 }
-async function toggleItem(idx) { checkedItems[idx] = !checkedItems[idx]; renderShop(); await saveChecked(); }
-async function resetShop() { checkedItems = {}; renderShop(); await saveChecked(); }
-function filterCat(btn) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active'); currentFilter = btn.dataset.cat; renderShop();
+async function toggleItem(idx){checkedItems[idx]=!checkedItems[idx];renderShop();saveChecked();}
+async function resetShop(){checkedItems={};renderShop();saveChecked();}
+function filterCat(btn){document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentFilter=btn.dataset.cat;renderShop();}
+async function saveChecked(){
+  try{const sb=getSB();if(!sb)return;
+    const{data:ex}=await sb.from('shopping_checked').select('id').eq('week_number',viewKW).eq('year',viewYear).limit(1);
+    if(ex&&ex.length>0)await sb.from('shopping_checked').update({checked_items:checkedItems,updated_at:new Date().toISOString()}).eq('id',ex[0].id);
+    else await sb.from('shopping_checked').insert({week_number:viewKW,year:viewYear,checked_items:checkedItems});
+  }catch(e){}
 }
-function updateProgress() {
-  const total = planData.shopData.length;
-  const done = Object.values(checkedItems).filter(Boolean).length;
-  const pct = total ? Math.round(done/total*100) : 0;
-  document.getElementById('prog-bar').style.width = pct+'%';
-  document.getElementById('prog-pct').textContent = pct+'%';
-  document.getElementById('prog-count').textContent = `${done}/${total}`;
-}
+let betTimer=null;
+function saveBetrag(){clearTimeout(betTimer);betTimer=setTimeout(async()=>{
+  try{const sb=getSB();if(!sb)return;const v=parseFloat(document.getElementById('betrag-input').value)||null;
+    const{data:ex}=await sb.from('shopping_checked').select('id').eq('week_number',viewKW).eq('year',viewYear).limit(1);
+    if(ex&&ex.length>0)await sb.from('shopping_checked').update({betrag:v,updated_at:new Date().toISOString()}).eq('id',ex[0].id);
+    else await sb.from('shopping_checked').insert({week_number:viewKW,year:viewYear,checked_items:{},betrag:v});
+  }catch(e){}
+},800);}
+let notizTimer=null;
+function saveShopNotiz(){clearTimeout(notizTimer);notizTimer=setTimeout(async()=>{
+  try{const sb=getSB();if(!sb)return;const n=document.getElementById('shop-notiz').value.trim();
+    const{data:ex}=await sb.from('shopping_checked').select('id').eq('week_number',viewKW).eq('year',viewYear).limit(1);
+    if(ex&&ex.length>0)await sb.from('shopping_checked').update({notiz:n,updated_at:new Date().toISOString()}).eq('id',ex[0].id);
+    else await sb.from('shopping_checked').insert({week_number:viewKW,year:viewYear,checked_items:{},notiz:n});
+    const s=document.getElementById('shop-notiz-status');if(s){s.textContent='✅';setTimeout(()=>{s.textContent='';},2000);}
+  }catch(e){}
+},800);}
 
-// ══════════════════════════════════
-// betrag column — add if missing via ALTER (best-effort)
-// ══════════════════════════════════
-
-// ══════════════════════════════════
-// WEEK RENDER
-// ══════════════════════════════════
-function renderWeek() {
-  const wd = planData.weekData;
-  const resteItems = ['Hähnchenbrust','Lachs','Reis (gekocht)','Putenbrust','Süßkartoffeln','Brokkoli','Linsen (gekocht)','Pasta','Hack','Paprika','Zucchini'];
-  document.getElementById('woche-content').innerHTML = `
-    <div class="rotation-banner">
-      <div>
-        <div class="rotation-title">📅 KW ${viewKW} / ${viewYear}</div>
-        <div class="rotation-sub">${kwToDateRange(viewKW,viewYear)}</div>
-      </div>
-      <div style="display:flex;gap:5px;">
-        <div class="rot-badge active">A</div><div class="rot-badge">B</div><div class="rot-badge">C</div>
-      </div>
-    </div>
-    <div class="reste-section">
-      <h3>🥡 Reste für nächste Woche</h3>
-      <div class="reste-grid">${resteItems.map(r=>`<div class="reste-tag" data-val="${r}" onclick="this.classList.toggle('selected')">${r}</div>`).join('')}</div>
-      <div class="reste-custom">
-        <input type="text" class="diary-input" id="reste-custom-input" placeholder="Andere Reste...">
-        <button class="btn secondary" onclick="addCustomReste()" style="white-space:nowrap;">+ Add</button>
-      </div>
-      <textarea class="kommentar-input" id="reste-kommentar" placeholder="Kommentar für Claude (z.B. 'mehr asiatisch', 'keine Linsen nächste Woche')..."></textarea>
-      <div class="save-row" style="margin-top:8px;">
-        <button class="btn primary" id="save-reste-btn" onclick="saveReste()">Speichern ✓</button>
-        <span class="save-status" id="reste-save-status"></span>
-      </div>
-    </div>
-    <div class="week-grid">
-      ${wd.map(d => {
-        const tc = (d.type==='training'||d.type==='both') ? 'training' : (d.mealprep ? 'mealprep' : 'rest');
-        const pills = [];
-        if (d.type==='training'||d.type==='both') pills.push('<span class="pill training">💪 Training</span>');
-        if (d.mealprep) pills.push('<span class="pill mealprep">⚡ Mealprep</span>');
-        return `<div class="day-card">
-          <div class="day-header ${tc}"><strong>${d.day}</strong><div class="day-pills">${pills.join('')}</div></div>
-          <div class="meal-grid">
-            ${[
-              {label:'☕ Shake', val:d.meals.shake},
-              {label:'🥗 Mittag', val:d.meals.mittag},
-              {label:'🍽 Abend', val:d.meals.abend},
-              {label:'🍎 Snack', val:d.meals.snack}
-            ].map(m => {
-              const det = findMealDetail(m.val);
-              const kcalLine = det ? `${det.seb.macro.kcal.replace('~','')} · Enna ${det.fr.macro.kcal.replace('~','')}` : 'Tippen für Details';
-              return `<div class="meal-slot" onclick="openMealDetail('${m.val.replace(/'/g,"\\'")}')">
-                <div class="meal-label">${m.label} <span style="font-size:0.58rem;color:#aaa;">▶</span></div>
-                <div class="meal-name">${m.val}</div>
-                <div class="meal-kcal">${kcalLine}</div>
-              </div>`;
-            }).join('')}
-          </div>
-        </div>`;
-      }).join('')}
-    </div>`;
-  loadReste();
-}
-function addCustomReste() {
-  const inp = document.getElementById('reste-custom-input');
-  const val = inp.value.trim(); if (!val) return;
-  const tag = document.createElement('div');
-  tag.className = 'reste-tag selected'; tag.dataset.val = val; tag.textContent = val;
-  tag.onclick = () => tag.classList.toggle('selected');
-  document.querySelector('.reste-grid').appendChild(tag);
-  inp.value = '';
-}
-
-// ══════════════════════════════════
 // RECIPES
-// ══════════════════════════════════
-function renderRecipes() {
-  document.getElementById('recipe-grid').innerHTML = `
-    <div class="card"><div class="card-header green">🍳 Mealprep-Rezepte — KW ${viewKW}</div></div>
-    <div class="recipe-cards">
-      ${planData.recipes.map((r,i) => `
-        <div class="recipe-card" onclick="openRecipe(${i})">
-          <div class="recipe-thumb" style="background:${r.color}">${r.emoji}</div>
-          <div class="recipe-info">
-            <div class="recipe-title">${r.title}</div>
-            <span class="recipe-badge">${r.day}</span>
-            <div class="recipe-makros">
-              <div class="recipe-makro"><span>${r.makros.kcal}</span><span>kcal*</span></div>
-              <div class="recipe-makro"><span>${r.makros.p}g</span><span>P</span></div>
-              <div class="recipe-makro"><span>${r.makros.k}g</span><span>KH</span></div>
-              <div class="recipe-makro"><span>${r.makros.f}g</span><span>F</span></div>
-            </div>
-            <div style="font-size:0.62rem;color:#aaa;margin-top:2px;">*Sebastian-Portion</div>
-          </div>
-        </div>`).join('')}
-    </div>`;
+function renderRecipes(){
+  document.getElementById('recipe-grid').innerHTML=
+    '<div class="card"><div class="ch gn">🍳 Mealprep-Rezepte — KW '+viewKW+'</div></div>'+
+    '<div class="rcards">'+planData.recipes.map((r,i)=>
+      '<div class="rcard" onclick="openRecipe('+i+')">'+
+      '<div class="rthumb" style="background:'+r.color+'">'+r.emoji+'</div>'+
+      '<div class="rinfo"><div class="rtitlec">'+r.title+'</div><span class="rbadgec">'+r.day+'</span>'+
+      '<div class="rmakros"><div class="rmak"><span>'+r.makros.kcal+'</span><span>kcal*</span></div><div class="rmak"><span>'+r.makros.p+'g</span><span>P</span></div><div class="rmak"><span>'+r.makros.k+'g</span><span>KH</span></div><div class="rmak"><span>'+r.makros.f+'g</span><span>F</span></div></div>'+
+      '<div style="font-size:0.62rem;color:#aaa;margin-top:2px;">*Sebastian-Portion</div></div></div>'
+    ).join('')+'</div>';
 }
-function openRecipe(i) {
-  const r = planData.recipes[i];
-  document.getElementById('recipe-modal-inner').innerHTML = `
-    <div class="detail-modal-header">
-      <span style="font-weight:700;font-size:1rem;">${r.emoji} ${r.title}</span>
-      <button class="close-btn" onclick="document.getElementById('recipe-modal').style.display='none'">×</button>
-    </div>
-    <div class="section-label">Portionen (Rohgewichte)</div>
-    <div class="portion-compare">
-      <div class="portion-box seb"><div class="portion-name">👨 Sebastian</div><div class="portion-gram">${r.portionen.seb.gram}</div><div class="portion-makro">${r.portionen.seb.kcal} · ${r.portionen.seb.p} · ${r.portionen.seb.k} · ${r.portionen.seb.f}</div></div>
-      <div class="portion-box fr"><div class="portion-name">👩 Enna</div><div class="portion-gram">${r.portionen.fr.gram}</div><div class="portion-makro">${r.portionen.fr.kcal} · ${r.portionen.fr.p} · ${r.portionen.fr.k} · ${r.portionen.fr.f}</div></div>
-    </div>
-    <div class="section-label">Zutaten (4 Portionen, Rohgewichte)</div>
-    <table class="ingredient-table">
-      <tr><th>Zutat</th><th>Menge roh</th><th>Hinweis</th></tr>
-      ${r.zutaten.map(z=>`<tr><td>${z[0]}</td><td><strong>${z[1]}</strong></td><td style="color:#888;font-size:0.72rem;">${z[2]}</td></tr>`).join('')}
-    </table>
-    <div class="section-label">Zubereitung</div>
-    <ol class="steps-list">${r.steps.map(s=>`<li>${s}</li>`).join('')}</ol>`;
-  document.getElementById('recipe-modal').style.display = 'flex';
-}
-function maybeCloseModal(e) {
-  if (e.target === document.getElementById('recipe-modal')) document.getElementById('recipe-modal').style.display = 'none';
+function openRecipe(i){
+  const r=planData.recipes[i];
+  document.getElementById('recipe-modal-inner').innerHTML=
+    '<div class="shdr"><span style="font-weight:700;">'+r.emoji+' '+r.title+'</span><button class="closeb" onclick="document.getElementById(\'recipe-modal\').style.display=\'none\'">×</button></div>'+
+    '<div class="slabel">Portionen (Rohgewichte)</div>'+
+    '<div class="pcmp"><div class="pbox sb"><div class="pname">👨 Sebastian</div><div style="font-size:0.82rem;font-weight:700;">'+r.portionen.seb.gram+'</div><div style="font-size:0.7rem;color:#555;margin-top:3px;">'+r.portionen.seb.kcal+' · '+r.portionen.seb.p+'</div></div>'+
+    '<div class="pbox fr"><div class="pname">👩 Enna</div><div style="font-size:0.82rem;font-weight:700;">'+r.portionen.fr.gram+'</div><div style="font-size:0.7rem;color:#555;margin-top:3px;">'+r.portionen.fr.kcal+' · '+r.portionen.fr.p+'</div></div></div>'+
+    '<div class="slabel">Zutaten (4 Portionen gesamt)</div>'+
+    '<table class="itab"><tr><th>Zutat</th><th>Menge roh</th><th>Hinweis</th></tr>'+r.zutaten.map(z=>'<tr><td>'+z[0]+'</td><td><strong>'+z[1]+'</strong></td><td style="color:#888;font-size:0.72rem;">'+z[2]+'</td></tr>').join('')+'</table>'+
+    '<div class="slabel">Zubereitung</div><ol class="steps">'+r.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol>';
+  document.getElementById('recipe-modal').style.display='flex';
 }
 
-// ══════════════════════════════════
-// MEAL DETAIL MODAL
-// ══════════════════════════════════
-function findMealDetail(mealName) {
-  for (const [key, val] of Object.entries(MEAL_DETAILS)) {
-    if (mealName.includes(key)) return val;
-  }
-  return null;
-}
-function openMealDetail(mealName) {
-  const det = findMealDetail(mealName);
-  if (!det) return;
-  document.getElementById('meal-detail-inner').innerHTML = `
-    <div class="meal-detail-header">
-      <div class="meal-detail-title">${det.emoji} ${det.title}</div>
-      <button class="close-btn" onclick="closeMealDetail()">×</button>
-    </div>
-    <div class="meal-detail-persons">
-      <div class="meal-detail-person seb">
-        <div class="meal-detail-pname">👨 Sebastian</div>
-        ${det.seb.ingredients.map(i=>`<div class="meal-detail-ingredient"><span>${i[0]}</span><span class="amt">${i[1]}</span></div>`).join('')}
-        <div class="meal-detail-macro">
-          <span>${det.seb.macro.kcal}</span>
-          <span>${det.seb.macro.p}</span>
-          <span>${det.seb.macro.k}</span>
-          <span>${det.seb.macro.f}</span>
-        </div>
-      </div>
-      <div class="meal-detail-person fr">
-        <div class="meal-detail-pname">👩 Enna</div>
-        ${det.fr.ingredients.map(i=>`<div class="meal-detail-ingredient"><span>${i[0]}</span><span class="amt">${i[1]}</span></div>`).join('')}
-        <div class="meal-detail-macro">
-          <span>${det.fr.macro.kcal}</span>
-          <span>${det.fr.macro.p}</span>
-          <span>${det.fr.macro.k}</span>
-          <span>${det.fr.macro.f}</span>
-        </div>
-      </div>
-    </div>
-    ${det.note ? `<div style="background:var(--green-light);border-radius:8px;padding:9px 12px;font-size:0.78rem;color:var(--green-dark);">💡 ${det.note}</div>` : ''}`;
-  document.getElementById('meal-detail-overlay').style.display = 'block';
-}
-function closeMealDetail() {
-  document.getElementById('meal-detail-overlay').style.display = 'none';
-}
-
-// ══════════════════════════════════
 // MEALPREP TAB
-// ══════════════════════════════════
-function renderMealprepTab() {
-  const cont = document.getElementById('mealprep-content');
-  if (!planData) { cont.innerHTML = '<div class="loading-overlay"><div class="spinner"></div></div>'; return; }
-  // Mi = recipes 0+1 (Lachs, Pute), Sa = recipes 2+3 (Thai-Hähnchen, Süßkart-Hack)
-  const dayRecipes = currentMealprepDay === 'mi'
-    ? planData.recipes.slice(0,2)
-    : planData.recipes.slice(2);
-  const dayLabel = currentMealprepDay === 'mi' ? 'Mittwoch' : 'Samstag';
-
-  // Total shopping amounts from recipes
-  const allIngredients = dayRecipes.flatMap(r => r.zutaten);
-
-  cont.innerHTML = `
-    <div class="mp-total-banner">
-      <strong>⚡ Mealprep ${dayLabel}</strong> — ergibt je <strong>2 Portionen Sebastian + 2 Portionen Enna</strong> pro Rezept (4 Tage)
-    </div>
-    ${dayRecipes.map(r => {
-      const det = findMealDetail(r.title);
-      return `
-      <div class="mp-recipe-card">
-        <div class="mp-recipe-header">
-          <div class="mp-recipe-emoji">${r.emoji}</div>
-          <div>
-            <div class="mp-recipe-title">${r.title}</div>
-            <div class="mp-recipe-sub">4 Portionen gesamt · Rohgewichte</div>
-          </div>
-        </div>
-        <div style="padding:0 12px 8px;">
-          <div style="font-size:0.72rem;font-weight:700;color:var(--grey-dark);text-transform:uppercase;margin-bottom:6px;">Einkauf (Gesamt für 4 Portionen)</div>
-          ${r.zutaten.map(z=>`
-            <div style="display:flex;justify-content:space-between;font-size:0.8rem;padding:4px 0;border-bottom:1px solid #f5f5f5;">
-              <span>${z[0]}</span><strong style="color:var(--green-dark);">${z[1]}</strong>
-            </div>`).join('')}
-        </div>
-        ${det ? `
-        <div class="mp-portion-grid">
-          <div class="mp-portion-box seb">
-            <div class="mp-portion-name">👨 Sebastian — je Box</div>
-            ${det.seb.ingredients.map(i=>`<div class="mp-portion-row"><span>${i[0]}</span><span class="mp-amt">${i[1]}</span></div>`).join('')}
-            <div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(0,0,0,0.1);">
-              <div style="font-size:0.7rem;font-weight:700;color:var(--blue);">${det.seb.macro.kcal} · ${det.seb.macro.p}</div>
-            </div>
-          </div>
-          <div class="mp-portion-box fr">
-            <div class="mp-portion-name">👩 Enna — je Box</div>
-            ${det.fr.ingredients.map(i=>`<div class="mp-portion-row"><span>${i[0]}</span><span class="mp-amt">${i[1]}</span></div>`).join('')}
-            <div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(0,0,0,0.1);">
-              <div style="font-size:0.7rem;font-weight:700;color:var(--orange);">${det.fr.macro.kcal} · ${det.fr.macro.p}</div>
-            </div>
-          </div>
-        </div>` : ''}
-        <div class="mp-steps">
-          <div class="mp-steps-title">Zubereitung</div>
-          <ol>${r.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
-        </div>
-      </div>`;
-    }).join('')}
-    <div style="background:white;border-radius:10px;border:1px solid #e0e0e0;padding:12px;font-size:0.78rem;">
-      <strong style="color:var(--green-dark);">📦 Beschriftung Boxen</strong><br>
-      <div style="margin-top:6px;color:#555;">Jede Box mit Name + Tag beschriften.<br>
-      Haltbarkeit im Kühlschrank: <strong>4 Tage</strong>. Einfrieren möglich.</div>
-    </div>`;
+function renderMP(){
+  const recipes=mpDay==='mi'?planData.recipes.slice(0,2):planData.recipes.slice(2);
+  const dayLabel=mpDay==='mi'?'Mittwoch':'Samstag';
+  document.getElementById('mealprep-content').innerHTML=
+    '<div class="mptot"><strong>⚡ Mealprep '+dayLabel+'</strong> — je 2 Boxen Sebastian + 2 Boxen Enna (reicht 4 Tage)</div>'+
+    recipes.map(r=>{
+      const det=findMD(r.title);
+      return '<div class="mpcard">'+
+        '<div class="mpch"><div class="mpem">'+r.emoji+'</div><div><div class="mptitle">'+r.title+'</div><div class="mpsub">4 Portionen · Rohgewichte</div></div></div>'+
+        '<div style="padding:0 12px 8px;"><div style="font-size:0.72rem;font-weight:700;color:var(--grd);text-transform:uppercase;margin-bottom:6px;">Gesamt einkaufen</div>'+
+        r.zutaten.map(z=>'<div style="display:flex;justify-content:space-between;font-size:0.8rem;padding:4px 0;border-bottom:1px solid #f5f5f5;"><span>'+z[0]+'</span><strong style="color:var(--gd);">'+z[1]+'</strong></div>').join('')+'</div>'+
+        (det?'<div class="mppg">'+
+          '<div class="mppb sb"><div class="mppn">👨 Sebastian — je Box</div>'+det.seb.ing.map(i=>'<div class="mppr"><span>'+i[0]+'</span><span class="ma">'+i[1]+'</span></div>').join('')+'<div style="margin-top:6px;padding-top:5px;border-top:1px solid rgba(0,0,0,0.1);font-size:0.7rem;font-weight:700;color:var(--b);">'+det.seb.mac.kcal+' · '+det.seb.mac.p+'</div></div>'+
+          '<div class="mppb fr"><div class="mppn">👩 Enna — je Box</div>'+det.fr.ing.map(i=>'<div class="mppr"><span>'+i[0]+'</span><span class="ma">'+i[1]+'</span></div>').join('')+'<div style="margin-top:6px;padding-top:5px;border-top:1px solid rgba(0,0,0,0.1);font-size:0.7rem;font-weight:700;color:var(--or);">'+det.fr.mac.kcal+' · '+det.fr.mac.p+'</div></div>'+
+          '</div>':'') +
+        '<div style="padding:0 12px 12px;"><div style="font-size:0.72rem;font-weight:700;color:var(--grd);text-transform:uppercase;margin-bottom:6px;">Zubereitung</div><ol style="padding-left:16px;font-size:0.8rem;line-height:1.8;">'+r.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol></div></div>';
+    }).join('')+
+    '<div style="background:white;border-radius:10px;border:1px solid #e0e0e0;padding:12px;font-size:0.78rem;"><strong style="color:var(--gd);">📦 Boxen beschriften</strong><br><div style="margin-top:5px;color:#555;">Name + Tag auf jede Box.<br>Haltbarkeit Kühlschrank: <strong>4 Tage</strong>. Einfrieren möglich.</div></div>';
 }
-function switchMealprepDay(day, btn) {
-  currentMealprepDay = day;
-  document.getElementById('mp-mi-btn').classList.toggle('active', day==='mi');
-  document.getElementById('mp-sa-btn').classList.toggle('active', day==='sa');
-  // Toggle button colors
-  document.getElementById('mp-mi-btn').classList.toggle('seb', day==='mi');
-  document.getElementById('mp-mi-btn').classList.toggle('fr', day!=='mi');
-  document.getElementById('mp-sa-btn').classList.toggle('fr', day==='sa');
-  document.getElementById('mp-sa-btn').classList.toggle('seb', day!=='sa');
-  renderMealprepTab();
+function switchMP(day,btn){
+  mpDay=day;
+  document.getElementById('mp-mi-btn').className='pbtn '+(day==='mi'?'sb active':'fr');
+  document.getElementById('mp-sa-btn').className='pbtn '+(day==='sa'?'sb active':'fr');
+  renderMP();
 }
 
-// ══════════════════════════════════
 // MAKROS
-// ══════════════════════════════════
-function renderMakros() {
-  const cards = [
-    {name:"👨 Sebastian",color:"var(--blue-light)",border:"var(--blue)",kcalR:"1.730",kcalT:"1.960",p:"165g",kh:"185g",f:"55g",ziel:"Recomp: -0,3 kg/Woche"},
-    {name:"👩 Enna",color:"var(--purple-light)",border:"var(--purple)",kcalR:"1.365",kcalT:"1.555",p:"115g",kh:"155g",f:"42g",ziel:"Recomp: -0,2 kg/Woche"},
-  ];
-  document.getElementById('makro-cards').innerHTML = cards.map(c => `
-    <div class="makro-card" style="border-left:4px solid ${c.border};background:${c.color};">
-      <div class="makro-name">${c.name}</div>
-      <div class="makro-ziel">${c.ziel}</div>
-      <div class="makro-row"><span>Ruhetag</span><strong>${c.kcalR} kcal</strong></div>
-      <div class="makro-row"><span>Trainingstag</span><strong>${c.kcalT} kcal</strong></div>
-      <div class="makro-row"><span>Protein</span><strong>${c.p}</strong></div>
-      <div class="makro-row"><span>KH</span><strong>${c.kh}</strong></div>
-      <div class="makro-row"><span>Fett</span><strong>${c.f}</strong></div>
-    </div>`).join('');
+function renderMakros(){
+  document.getElementById('makro-cards').innerHTML=[
+    {name:'👨 Sebastian',color:'var(--bl)',border:'var(--b)',kcalR:'1.670',kcalT:'1.790',p:'155g',kh:'175g',f:'50g',ziel:'Recomp: -0,3 kg/Woche'},
+    {name:'👩 Enna',color:'var(--pl)',border:'var(--pu)',kcalR:'1.255',kcalT:'1.345',p:'100g',kh:'135g',f:'38g',ziel:'Recomp: -0,2 kg/Woche'},
+  ].map(c=>'<div class="mcard" style="border-left:4px solid '+c.border+';background:'+c.color+';"><div class="mcname">'+c.name+'</div><div class="mcziel">'+c.ziel+'</div><div class="mcrow"><span>Ruhetag</span><strong>'+c.kcalR+' kcal</strong></div><div class="mcrow"><span>Trainingstag</span><strong>'+c.kcalT+' kcal</strong></div><div class="mcrow"><span>Protein</span><strong>'+c.p+'</strong></div><div class="mcrow"><span>KH</span><strong>'+c.kh+'</strong></div><div class="mcrow"><span>Fett</span><strong>'+c.f+'</strong></div></div>').join('');
 }
 
-// ══════════════════════════════════
 // SUPPS
-// ══════════════════════════════════
-function renderSupps() {
-  const supps = [
-    {emoji:"🌊",name:"Omega-3 Fischöl flüssig",dose:"1 TL (5ml) täglich zum Essen",benefit:"Entzündungshemmend, Gelenke, Schienbeinkantensyndrom",brand:"Norsan Nordic Omega-3 oder Staufen Omega-3 flüssig",color:"#e3f2fd"},
-    {emoji:"☀️",name:"Vitamin D3 + K2 Tropfen",dose:"3–5 Tropfen täglich (2.000–4.000 IE D3)",benefit:"Knochen, Immunsystem, Muskelregeneration",brand:"Zeinpharma D3+K2 Tropfen oder Fairvital D3+K2 liquid",color:"#fff9c4"},
-    {emoji:"⚡",name:"Magnesium Citrat Pulver",dose:"300–400mg abends",benefit:"Muskelregeneration, Schlaf, Krampfprävention",brand:"Natural Calm Magnesium Pulver",color:"#e8f5e9"},
-    {emoji:"🧬",name:"Kreatin Monohydrat Pulver",dose:"3–5g täglich (auch Ruhetage)",benefit:"Kraft, Muskelerhalt beim Recomp",brand:"Bulk Powders oder MyProtein Kreatin Monohydrat",color:"#fce4ec"},
-    {emoji:"🩹",name:"Kollagen Hydrolysat Pulver",dose:"10–15g täglich (morgens oder post-workout)",benefit:"Knorpel, Sehnen — direkt für Schienbeinkantensyndrom",brand:"Ufory Kollagen Pulver oder Weider Collagen Protein",color:"#fff3e0"},
-  ];
-  document.getElementById('supp-list').innerHTML = supps.map(s => `
-    <div class="supp-card" style="background:${s.color};">
-      <div class="supp-emoji">${s.emoji}</div>
-      <div>
-        <div class="supp-name">${s.name}</div>
-        <div class="supp-dose">${s.dose}</div>
-        <div class="supp-benefit">${s.benefit}</div>
-        <div class="supp-brand">💡 ${s.brand}</div>
-      </div>
-    </div>`).join('');
+function renderSupps(){
+  document.getElementById('supp-list').innerHTML=[
+    {emoji:'🌊',name:'Omega-3 Fischöl flüssig',dose:'1 TL (5ml) täglich zum Essen',benefit:'Entzündungshemmend, Gelenke, Schienbeinkantensyndrom',brand:'Norsan Nordic Omega-3 oder Staufen Omega-3 flüssig',color:'#e3f2fd'},
+    {emoji:'☀️',name:'Vitamin D3 + K2 Tropfen',dose:'3–5 Tropfen täglich',benefit:'Knochen, Immunsystem, Muskelregeneration',brand:'Zeinpharma D3+K2 Tropfen oder Fairvital D3+K2 liquid',color:'#fff9c4'},
+    {emoji:'⚡',name:'Magnesium Citrat Pulver',dose:'300–400mg abends',benefit:'Muskelregeneration, Schlaf, Krampfprävention',brand:'Natural Calm Magnesium Pulver',color:'#e8f5e9'},
+    {emoji:'🧬',name:'Kreatin Monohydrat Pulver',dose:'3–5g täglich (auch Ruhetage)',benefit:'Kraft, Muskelerhalt beim Recomp',brand:'Bulk Powders oder MyProtein Kreatin',color:'#fce4ec'},
+    {emoji:'🩹',name:'Kollagen Hydrolysat Pulver',dose:'10–15g täglich',benefit:'Knorpel, Sehnen — direkt für Schienbeinkantensyndrom',brand:'Ufory Kollagen Pulver oder Weider Collagen Protein',color:'#fff3e0'},
+  ].map(s=>'<div class="suppcard" style="background:'+s.color+';"><div class="suppem">'+s.emoji+'</div><div><div class="suppname">'+s.name+'</div><div class="suppdose">'+s.dose+'</div><div class="suppben">'+s.benefit+'</div><div class="suppbrand">💡 '+s.brand+'</div></div></div>').join('');
 }
 
-// ══════════════════════════════════
 // DIARY
-// ══════════════════════════════════
-const DIARY_QUESTIONS = [
-  {id:'q1', label:'😋 Wie war das Essen?', sub:'Hast du alles aufessen können?', type:'scale', options:['Zu wenig','Genau richtig','Zu viel']},
-  {id:'q2', label:'🍽 Sättigungsgefühl', sub:'Warst du nach den Mahlzeiten satt?', type:'scale', options:['Zu hungrig','Gut gesättigt','Zu voll']},
-  {id:'q3', label:'🍫 Heißhunger?', sub:'Hatte ich Heißhunger zwischen den Mahlzeiten?', type:'scale', options:['Keiner','Leicht','Stark']},
-  {id:'q4', label:'⚡ Energie & Stimmung', sub:'Wie war deine Energie den Tag über?', type:'scale', options:['Müde','Okay','Top']},
-  {id:'q5', label:'💪 Training heute?', sub:'Wie war die Leistung?', type:'scale', options:['Kein Training','Okay','Super']},
+const DQ=[
+  {id:'q1',label:'😋 Essen aufessen können?',sub:'Waren die Portionen passend?',opts:['Zu wenig','Genau richtig','Zu viel']},
+  {id:'q2',label:'🍽 Sättigungsgefühl',sub:'Warst du nach den Mahlzeiten satt?',opts:['Zu hungrig','Gut gesättigt','Zu voll']},
+  {id:'q3',label:'🍫 Heißhunger?',sub:'Gab es Heißhunger zwischen Mahlzeiten?',opts:['Keiner','Leicht','Stark']},
+  {id:'q4',label:'⚡ Energie & Stimmung',sub:'Wie war deine Energie?',opts:['Müde','Okay','Top']},
+  {id:'q5',label:'💪 Training heute?',sub:'Wie war die Leistung?',opts:['Kein Training','Okay','Super']},
 ];
-
-function initDiary() {
-  const days = ['Mo','Di','Mi','Do','Fr','Sa','So'];
-  const tabs = document.getElementById('diary-day-tabs');
-  if (!tabs) return;
-  tabs.innerHTML = days.map((d,i) => `<button class="diary-day-tab${i===diaryDay?' active':''}" onclick="switchDiaryDay(${i},this)">${d}</button>`).join('');
-  diaryState = {};
-  renderDiaryForm();
-  loadDiaryHistory();
+function initDiary(){
+  const tabs=document.getElementById('diary-day-tabs');if(!tabs)return;
+  tabs.innerHTML=['Mo','Di','Mi','Do','Fr','Sa','So'].map((d,i)=>'<button class="ddtab'+(i===dpDay?' active':'')+'" onclick="switchDD('+i+',this)">'+d+'</button>').join('');
+  dpState={};renderDiaryForm();loadDiaryHistory();
 }
-function switchDiaryPerson(p, btn) {
-  diaryPerson = p;
-  document.querySelectorAll('.diary-person-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  diaryState = {};
-  renderDiaryForm();
-  loadDiaryHistory();
+function switchDP(p,btn){dpPerson=p;document.querySelectorAll('.dpbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');dpState={};renderDiaryForm();loadDiaryHistory();}
+function switchDD(i,btn){dpDay=i;document.querySelectorAll('.ddtab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');dpState={};renderDiaryForm();}
+function setScale(qid,val,btn){dpState[qid]=val;btn.closest('.dscale').querySelectorAll('.dsbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function renderDiaryForm(){
+  const days=['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'];
+  const name=dpPerson==='seb'?'Sebastian':'Enna';
+  document.getElementById('diary-form').innerHTML=
+    '<div class="card"><div class="ch gn">📝 '+days[dpDay]+' — '+name+'</div><div class="cb">'+
+    DQ.map(q=>'<div class="dq"><label>'+q.label+'</label><div class="dqsub">'+q.sub+'</div><div class="dscale">'+
+      q.opts.map((o,i)=>'<button class="dsbtn'+(dpState[q.id]===i?' active':'')+'" onclick="setScale(\''+q.id+'\','+i+',this)">'+o+'</button>').join('')+
+    '</div></div>').join('')+
+    '<div class="dq"><label>📝 Freies Feld</label><div class="dqsub">Sonstiges, Auffälligkeiten, Wünsche für nächste Woche</div>'+
+    '<textarea class="kinput" id="d-notiz" placeholder="z.B. Lachs war zu viel, mehr Pasta, mittags noch hungrig..."></textarea></div>'+
+    '<div class="srow" style="margin-top:8px;"><button class="btn pr" onclick="saveDiary()">Speichern ✓</button><span class="sstatus" id="diary-status"></span></div>'+
+    '</div></div>';
 }
-function switchDiaryDay(i, btn) {
-  diaryDay = i;
-  document.querySelectorAll('.diary-day-tab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  diaryState = {};
-  renderDiaryForm();
+async function saveDiary(){
+  const entry={q1:dpState.q1!==undefined?DQ[0].opts[dpState.q1]:null,q2:dpState.q2!==undefined?DQ[1].opts[dpState.q2]:null,q3:dpState.q3!==undefined?DQ[2].opts[dpState.q3]:null,q4:dpState.q4!==undefined?DQ[3].opts[dpState.q4]:null,q5:dpState.q5!==undefined?DQ[4].opts[dpState.q5]:null,notiz:document.getElementById('d-notiz').value.trim(),saved_at:new Date().toISOString()};
+  const st=document.getElementById('diary-status');
+  try{const sb=getSB();if(!sb)throw new Error('Offline');
+    const{data:ex}=await sb.from('diary_entries').select('id').eq('week_number',viewKW).eq('year',viewYear).eq('person',dpPerson).eq('day_index',dpDay).limit(1);
+    if(ex&&ex.length>0)await sb.from('diary_entries').update({entry_data:entry,updated_at:new Date().toISOString()}).eq('id',ex[0].id);
+    else await sb.from('diary_entries').insert({week_number:viewKW,year:viewYear,person:dpPerson,day_index:dpDay,entry_data:entry});
+    st.textContent='✅ Gespeichert';st.style.color='var(--gm)';loadDiaryHistory();
+  }catch(e){st.textContent='❌ '+e.message;st.style.color='var(--re)';}
+  setTimeout(()=>{if(st)st.textContent='';},3000);
 }
-function setScale(qid, val, btn) {
-  diaryState[qid] = val;
-  btn.closest('.diary-scale').querySelectorAll('.diary-scale-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+async function loadDiaryHistory(){
+  try{const sb=getSB();if(!sb){renderDiaryHistory([]);return;}
+    const{data}=await sb.from('diary_entries').select('*').eq('week_number',viewKW).eq('year',viewYear).eq('person',dpPerson).order('day_index',{ascending:true});
+    renderDiaryHistory(data);
+  }catch(e){renderDiaryHistory([]);}
 }
-function renderDiaryForm() {
-  const days = ['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'];
-  const name = diaryPerson==='seb' ? 'Sebastian' : 'Enna';
-  document.getElementById('diary-form-container').innerHTML = `
-    <div class="card">
-      <div class="card-header green">📝 ${days[diaryDay]} — ${name}</div>
-      <div class="card-body">
-        ${DIARY_QUESTIONS.map(q => `
-          <div class="diary-q">
-            <label>${q.label}</label>
-            <div class="diary-q-sub">${q.sub}</div>
-            <div class="diary-scale">
-              ${q.options.map((opt,i) => `<button class="diary-scale-btn${diaryState[q.id]===i?' active':''}" onclick="setScale('${q.id}',${i},this)">${opt}</button>`).join('')}
-            </div>
-          </div>`).join('')}
-        <div class="diary-q">
-          <label>📝 Freies Feld</label>
-          <div class="diary-q-sub">Sonstiges, Auffälligkeiten, Wünsche für nächste Woche</div>
-          <textarea class="kommentar-input" id="d-notiz" placeholder="z.B. 'Lachs war zu viel', 'Lust auf mehr Pasta', 'Mittags immer noch hungrig'..."></textarea>
-        </div>
-        <div class="save-row" style="margin-top:8px;">
-          <button class="btn primary" onclick="saveDiaryEntry()">Speichern ✓</button>
-          <span class="save-status" id="diary-save-status"></span>
-        </div>
-      </div>
-    </div>`;
+function renderDiaryHistory(data){
+  const hist=document.getElementById('diary-history');if(!hist)return;
+  const days=['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'];
+  if(!data||data.length===0){hist.innerHTML='<div style="text-align:center;color:#bbb;padding:20px;font-size:0.82rem;">Noch keine Einträge diese Woche.</div>';return;}
+  hist.innerHTML=data.map(e=>'<div class="decard"><div class="deday">'+days[e.day_index]+'</div>'+
+    (e.entry_data.q1?'<div class="derow"><span>😋</span><span>Essen: <strong>'+e.entry_data.q1+'</strong></span></div>':'')+
+    (e.entry_data.q2?'<div class="derow"><span>🍽</span><span>Sättigung: <strong>'+e.entry_data.q2+'</strong></span></div>':'')+
+    (e.entry_data.q3?'<div class="derow"><span>🍫</span><span>Heißhunger: <strong>'+e.entry_data.q3+'</strong></span></div>':'')+
+    (e.entry_data.q4?'<div class="derow"><span>⚡</span><span>Energie: <strong>'+e.entry_data.q4+'</strong></span></div>':'')+
+    (e.entry_data.q5?'<div class="derow"><span>💪</span><span>Training: <strong>'+e.entry_data.q5+'</strong></span></div>':'')+
+    (e.entry_data.notiz?'<div class="derow"><span>📝</span><span>'+e.entry_data.notiz+'</span></div>':'')+
+    '</div>').join('');
 }
-async function saveDiaryEntry() {
-  const entry = {
-    q1: diaryState.q1 !== undefined ? DIARY_QUESTIONS[0].options[diaryState.q1] : null,
-    q2: diaryState.q2 !== undefined ? DIARY_QUESTIONS[1].options[diaryState.q2] : null,
-    q3: diaryState.q3 !== undefined ? DIARY_QUESTIONS[2].options[diaryState.q3] : null,
-    q4: diaryState.q4 !== undefined ? DIARY_QUESTIONS[3].options[diaryState.q4] : null,
-    q5: diaryState.q5 !== undefined ? DIARY_QUESTIONS[4].options[diaryState.q5] : null,
-    notiz: document.getElementById('d-notiz').value.trim(),
-    saved_at: new Date().toISOString()
-  };
-  const status = document.getElementById('diary-save-status');
-  try {
-    const sb = getSB(); if (!sb) throw new Error('Offline');
-    const {data:ex} = await sb.from('diary_entries').select('id').eq('week_number',viewKW).eq('year',viewYear).eq('person',diaryPerson).eq('day_index',diaryDay).limit(1);
-    if (ex && ex.length > 0) await sb.from('diary_entries').update({entry_data:entry,updated_at:new Date().toISOString()}).eq('id',ex[0].id);
-    else await sb.from('diary_entries').insert({week_number:viewKW,year:viewYear,person:diaryPerson,day_index:diaryDay,entry_data:entry});
-    status.textContent = '✅ Gespeichert'; status.style.color = 'var(--green-med)';
-    loadDiaryHistory();
-  } catch(e) { status.textContent = '❌ '+e.message; status.style.color = 'var(--red)'; }
-  setTimeout(() => { status.textContent = ''; }, 3000);
-}
-async function loadDiaryHistory() {
-  const hist = document.getElementById('diary-history');
-  if (!hist) return;
-  try {
-    const sb = getSB();
-    if (!sb) { hist.innerHTML = ''; return; }
-    const {data} = await sb.from('diary_entries').select('*').eq('week_number',viewKW).eq('year',viewYear).eq('person',diaryPerson).order('day_index',{ascending:true});
-    const days = ['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'];
-    if (!data || data.length === 0) {
-      hist.innerHTML = '<div style="text-align:center;color:#bbb;padding:20px;font-size:0.82rem;">Noch keine Einträge diese Woche.</div>';
-      return;
-    }
-    const qs = DIARY_QUESTIONS;
-    hist.innerHTML = data.map(e => `
-      <div class="diary-entry-card">
-        <div class="diary-entry-day">${days[e.day_index]}</div>
-        ${e.entry_data.q1 ? `<div class="diary-entry-row"><span>😋</span><span>${qs[0].label.replace(/^[^ ]+ /,'')}: <strong>
+</script>
+</body>
+</html>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
