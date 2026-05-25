@@ -233,6 +233,43 @@ main{max-width:680px;margin:0 auto;padding:12px 12px 80px;}
 .supp-brand{font-size:0.7rem;background:var(--grey);border-radius:6px;padding:3px 8px;display:inline-block;margin-top:4px;}
 .warning-box{background:#fff3e0;border:2px solid var(--orange);border-radius:10px;padding:12px 14px;font-size:0.78rem;line-height:1.6;margin-top:8px;}
 
+/* MEAL SLOT — interactive */
+.meal-slot{cursor:pointer;transition:background 0.15s;-webkit-tap-highlight-color:transparent;}
+.meal-slot:active{background:#d0ebd1;}
+
+/* MEAL DETAIL SHEET */
+.meal-detail-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.meal-detail-title{font-size:1rem;font-weight:700;}
+.meal-detail-persons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.meal-detail-person{border-radius:10px;padding:12px;border:2px solid #e0e0e0;}
+.meal-detail-person.seb{border-color:var(--blue);background:var(--blue-light);}
+.meal-detail-person.fr{border-color:var(--orange);background:var(--orange-light);}
+.meal-detail-pname{font-size:0.72rem;font-weight:700;margin-bottom:6px;}
+.meal-detail-ingredient{display:flex;justify-content:space-between;font-size:0.8rem;padding:3px 0;border-bottom:1px solid rgba(0,0,0,0.07);}
+.meal-detail-ingredient:last-child{border-bottom:none;}
+.meal-detail-ingredient .amt{font-weight:700;color:var(--green-dark);}
+.meal-detail-macro{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+.meal-detail-macro span{background:white;border-radius:6px;padding:3px 8px;font-size:0.72rem;font-weight:700;}
+
+/* MEALPREP TAB */
+.mp-recipe-card{background:white;border-radius:12px;border:1px solid #e0e0e0;margin-bottom:12px;overflow:hidden;}
+.mp-recipe-header{padding:12px 14px;display:flex;align-items:center;gap:10px;}
+.mp-recipe-emoji{font-size:1.8rem;}
+.mp-recipe-title{font-weight:700;font-size:0.92rem;}
+.mp-recipe-sub{font-size:0.72rem;color:#888;margin-top:2px;}
+.mp-portion-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 12px 12px;}
+.mp-portion-box{border-radius:10px;padding:10px;border:2px solid #e0e0e0;}
+.mp-portion-box.seb{border-color:var(--blue);background:var(--blue-light);}
+.mp-portion-box.fr{border-color:var(--orange);background:var(--orange-light);}
+.mp-portion-name{font-size:0.72rem;font-weight:700;margin-bottom:5px;}
+.mp-portion-row{display:flex;justify-content:space-between;font-size:0.78rem;padding:2px 0;}
+.mp-portion-row .mp-amt{font-weight:700;color:var(--green-dark);}
+.mp-steps{padding:0 12px 12px;}
+.mp-steps-title{font-size:0.72rem;font-weight:700;color:var(--grey-dark);text-transform:uppercase;margin-bottom:6px;}
+.mp-steps ol{padding-left:16px;font-size:0.8rem;line-height:1.8;}
+.mp-total-banner{background:var(--green-light);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.82rem;}
+.mp-total-banner strong{color:var(--green-dark);}
+
 /* INPUT */
 input[type=text], textarea {
   -webkit-appearance:none;
@@ -285,7 +322,7 @@ input[type=text], textarea {
     <div class="tab active" onclick="showTab('woche',this)">📅 Woche</div>
     <div class="tab" onclick="showTab('einkauf',this)">🛒 Einkauf</div>
     <div class="tab" onclick="showTab('rezepte',this)">🍳 Rezepte</div>
-    <div class="tab" onclick="showTab('portionen',this)">⚖️ Portion</div>
+    <div class="tab" onclick="showTab('mealprep',this)">⚡ Mealprep</div>
     <div class="tab" onclick="showTab('tagebuch',this)">📔 Tagebuch</div>
     <div class="tab" onclick="showTab('makros',this)">📊 Makros</div>
     <div class="tab" onclick="showTab('supps',this)">💊 Supps</div>
@@ -341,12 +378,19 @@ input[type=text], textarea {
   </div>
 </div>
 
-<div id="tab-portionen" class="section">
-  <div class="person-toggle">
-    <button class="person-btn seb active" id="portion-seb-btn" onclick="switchPortion('seb')">👨 Sebastian</button>
-    <button class="person-btn fr" id="portion-fr-btn" onclick="switchPortion('fr')">👩 Enna</button>
+<div id="tab-mealprep" class="section">
+  <div style="display:flex;gap:8px;margin-bottom:12px;">
+    <button class="person-btn seb active" id="mp-mi-btn" onclick="switchMealprepDay('mi',this)" style="flex:1;">⚡ Mittwoch</button>
+    <button class="person-btn fr" id="mp-sa-btn" onclick="switchMealprepDay('sa',this)" style="flex:1;">⚡ Samstag</button>
   </div>
-  <div id="portionen-content"><div class="loading-overlay"><div class="spinner"></div></div></div>
+  <div id="mealprep-content"><div class="loading-overlay"><div class="spinner"></div></div></div>
+</div>
+
+<!-- Meal detail bottom sheet -->
+<div id="meal-detail-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:600;" onclick="closeMealDetail()">
+  <div id="meal-detail-sheet" style="position:absolute;bottom:0;left:0;right:0;max-width:680px;margin:0 auto;background:white;border-radius:20px 20px 0 0;padding:20px;max-height:80vh;overflow-y:auto;" onclick="event.stopPropagation()">
+    <div id="meal-detail-inner"></div>
+  </div>
 </div>
 
 <div id="tab-tagebuch" class="section">
@@ -410,7 +454,7 @@ function getSB() {
 let planData = null;
 let checkedItems = {};
 let currentFilter = 'all';
-let currentPortionPerson = 'seb';
+let currentMealprepDay = 'mi';
 let diaryPerson = 'seb';
 let diaryDay = 0;
 let diaryState = {}; // {q1,q2,q3,q4,q5,notiz}
@@ -444,13 +488,13 @@ function kwToDateRange(kw,year) {
 // ══════════════════════════════════
 const FALLBACK = {
   weekData:[
-    {day:"Montag",type:"rest",meals:{shake:"Protein Shake (lf. Milch + Banane)",mittag:"Hähnchenbrust-Reste + Reis + Paprika",abend:"Hack-Pfanne mit Zucchini (Reste aufbrauchen)",snack:"Lf. Joghurt + Beeren"},mealprep:false},
-    {day:"Dienstag",type:"training",meals:{shake:"Protein Shake (lf. Milch + Beeren)",mittag:"Hähnchenschenkel + Süßkartoffeln (frisch)",abend:"Hähnchenschenkel + Süßkartoffeln (frisch)",snack:"Lf. Joghurt + Banane"},mealprep:false},
-    {day:"Mittwoch",type:"both",meals:{shake:"Protein Shake (lf. Milch + Banane)",mittag:"Lachs + Reis + Brokkoli (Mealprep)",abend:"Lachs + Reis + Brokkoli (Mealprep)",snack:"Alpro Joghurt + Beeren"},mealprep:true},
-    {day:"Donnerstag",type:"rest",meals:{shake:"Protein Shake (lf. Milch + Beeren)",mittag:"Lachs-Bowl (Mealprep-Reste)",abend:"Putenbrust + Linsen-Curry (Mealprep)",snack:"Reiswaffel + Obst"},mealprep:false},
-    {day:"Freitag",type:"training",meals:{shake:"Protein Shake (lf. Milch + Banane)",mittag:"Putenbrust + Linsen-Curry (Mealprep)",abend:"Bolognese + Vollkorn-Pasta",snack:"Lf. Joghurt + Beeren"},mealprep:false},
-    {day:"Samstag",type:"training",meals:{shake:"Protein Shake (lf. Milch + Banane)",mittag:"Thai-Hähnchen-Bowl (Mealprep)",abend:"Thai-Hähnchen-Bowl (Mealprep)",snack:"Lf. Joghurt + Banane"},mealprep:true},
-    {day:"Sonntag",type:"training",meals:{shake:"Protein Shake (lf. Milch + Beeren)",mittag:"Süßkartoffel-Rinderhack (Mealprep)",abend:"Süßkartoffel-Rinderhack (Mealprep)",snack:"Alpro Joghurt + Beeren"},mealprep:false},
+    {day:"Montag",type:"rest",meals:{shake:"Protein Shake",mittag:"Hähnchenbrust-Reste + Reis + Paprika",abend:"Hack-Pfanne mit Zucchini (Reste)",snack:"Lf. Joghurt + Beeren"},mealprep:false},
+    {day:"Dienstag",type:"training",meals:{shake:"Protein Shake",mittag:"Hähnchenschenkel + Süßkartoffeln (frisch)",abend:"Hähnchenschenkel + Süßkartoffeln (frisch)",snack:"Lf. Joghurt"},mealprep:false},
+    {day:"Mittwoch",type:"both",meals:{shake:"Protein Shake",mittag:"Lachs + Reis + Brokkoli (Mealprep)",abend:"Lachs + Reis + Brokkoli (Mealprep)",snack:"Lf. Joghurt + Beeren"},mealprep:true},
+    {day:"Donnerstag",type:"rest",meals:{shake:"Protein Shake",mittag:"Lachs + Reis + Brokkoli (Mealprep)",abend:"Putenbrust + Linsen-Curry (Mealprep)",snack:"Reiswaffel"},mealprep:false},
+    {day:"Freitag",type:"training",meals:{shake:"Protein Shake",mittag:"Putenbrust + Linsen-Curry (Mealprep)",abend:"Bolognese + Vollkorn-Pasta",snack:"Lf. Joghurt"},mealprep:false},
+    {day:"Samstag",type:"training",meals:{shake:"Protein Shake",mittag:"Thai-Hähnchen-Bowl (Mealprep)",abend:"Thai-Hähnchen-Bowl (Mealprep)",snack:"Lf. Joghurt"},mealprep:true},
+    {day:"Sonntag",type:"training",meals:{shake:"Protein Shake",mittag:"Süßkartoffel-Rinderhack (Mealprep)",abend:"Süßkartoffel-Rinderhack (Mealprep)",snack:"Lf. Joghurt + Beeren"},mealprep:false},
   ],
   shopData:[
     {cat:"protein",name:"Hähnchenbrustfilet",amount:"800g roh",note:"Di+Mi frisch"},
@@ -504,6 +548,77 @@ const FALLBACK = {
      zutaten:[["Rinderhackfleisch 20%","1.100g roh",""],["Süßkartoffeln","1.200g roh",""],["Blattspinat TK","300g",""],["Zwiebeln","150g roh",""],["Kokosöl","30g",""],["Paprika, Cumin, Zimt","je 5g",""]],
      steps:["Süßkartoffeln würfeln, 200°C 25 Min. rösten","Hack + Zwiebeln krümelig braten","Spinat + Gewürze, 5 Min.","Alles mischen, in 4 Boxen portionieren"]},
   ]
+};
+
+// ── MEAL DETAILS: exact ingredients per person per meal type ──
+// key = meals.shake / meals.mittag value (matched by substring)
+const MEAL_DETAILS = {
+  'Protein Shake': {
+    emoji:'☕', title:'Protein Shake',
+    seb:{ ingredients:[['Whey Protein Isolat (lf.)','40g'],['Laktosefreie Milch 1,5%','400ml']], macro:{kcal:'~370 kcal',p:'~38g P',k:'~18g KH',f:'~8g F'} },
+    fr: { ingredients:[['Whey Protein Isolat (lf.)','30g'],['Laktosefreie Milch 1,5%','350ml']], macro:{kcal:'~285 kcal',p:'~29g P',k:'~16g KH',f:'~7g F'} },
+    note:'Beide: einfach in Shaker schütteln — fertig.'
+  },
+  'Lachs + Reis + Brokkoli': {
+    emoji:'🐟', title:'Lachs + Reis + Brokkoli',
+    seb:{ ingredients:[['Lachsfilet (roh)','280g'],['Basmati-Reis (roh)','120g → ~290g gegart'],['Brokkoli (roh)','200g']], macro:{kcal:'~720 kcal',p:'~57g P',k:'~64g KH',f:'~23g F'} },
+    fr: { ingredients:[['Lachsfilet (roh)','190g'],['Basmati-Reis (roh)','85g → ~205g gegart'],['Brokkoli (roh)','140g']], macro:{kcal:'~505 kcal',p:'~41g P',k:'~45g KH',f:'~16g F'} },
+    note:'Aus Mealprep-Box. Erwärmen 2–3 Min. Mikrowelle oder Pfanne.'
+  },
+  'Putenbrust + Linsen-Curry': {
+    emoji:'🥩', title:'Putenbrust + Linsen-Curry',
+    seb:{ ingredients:[['Putenbrust (roh)','240g'],['Rote Linsen (trocken)','90g → ~230g gegart'],['Kokosmilch-Sauce','~80ml']], macro:{kcal:'~690 kcal',p:'~61g P',k:'~59g KH',f:'~17g F'} },
+    fr: { ingredients:[['Putenbrust (roh)','165g'],['Rote Linsen (trocken)','65g → ~160g gegart'],['Kokosmilch-Sauce','~60ml']], macro:{kcal:'~485 kcal',p:'~44g P',k:'~42g KH',f:'~12g F'} },
+    note:'Aus Mealprep-Box. Erwärmen 2–3 Min. Mikrowelle oder Pfanne.'
+  },
+  'Thai-Hähnchen-Bowl': {
+    emoji:'🍗', title:'Thai-Hähnchen-Bowl',
+    seb:{ ingredients:[['Hähnchenbrustfilet (roh)','200g'],['Basmati-Reis (roh)','110g → ~265g gegart'],['Paprika + Zucchini (roh)','130g'],['Kokosmilch-Sauce','~50ml']], macro:{kcal:'~685 kcal',p:'~60g P',k:'~74g KH',f:'~13g F'} },
+    fr: { ingredients:[['Hähnchenbrustfilet (roh)','140g'],['Basmati-Reis (roh)','80g → ~190g gegart'],['Paprika + Zucchini (roh)','90g'],['Kokosmilch-Sauce','~40ml']], macro:{kcal:'~480 kcal',p:'~43g P',k:'~52g KH',f:'~9g F'} },
+    note:'Aus Mealprep-Box. Erwärmen 2–3 Min. Mikrowelle oder Pfanne.'
+  },
+  'Süßkartoffel-Rinderhack': {
+    emoji:'🥔', title:'Süßkartoffel-Rinderhack',
+    seb:{ ingredients:[['Rinderhack 20% (roh)','230g'],['Süßkartoffeln (roh)','280g'],['Blattspinat TK','60g']], macro:{kcal:'~730 kcal',p:'~44g P',k:'~60g KH',f:'~29g F'} },
+    fr: { ingredients:[['Rinderhack 20% (roh)','160g'],['Süßkartoffeln (roh)','200g'],['Blattspinat TK','45g']], macro:{kcal:'~515 kcal',p:'~31g P',k:'~43g KH',f:'~21g F'} },
+    note:'Aus Mealprep-Box. Erwärmen 2–3 Min. Mikrowelle oder Pfanne.'
+  },
+  'Hähnchenschenkel + Süßkartoffeln': {
+    emoji:'🍗', title:'Hähnchenschenkel + Süßkartoffeln (frisch)',
+    seb:{ ingredients:[['Hähnchenschenkel (roh)','350g'],['Süßkartoffeln (roh)','300g'],['Olivenöl','10g'],['Gewürze','nach Geschmack']], macro:{kcal:'~720 kcal',p:'~55g P',k:'~58g KH',f:'~24g F'} },
+    fr: { ingredients:[['Hähnchenschenkel (roh)','240g'],['Süßkartoffeln (roh)','210g'],['Olivenöl','8g'],['Gewürze','nach Geschmack']], macro:{kcal:'~505 kcal',p:'~40g P',k:'~41g KH',f:'~17g F'} },
+    note:'200°C, 30–35 Min. Ofen. Süßkartoffeln gleichzeitig rösten.'
+  },
+  'Hack-Pfanne mit Zucchini': {
+    emoji:'🥩', title:'Hack-Pfanne mit Zucchini (Reste)',
+    seb:{ ingredients:[['Rinderhack (Reste)','~200g'],['Zucchini (Reste)','~150g'],['Paprika (Reste)','~100g'],['Olivenöl','10g']], macro:{kcal:'~580 kcal',p:'~40g P',k:'~15g KH',f:'~38g F'} },
+    fr: { ingredients:[['Rinderhack (Reste)','~140g'],['Zucchini (Reste)','~110g'],['Paprika (Reste)','~70g'],['Olivenöl','8g']], macro:{kcal:'~410 kcal',p:'~28g P',k:'~11g KH',f:'~27g F'} },
+    note:'Reste aufbrauchen — Mengen je nach Vorrat anpassen.'
+  },
+  'Hähnchenbrust-Reste': {
+    emoji:'🍗', title:'Hähnchenbrust + Reis + Paprika (Reste)',
+    seb:{ ingredients:[['Hähnchenbrust (Reste)','~200g'],['Reis (Reste, gegart)','~200g'],['Paprika (Reste)','~100g']], macro:{kcal:'~530 kcal',p:'~50g P',k:'~55g KH',f:'~8g F'} },
+    fr: { ingredients:[['Hähnchenbrust (Reste)','~140g'],['Reis (Reste, gegart)','~140g'],['Paprika (Reste)','~70g']], macro:{kcal:'~375 kcal',p:'~36g P',k:'~39g KH',f:'~6g F'} },
+    note:'Reste aufbrauchen — kalt oder kurz erwärmt.'
+  },
+  'Bolognese + Vollkorn-Pasta': {
+    emoji:'🍝', title:'Bolognese + Vollkorn-Pasta',
+    seb:{ ingredients:[['Rinderhack 20% (roh)','220g'],['Vollkorn-Pasta (trocken)','130g → ~310g gegart'],['Zwiebel + Knoblauch','50g'],['Passata','150g']], macro:{kcal:'~780 kcal',p:'~52g P',k:'~72g KH',f:'~28g F'} },
+    fr: { ingredients:[['Rinderhack 20% (roh)','155g'],['Vollkorn-Pasta (trocken)','90g → ~215g gegart'],['Zwiebel + Knoblauch','35g'],['Passata','100g']], macro:{kcal:'~550 kcal',p:'~37g P',k:'~50g KH',f:'~20g F'} },
+    note:'Frisch kochen. Pasta al dente (8 Min.). Sauce 15 Min. köcheln.'
+  },
+  'Lf. Joghurt': {
+    emoji:'🍦', title:'Lf. Joghurt (Snack)',
+    seb:{ ingredients:[['Lf. griech. Joghurt','200g']], macro:{kcal:'~120 kcal',p:'~16g P',k:'~5g KH',f:'~3g F'} },
+    fr: { ingredients:[['Lf. griech. Joghurt','150g']], macro:{kcal:'~90 kcal',p:'~12g P',k:'~4g KH',f:'~2g F'} },
+    note:'Optional an Ruhetagen. Trainingstag: als Post-Workout Snack.'
+  },
+  'Reiswaffel': {
+    emoji:'🍘', title:'Reiswaffel (Snack)',
+    seb:{ ingredients:[['Reiswaffeln','2 Stück (26g)']], macro:{kcal:'~100 kcal',p:'~2g P',k:'~22g KH',f:'~1g F'} },
+    fr: { ingredients:[['Reiswaffeln','2 Stück (26g)']], macro:{kcal:'~100 kcal',p:'~2g P',k:'~22g KH',f:'~1g F'} },
+    note:'Leichter Snack für Ruhetage.'
+  },
 };
 
 const PORTION_DATA = {
@@ -602,7 +717,7 @@ async function loadPlan() {
   renderWeek();
   renderShop();
   renderRecipes();
-  renderPortionen();
+  renderMealprepTab();
 }
 function setBadge(t,type){
   const b = document.getElementById('sync-badge');
@@ -779,10 +894,20 @@ function renderWeek() {
         return `<div class="day-card">
           <div class="day-header ${tc}"><strong>${d.day}</strong><div class="day-pills">${pills.join('')}</div></div>
           <div class="meal-grid">
-            <div class="meal-slot"><div class="meal-label">☕ Shake</div><div class="meal-name">${d.meals.shake}</div><div class="meal-kcal">Seb ~380 · Enna ~295 kcal</div></div>
-            <div class="meal-slot"><div class="meal-label">🥗 Mittag</div><div class="meal-name">${d.meals.mittag}</div><div class="meal-kcal">Seb ~550 · Enna ~420 kcal</div></div>
-            <div class="meal-slot"><div class="meal-label">🍽 Abend</div><div class="meal-name">${d.meals.abend}</div><div class="meal-kcal">Seb ~800 · Enna ~650 kcal</div></div>
-            <div class="meal-slot"><div class="meal-label">🍎 Snack</div><div class="meal-name">${d.meals.snack}</div><div class="meal-kcal">${d.type==='training'||d.type==='both'?'Seb ~230 · Enna ~190 kcal':'Ruhetag — optional'}</div></div>
+            ${[
+              {label:'☕ Shake', val:d.meals.shake},
+              {label:'🥗 Mittag', val:d.meals.mittag},
+              {label:'🍽 Abend', val:d.meals.abend},
+              {label:'🍎 Snack', val:d.meals.snack}
+            ].map(m => {
+              const det = findMealDetail(m.val);
+              const kcalLine = det ? `${det.seb.macro.kcal.replace('~','')} · Enna ${det.fr.macro.kcal.replace('~','')}` : 'Tippen für Details';
+              return `<div class="meal-slot" onclick="openMealDetail('${m.val.replace(/'/g,"\\'")}')">
+                <div class="meal-label">${m.label} <span style="font-size:0.58rem;color:#aaa;">▶</span></div>
+                <div class="meal-name">${m.val}</div>
+                <div class="meal-kcal">${kcalLine}</div>
+              </div>`;
+            }).join('')}
           </div>
         </div>`;
       }).join('')}
@@ -849,209 +974,114 @@ function maybeCloseModal(e) {
 }
 
 // ══════════════════════════════════
-// PORTIONEN
+// MEAL DETAIL MODAL
 // ══════════════════════════════════
-function renderPortionen() { renderPortionPerson(currentPortionPerson); }
-function switchPortion(p) {
-  currentPortionPerson = p;
-  document.getElementById('portion-seb-btn').classList.toggle('active', p==='seb');
-  document.getElementById('portion-fr-btn').classList.toggle('active', p==='fr');
-  renderPortionPerson(p);
+function findMealDetail(mealName) {
+  for (const [key, val] of Object.entries(MEAL_DETAILS)) {
+    if (mealName.includes(key)) return val;
+  }
+  return null;
 }
-function renderPortionPerson(p) {
-  const pd = PORTION_DATA[p];
-  const name = p==='seb' ? 'Sebastian' : 'Enna';
-  const rows = [
-    ['☕ Shake',pd.shake.gram,pd.shake.kcal,pd.shake.note],
-    ['🥗 Mittag Mealprep',pd.mittag_mealprep.gram,pd.mittag_mealprep.kcal,pd.mittag_mealprep.note],
-    ['🥗 Mittag Frisch',pd.mittag_frisch.gram,pd.mittag_frisch.kcal,pd.mittag_frisch.note],
-    ['🍽 Lachs+Brokkoli',pd.abend_r1.gram,pd.abend_r1.kcal,pd.abend_r1.note],
-    ['🍽 Pute+Linsen',pd.abend_r2.gram,pd.abend_r2.kcal,pd.abend_r2.note],
-    ['🍽 Thai-Hähnchen',pd.abend_r3.gram,pd.abend_r3.kcal,pd.abend_r3.note],
-    ['🍽 Süßkart.+Hack',pd.abend_r4.gram,pd.abend_r4.kcal,pd.abend_r4.note],
-    ['🍎 Snack',pd.snack.gram,pd.snack.kcal,pd.snack.note],
-  ];
-  document.getElementById('portionen-content').innerHTML = `
-    <div class="card">
-      <div class="card-header green">⚖️ Portionen — ${name}</div>
-      <div class="card-body" style="overflow-x:auto;">
-        <table style="width:100%;font-size:0.78rem;border-collapse:collapse;min-width:280px;">
-          <tr style="background:var(--green-light);"><th style="padding:6px;text-align:left;">Mahlzeit</th><th style="padding:6px;">Menge</th><th style="padding:6px;">kcal</th></tr>
-          ${rows.map((r,i) => `<tr style="${i%2?'background:#fafafa':''}"><td style="padding:5px 6px;">${r[0]}</td><td style="text-align:center;">${r[1]}</td><td style="text-align:center;font-weight:700;">${r[2]}</td></tr>`).join('')}
-        </table>
+function openMealDetail(mealName) {
+  const det = findMealDetail(mealName);
+  if (!det) return;
+  document.getElementById('meal-detail-inner').innerHTML = `
+    <div class="meal-detail-header">
+      <div class="meal-detail-title">${det.emoji} ${det.title}</div>
+      <button class="close-btn" onclick="closeMealDetail()">×</button>
+    </div>
+    <div class="meal-detail-persons">
+      <div class="meal-detail-person seb">
+        <div class="meal-detail-pname">👨 Sebastian</div>
+        ${det.seb.ingredients.map(i=>`<div class="meal-detail-ingredient"><span>${i[0]}</span><span class="amt">${i[1]}</span></div>`).join('')}
+        <div class="meal-detail-macro">
+          <span>${det.seb.macro.kcal}</span>
+          <span>${det.seb.macro.p}</span>
+          <span>${det.seb.macro.k}</span>
+          <span>${det.seb.macro.f}</span>
+        </div>
+      </div>
+      <div class="meal-detail-person fr">
+        <div class="meal-detail-pname">👩 Enna</div>
+        ${det.fr.ingredients.map(i=>`<div class="meal-detail-ingredient"><span>${i[0]}</span><span class="amt">${i[1]}</span></div>`).join('')}
+        <div class="meal-detail-macro">
+          <span>${det.fr.macro.kcal}</span>
+          <span>${det.fr.macro.p}</span>
+          <span>${det.fr.macro.k}</span>
+          <span>${det.fr.macro.f}</span>
+        </div>
       </div>
     </div>
-    ${rows.map(r => r[3] ? `<div style="font-size:0.72rem;color:#777;padding:2px 4px;">→ ${r[0]}: ${r[3]}</div>` : '').join('')}`;
+    ${det.note ? `<div style="background:var(--green-light);border-radius:8px;padding:9px 12px;font-size:0.78rem;color:var(--green-dark);">💡 ${det.note}</div>` : ''}`;
+  document.getElementById('meal-detail-overlay').style.display = 'block';
+}
+function closeMealDetail() {
+  document.getElementById('meal-detail-overlay').style.display = 'none';
 }
 
 // ══════════════════════════════════
-// MAKROS
+// MEALPREP TAB
 // ══════════════════════════════════
-function renderMakros() {
-  const cards = [
-    {name:"👨 Sebastian",color:"var(--blue-light)",border:"var(--blue)",kcalR:"1.730",kcalT:"1.960",p:"165g",kh:"185g",f:"55g",ziel:"Recomp: -0,3 kg/Woche"},
-    {name:"👩 Enna",color:"var(--purple-light)",border:"var(--purple)",kcalR:"1.365",kcalT:"1.555",p:"115g",kh:"155g",f:"42g",ziel:"Recomp: -0,2 kg/Woche"},
-  ];
-  document.getElementById('makro-cards').innerHTML = cards.map(c => `
-    <div class="makro-card" style="border-left:4px solid ${c.border};background:${c.color};">
-      <div class="makro-name">${c.name}</div>
-      <div class="makro-ziel">${c.ziel}</div>
-      <div class="makro-row"><span>Ruhetag</span><strong>${c.kcalR} kcal</strong></div>
-      <div class="makro-row"><span>Trainingstag</span><strong>${c.kcalT} kcal</strong></div>
-      <div class="makro-row"><span>Protein</span><strong>${c.p}</strong></div>
-      <div class="makro-row"><span>KH</span><strong>${c.kh}</strong></div>
-      <div class="makro-row"><span>Fett</span><strong>${c.f}</strong></div>
-    </div>`).join('');
-}
+function renderMealprepTab() {
+  const cont = document.getElementById('mealprep-content');
+  if (!planData) { cont.innerHTML = '<div class="loading-overlay"><div class="spinner"></div></div>'; return; }
+  // Mi = recipes 0+1 (Lachs, Pute), Sa = recipes 2+3 (Thai-Hähnchen, Süßkart-Hack)
+  const dayRecipes = currentMealprepDay === 'mi'
+    ? planData.recipes.slice(0,2)
+    : planData.recipes.slice(2);
+  const dayLabel = currentMealprepDay === 'mi' ? 'Mittwoch' : 'Samstag';
 
-// ══════════════════════════════════
-// SUPPS
-// ══════════════════════════════════
-function renderSupps() {
-  const supps = [
-    {emoji:"🌊",name:"Omega-3 Fischöl flüssig",dose:"1 TL (5ml) täglich zum Essen",benefit:"Entzündungshemmend, Gelenke, Schienbeinkantensyndrom",brand:"Norsan Nordic Omega-3 oder Staufen Omega-3 flüssig",color:"#e3f2fd"},
-    {emoji:"☀️",name:"Vitamin D3 + K2 Tropfen",dose:"3–5 Tropfen täglich (2.000–4.000 IE D3)",benefit:"Knochen, Immunsystem, Muskelregeneration",brand:"Zeinpharma D3+K2 Tropfen oder Fairvital D3+K2 liquid",color:"#fff9c4"},
-    {emoji:"⚡",name:"Magnesium Citrat Pulver",dose:"300–400mg abends",benefit:"Muskelregeneration, Schlaf, Krampfprävention",brand:"Natural Calm Magnesium Pulver",color:"#e8f5e9"},
-    {emoji:"🧬",name:"Kreatin Monohydrat Pulver",dose:"3–5g täglich (auch Ruhetage)",benefit:"Kraft, Muskelerhalt beim Recomp",brand:"Bulk Powders oder MyProtein Kreatin Monohydrat",color:"#fce4ec"},
-    {emoji:"🩹",name:"Kollagen Hydrolysat Pulver",dose:"10–15g täglich (morgens oder post-workout)",benefit:"Knorpel, Sehnen — direkt für Schienbeinkantensyndrom",brand:"Ufory Kollagen Pulver oder Weider Collagen Protein",color:"#fff3e0"},
-  ];
-  document.getElementById('supp-list').innerHTML = supps.map(s => `
-    <div class="supp-card" style="background:${s.color};">
-      <div class="supp-emoji">${s.emoji}</div>
-      <div>
-        <div class="supp-name">${s.name}</div>
-        <div class="supp-dose">${s.dose}</div>
-        <div class="supp-benefit">${s.benefit}</div>
-        <div class="supp-brand">💡 ${s.brand}</div>
-      </div>
-    </div>`).join('');
-}
+  // Total shopping amounts from recipes
+  const allIngredients = dayRecipes.flatMap(r => r.zutaten);
 
-// ══════════════════════════════════
-// DIARY
-// ══════════════════════════════════
-const DIARY_QUESTIONS = [
-  {id:'q1', label:'😋 Wie war das Essen?', sub:'Hast du alles aufessen können?', type:'scale', options:['Zu wenig','Genau richtig','Zu viel']},
-  {id:'q2', label:'🍽 Sättigungsgefühl', sub:'Warst du nach den Mahlzeiten satt?', type:'scale', options:['Zu hungrig','Gut gesättigt','Zu voll']},
-  {id:'q3', label:'🍫 Heißhunger?', sub:'Hatte ich Heißhunger zwischen den Mahlzeiten?', type:'scale', options:['Keiner','Leicht','Stark']},
-  {id:'q4', label:'⚡ Energie & Stimmung', sub:'Wie war deine Energie den Tag über?', type:'scale', options:['Müde','Okay','Top']},
-  {id:'q5', label:'💪 Training heute?', sub:'Wie war die Leistung?', type:'scale', options:['Kein Training','Okay','Super']},
-];
-
-function initDiary() {
-  const days = ['Mo','Di','Mi','Do','Fr','Sa','So'];
-  const tabs = document.getElementById('diary-day-tabs');
-  if (!tabs) return;
-  tabs.innerHTML = days.map((d,i) => `<button class="diary-day-tab${i===diaryDay?' active':''}" onclick="switchDiaryDay(${i},this)">${d}</button>`).join('');
-  diaryState = {};
-  renderDiaryForm();
-  loadDiaryHistory();
-}
-function switchDiaryPerson(p, btn) {
-  diaryPerson = p;
-  document.querySelectorAll('.diary-person-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  diaryState = {};
-  renderDiaryForm();
-  loadDiaryHistory();
-}
-function switchDiaryDay(i, btn) {
-  diaryDay = i;
-  document.querySelectorAll('.diary-day-tab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  diaryState = {};
-  renderDiaryForm();
-}
-function setScale(qid, val, btn) {
-  diaryState[qid] = val;
-  btn.closest('.diary-scale').querySelectorAll('.diary-scale-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
-function renderDiaryForm() {
-  const days = ['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'];
-  const name = diaryPerson==='seb' ? 'Sebastian' : 'Enna';
-  document.getElementById('diary-form-container').innerHTML = `
-    <div class="card">
-      <div class="card-header green">📝 ${days[diaryDay]} — ${name}</div>
-      <div class="card-body">
-        ${DIARY_QUESTIONS.map(q => `
-          <div class="diary-q">
-            <label>${q.label}</label>
-            <div class="diary-q-sub">${q.sub}</div>
-            <div class="diary-scale">
-              ${q.options.map((opt,i) => `<button class="diary-scale-btn${diaryState[q.id]===i?' active':''}" onclick="setScale('${q.id}',${i},this)">${opt}</button>`).join('')}
+  cont.innerHTML = `
+    <div class="mp-total-banner">
+      <strong>⚡ Mealprep ${dayLabel}</strong> — ergibt je <strong>2 Portionen Sebastian + 2 Portionen Enna</strong> pro Rezept (4 Tage)
+    </div>
+    ${dayRecipes.map(r => {
+      const det = findMealDetail(r.title);
+      return `
+      <div class="mp-recipe-card">
+        <div class="mp-recipe-header">
+          <div class="mp-recipe-emoji">${r.emoji}</div>
+          <div>
+            <div class="mp-recipe-title">${r.title}</div>
+            <div class="mp-recipe-sub">4 Portionen gesamt · Rohgewichte</div>
+          </div>
+        </div>
+        <div style="padding:0 12px 8px;">
+          <div style="font-size:0.72rem;font-weight:700;color:var(--grey-dark);text-transform:uppercase;margin-bottom:6px;">Einkauf (Gesamt für 4 Portionen)</div>
+          ${r.zutaten.map(z=>`
+            <div style="display:flex;justify-content:space-between;font-size:0.8rem;padding:4px 0;border-bottom:1px solid #f5f5f5;">
+              <span>${z[0]}</span><strong style="color:var(--green-dark);">${z[1]}</strong>
+            </div>`).join('')}
+        </div>
+        ${det ? `
+        <div class="mp-portion-grid">
+          <div class="mp-portion-box seb">
+            <div class="mp-portion-name">👨 Sebastian — je Box</div>
+            ${det.seb.ingredients.map(i=>`<div class="mp-portion-row"><span>${i[0]}</span><span class="mp-amt">${i[1]}</span></div>`).join('')}
+            <div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(0,0,0,0.1);">
+              <div style="font-size:0.7rem;font-weight:700;color:var(--blue);">${det.seb.macro.kcal} · ${det.seb.macro.p}</div>
             </div>
-          </div>`).join('')}
-        <div class="diary-q">
-          <label>📝 Freies Feld</label>
-          <div class="diary-q-sub">Sonstiges, Auffälligkeiten, Wünsche für nächste Woche</div>
-          <textarea class="kommentar-input" id="d-notiz" placeholder="z.B. 'Lachs war zu viel', 'Lust auf mehr Pasta', 'Mittags immer noch hungrig'..."></textarea>
+          </div>
+          <div class="mp-portion-box fr">
+            <div class="mp-portion-name">👩 Enna — je Box</div>
+            ${det.fr.ingredients.map(i=>`<div class="mp-portion-row"><span>${i[0]}</span><span class="mp-amt">${i[1]}</span></div>`).join('')}
+            <div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(0,0,0,0.1);">
+              <div style="font-size:0.7rem;font-weight:700;color:var(--orange);">${det.fr.macro.kcal} · ${det.fr.macro.p}</div>
+            </div>
+          </div>
+        </div>` : ''}
+        <div class="mp-steps">
+          <div class="mp-steps-title">Zubereitung</div>
+          <ol>${r.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
         </div>
-        <div class="save-row" style="margin-top:8px;">
-          <button class="btn primary" onclick="saveDiaryEntry()">Speichern ✓</button>
-          <span class="save-status" id="diary-save-status"></span>
-        </div>
-      </div>
+      </div>`;
+    }).join('')}
+    <div style="background:white;border-radius:10px;border:1px solid #e0e0e0;padding:12px;font-size:0.78rem;">
+      <strong style="color:var(--green-dark);">📦 Beschriftung Boxen</strong><br>
+      <div style="margin-top:6px;color:#555;">Jede Box mit Name + Tag beschriften.<br>
+      Haltbarkeit im Kühlschrank: <strong>4 Tage</strong>. Einfrieren möglich.</div>
     </div>`;
 }
-async function saveDiaryEntry() {
-  const entry = {
-    q1: diaryState.q1 !== undefined ? DIARY_QUESTIONS[0].options[diaryState.q1] : null,
-    q2: diaryState.q2 !== undefined ? DIARY_QUESTIONS[1].options[diaryState.q2] : null,
-    q3: diaryState.q3 !== undefined ? DIARY_QUESTIONS[2].options[diaryState.q3] : null,
-    q4: diaryState.q4 !== undefined ? DIARY_QUESTIONS[3].options[diaryState.q4] : null,
-    q5: diaryState.q5 !== undefined ? DIARY_QUESTIONS[4].options[diaryState.q5] : null,
-    notiz: document.getElementById('d-notiz').value.trim(),
-    saved_at: new Date().toISOString()
-  };
-  const status = document.getElementById('diary-save-status');
-  try {
-    const sb = getSB(); if (!sb) throw new Error('Offline');
-    const {data:ex} = await sb.from('diary_entries').select('id').eq('week_number',viewKW).eq('year',viewYear).eq('person',diaryPerson).eq('day_index',diaryDay).limit(1);
-    if (ex && ex.length > 0) await sb.from('diary_entries').update({entry_data:entry,updated_at:new Date().toISOString()}).eq('id',ex[0].id);
-    else await sb.from('diary_entries').insert({week_number:viewKW,year:viewYear,person:diaryPerson,day_index:diaryDay,entry_data:entry});
-    status.textContent = '✅ Gespeichert'; status.style.color = 'var(--green-med)';
-    loadDiaryHistory();
-  } catch(e) { status.textContent = '❌ '+e.message; status.style.color = 'var(--red)'; }
-  setTimeout(() => { status.textContent = ''; }, 3000);
-}
-async function loadDiaryHistory() {
-  const hist = document.getElementById('diary-history');
-  if (!hist) return;
-  try {
-    const sb = getSB();
-    if (!sb) { hist.innerHTML = ''; return; }
-    const {data} = await sb.from('diary_entries').select('*').eq('week_number',viewKW).eq('year',viewYear).eq('person',diaryPerson).order('day_index',{ascending:true});
-    const days = ['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'];
-    if (!data || data.length === 0) {
-      hist.innerHTML = '<div style="text-align:center;color:#bbb;padding:20px;font-size:0.82rem;">Noch keine Einträge diese Woche.</div>';
-      return;
-    }
-    const qs = DIARY_QUESTIONS;
-    hist.innerHTML = data.map(e => `
-      <div class="diary-entry-card">
-        <div class="diary-entry-day">${days[e.day_index]}</div>
-        ${e.entry_data.q1 ? `<div class="diary-entry-row"><span>😋</span><span>${qs[0].label.replace(/^[^ ]+ /,'')}: <strong>${e.entry_data.q1}</strong></span></div>` : ''}
-        ${e.entry_data.q2 ? `<div class="diary-entry-row"><span>🍽</span><span>${qs[1].label.replace(/^[^ ]+ /,'')}: <strong>${e.entry_data.q2}</strong></span></div>` : ''}
-        ${e.entry_data.q3 ? `<div class="diary-entry-row"><span>🍫</span><span>${qs[2].label.replace(/^[^ ]+ /,'')}: <strong>${e.entry_data.q3}</strong></span></div>` : ''}
-        ${e.entry_data.q4 ? `<div class="diary-entry-row"><span>⚡</span><span>${qs[3].label.replace(/^[^ ]+ /,'')}: <strong>${e.entry_data.q4}</strong></span></div>` : ''}
-        ${e.entry_data.q5 ? `<div class="diary-entry-row"><span>💪</span><span>${qs[4].label.replace(/^[^ ]+ /,'')}: <strong>${e.entry_data.q5}</strong></span></div>` : ''}
-        ${e.entry_data.notiz ? `<div class="diary-entry-row"><span>📝</span><span>${e.entry_data.notiz}</span></div>` : ''}
-      </div>`).join('');
-  } catch(err) { hist.innerHTML = ''; }
-}
-
-// ══════════════════════════════════
-// TABS
-// ══════════════════════════════════
-function showTab(name, el) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
-  el.classList.add('active');
-}
-
-</script>
-</body>
-</html>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
