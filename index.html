@@ -788,4 +788,230 @@ function addCustomReste(){
 
 // ══════════════════════════════════
 // RECIPES
-// ═══════════════════�                              
+// ═══════════════════�
+// ══════════════════════════════════
+// RECIPES
+// ══════════════════════════════════
+function renderRecipes(){
+  document.getElementById('recipe-grid').innerHTML=`
+    <div class="card"><div class="card-header green">🍳 Mealprep-Rezepte — KW ${viewKW}</div></div>
+    <div class="recipe-cards">
+      ${planData.recipes.map((r,i)=>`
+        <div class="recipe-card" onclick="openRecipe(${i})">
+          <div class="recipe-thumb" style="background:${r.color}">${r.emoji}</div>
+          <div class="recipe-info">
+            <div class="recipe-title">${r.title}</div>
+            <span class="recipe-badge">${r.day}</span>
+            <div class="recipe-makros">
+              <div class="recipe-makro"><span>${r.makros.kcal}</span><span>kcal*</span></div>
+              <div class="recipe-makro"><span>${r.makros.p}g</span><span>P</span></div>
+              <div class="recipe-makro"><span>${r.makros.k}g</span><span>KH</span></div>
+              <div class="recipe-makro"><span>${r.makros.f}g</span><span>F</span></div>
+            </div>
+            <div style="font-size:0.65rem;color:#999;margin-top:3px;">*Sebastian-Portion</div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+function openRecipe(i){
+  const r=planData.recipes[i];
+  document.getElementById('recipe-modal-inner').innerHTML=`
+    <div class="detail-modal-header">
+      <span style="font-weight:700;">${r.emoji} ${r.title}</span>
+      <button class="close-btn" onclick="document.getElementById('recipe-modal').style.display='none'">×</button>
+    </div>
+    <div class="detail-modal-body">
+      <div class="section-label">Portionen (Rohgewichte)</div>
+      <div class="portion-compare">
+        <div class="portion-box seb"><div class="portion-name">👨 Sebastian</div><div class="portion-gram" style="color:var(--blue);">${r.portionen.seb.gram}</div><div class="portion-makro">${r.portionen.seb.kcal} · ${r.portionen.seb.p} · ${r.portionen.seb.k} · ${r.portionen.seb.f}</div></div>
+        <div class="portion-box fr"><div class="portion-name">👩 Enna</div><div class="portion-gram" style="color:var(--orange);">${r.portionen.fr.gram}</div><div class="portion-makro">${r.portionen.fr.kcal} · ${r.portionen.fr.p} · ${r.portionen.fr.k} · ${r.portionen.fr.f}</div></div>
+      </div>
+      <div class="section-label">Zutaten (6 Portionen gesamt, Rohgewichte)</div>
+      <table class="ingredient-table">
+        <tr><th>Zutat</th><th>Menge roh</th><th>Hinweis</th></tr>
+        ${r.zutaten.map(z=>`<tr><td>${z[0]}</td><td><strong>${z[1]}</strong></td><td>${z[2]}</td></tr>`).join('')}
+      </table>
+      <div class="section-label">Zubereitung</div>
+      <ol class="steps-list">${r.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
+    </div>`;
+  document.getElementById('recipe-modal').style.display='flex';
+}
+function maybeCloseModal(e){ if(e.target===document.getElementById('recipe-modal')) document.getElementById('recipe-modal').style.display='none'; }
+
+// ══════════════════════════════════
+// PORTIONEN
+// ══════════════════════════════════
+function renderPortionen(){
+  renderPortionPerson(currentPortionPerson);
+}
+function switchPortion(p){
+  currentPortionPerson=p;
+  document.getElementById('portion-seb-btn').classList.toggle('active',p==='seb');
+  document.getElementById('portion-fr-btn').classList.toggle('active',p==='fr');
+  renderPortionPerson(p);
+}
+function renderPortionPerson(p){
+  const pd=PORTION_DATA[p];
+  const name=p==='seb'?'Sebastian':'Enna';
+  document.getElementById('portionen-content').innerHTML=`
+    <div class="card">
+      <div class="card-header green">⚖️ Portionen — ${name}</div>
+      <div class="card-body">
+        <table style="width:100%;font-size:0.82rem;border-collapse:collapse;">
+          <tr style="background:var(--green-light);"><th style="padding:7px;text-align:left;">Mahlzeit</th><th style="padding:7px;">Menge</th><th style="padding:7px;">kcal</th><th style="padding:7px;">Hinweis</th></tr>
+          <tr><td style="padding:6px 7px;">☕ Shake</td><td style="text-align:center;">${pd.shake.gram}</td><td style="text-align:center;">${pd.shake.kcal}</td><td style="font-size:0.75rem;color:#666;">${pd.shake.note}</td></tr>
+          <tr style="background:#fafafa;"><td style="padding:6px 7px;">🥗 Mittag Mealprep</td><td style="text-align:center;">${pd.mittag_mealprep.gram}</td><td style="text-align:center;">${pd.mittag_mealprep.kcal}</td><td style="font-size:0.75rem;color:#666;">${pd.mittag_mealprep.note}</td></tr>
+          <tr><td style="padding:6px 7px;">🥗 Mittag Joghurt</td><td style="text-align:center;">${pd.mittag_joghurt.gram}</td><td style="text-align:center;">${pd.mittag_joghurt.kcal}</td><td style="font-size:0.75rem;color:#666;">${pd.mittag_joghurt.note}</td></tr>
+          <tr style="background:#fafafa;"><td style="padding:6px 7px;">🍽 Abend R1</td><td style="text-align:center;">${pd.abend_rezept1.gram}</td><td style="text-align:center;">${pd.abend_rezept1.kcal}</td><td style="font-size:0.75rem;color:#666;">${pd.abend_rezept1.note}</td></tr>
+          <tr><td style="padding:6px 7px;">🍽 Abend R2</td><td style="text-align:center;">${pd.abend_rezept2.gram}</td><td style="text-align:center;">${pd.abend_rezept2.kcal}</td><td style="font-size:0.75rem;color:#666;">${pd.abend_rezept2.note}</td></tr>
+          <tr style="background:#fafafa;"><td style="padding:6px 7px;">🍽 Abend R3</td><td style="text-align:center;">${pd.abend_rezept3.gram}</td><td style="text-align:center;">${pd.abend_rezept3.kcal}</td><td style="font-size:0.75rem;color:#666;">${pd.abend_rezept3.note}</td></tr>
+          <tr><td style="padding:6px 7px;">🍽 Abend R4</td><td style="text-align:center;">${pd.abend_rezept4.gram}</td><td style="text-align:center;">${pd.abend_rezept4.kcal}</td><td style="font-size:0.75rem;color:#666;">${pd.abend_rezept4.note}</td></tr>
+          <tr style="background:#fafafa;"><td style="padding:6px 7px;">🍎 Snack</td><td style="text-align:center;">${pd.snack.gram}</td><td style="text-align:center;">${pd.snack.kcal}</td><td style="font-size:0.75rem;color:#666;">${pd.snack.note}</td></tr>
+        </table>
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════
+// MAKROS
+// ══════════════════════════════════
+function renderMakros(){
+  const cards=[
+    {name:"👨 Sebastian",color:"var(--blue-light)",border:"var(--blue)",kcalR:"1.730",kcalT:"1.960",p:"165g",kh:"185g",f:"55g",ziel:"Recomp: -0,3 kg/Woche"},
+    {name:"👩 Enna",color:"var(--purple-light)",border:"var(--purple)",kcalR:"1.365",kcalT:"1.555",p:"115g",kh:"155g",f:"42g",ziel:"Recomp: -0,2 kg/Woche"},
+  ];
+  document.getElementById('makro-cards').innerHTML=cards.map(c=>`
+    <div class="makro-card" style="border-left:4px solid ${c.border};background:${c.color};">
+      <div class="makro-name">${c.name}</div>
+      <div class="makro-ziel">${c.ziel}</div>
+      <div class="makro-row"><span>Ruhetag</span><span>${c.kcalR} kcal</span></div>
+      <div class="makro-row"><span>Trainingstag</span><span>${c.kcalT} kcal</span></div>
+      <div class="makro-row"><span>Protein</span><span>${c.p}</span></div>
+      <div class="makro-row"><span>Kohlenhydrate</span><span>${c.kh}</span></div>
+      <div class="makro-row"><span>Fett</span><span>${c.f}</span></div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════
+// SUPPS
+// ══════════════════════════════════
+function renderSupps(){
+  const supps=[
+    {emoji:"🌊",name:"Omega-3 Fischöl flüssig",dose:"1 TL (5ml) täglich zum Essen",benefit:"Entzündungshemmend, Herzgesundheit, Schienbeinkantensyndrom",brand:"Norsan Nordic Omega-3 oder Staufen Omega-3 flüssig",color:"#e3f2fd"},
+    {emoji:"☀️",name:"Vitamin D3 + K2 Tropfen",dose:"3–5 Tropfen täglich (2.000–4.000 IE D3)",benefit:"Knochengesundheit, Immunsystem, Muskelregeneration",brand:"Zeinpharma D3+K2 Tropfen oder Fairvital D3+K2 liquid",color:"#fff9c4"},
+    {emoji:"⚡",name:"Magnesium Citrat Pulver",dose:"300–400mg vor dem Schlafen",benefit:"Muskelregeneration, Schlafqualität, Kramprävention Schienbeinkantensyndrom",brand:"Natural Calm Magnesium Pulver oder Sundown Magnesium Citrat Pulver",color:"#e8f5e9"},
+    {emoji:"🧬",name:"Kreatin Monohydrat Pulver",dose:"3–5g täglich (auch an Ruhetagen)",benefit:"Kraftzuwachs, Muskelerhalt beim Recomp, Regeneration",brand:"Bulk Powders oder MyProtein Kreatin Monohydrat",color:"#fce4ec"},
+    {emoji:"🩹",name:"Kollagen Hydrolysat Pulver",dose:"10–15g täglich (morgens oder post-workout)",benefit:"Knorpel, Sehnen, Bänder — direkt für Schienbeinkantensyndrom",brand:"Ufory Kollagen Pulver oder Weider Collagen Protein",color:"#fff3e0"},
+  ];
+  document.getElementById('supp-list').innerHTML=supps.map(s=>`
+    <div class="card" style="border-left:4px solid #ccc;">
+      <div class="card-body" style="background:${s.color};">
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+          <div style="font-size:1.8rem;">${s.emoji}</div>
+          <div>
+            <div style="font-weight:700;font-size:0.9rem;">${s.name}</div>
+            <div style="font-size:0.78rem;color:var(--grey-dark);margin:3px 0;">${s.dose}</div>
+            <div style="font-size:0.78rem;color:#444;margin-bottom:4px;">${s.benefit}</div>
+            <div style="font-size:0.72rem;background:white;border-radius:6px;padding:4px 8px;display:inline-block;">💡 ${s.brand}</div>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════
+// DIARY
+// ══════════════════════════════════
+function initDiary(){
+  const days=['Mo','Di','Mi','Do','Fr','Sa','So'];
+  const tabs=document.getElementById('diary-day-tabs');
+  if(!tabs) return;
+  tabs.innerHTML=days.map((d,i)=>`<button class="diary-day-tab${i===diaryDay?' active':''}" onclick="switchDiaryDay(${i},this)">${d}</button>`).join('');
+  renderDiaryForm();
+  loadDiaryHistory();
+}
+function switchDiaryPerson(p,btn){
+  diaryPerson=p;
+  document.querySelectorAll('.diary-person-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDiaryForm();
+  loadDiaryHistory();
+}
+function switchDiaryDay(i,btn){
+  diaryDay=i;
+  document.querySelectorAll('.diary-day-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDiaryForm();
+}
+function renderDiaryForm(){
+  const days=['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'];
+  const name=diaryPerson==='seb'?'Sebastian':'Enna';
+  document.getElementById('diary-form-container').innerHTML=`
+    <div class="card">
+      <div class="card-header green">📝 ${days[diaryDay]} — ${name}</div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <label style="font-size:0.82rem;font-weight:600;">☕ Shake</label>
+          <input class="diary-input" id="d-shake" type="text" placeholder="Was hattest du zum Frühstück?">
+          <label style="font-size:0.82rem;font-weight:600;">🥗 Mittag</label>
+          <input class="diary-input" id="d-mittag" type="text" placeholder="Mittagessen...">
+          <label style="font-size:0.82rem;font-weight:600;">🍽 Abend</label>
+          <input class="diary-input" id="d-abend" type="text" placeholder="Abendessen...">
+          <label style="font-size:0.82rem;font-weight:600;">🍎 Snack</label>
+          <input class="diary-input" id="d-snack" type="text" placeholder="Snack...">
+          <label style="font-size:0.82rem;font-weight:600;">💬 Notiz</label>
+          <textarea class="kommentar-input" id="d-notiz" placeholder="Wie war der Tag? Hunger? Energie?"></textarea>
+          <div class="save-row">
+            <button class="btn primary" onclick="saveDiaryEntry()">Speichern ✓</button>
+            <span class="save-status" id="diary-save-status"></span>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+async function saveDiaryEntry(){
+  const entry={shake:document.getElementById('d-shake').value,mittag:document.getElementById('d-mittag').value,abend:document.getElementById('d-abend').value,snack:document.getElementById('d-snack').value,notiz:document.getElementById('d-notiz').value,saved_at:new Date().toISOString()};
+  const status=document.getElementById('diary-save-status');
+  try {
+    const sbc=getSB(); if(!sbc) throw new Error('Offline');
+    const {data:ex}=await sbc.from('diary_entries').select('id').eq('week_number',viewKW).eq('year',viewYear).eq('person',diaryPerson).eq('day_index',diaryDay).limit(1);
+    if(ex&&ex.length>0) await sbc.from('diary_entries').update({entry_data:entry,updated_at:new Date().toISOString()}).eq('id',ex[0].id);
+    else await sbc.from('diary_entries').insert({week_number:viewKW,year:viewYear,person:diaryPerson,day_index:diaryDay,entry_data:entry});
+    status.textContent='✅ Gespeichert'; status.style.color='var(--green-med)';
+    loadDiaryHistory();
+  } catch(e){ status.textContent='❌ '+e.message; status.style.color='var(--red)'; }
+}
+async function loadDiaryHistory(){
+  const hist=document.getElementById('diary-history');
+  if(!hist) return;
+  try {
+    const sbc=getSB(); if(!sbc){hist.innerHTML='';return;}
+    const {data}=await sbc.from('diary_entries').select('*').eq('week_number',viewKW).eq('year',viewYear).eq('person',diaryPerson).order('day_index',{ascending:true});
+    const days=['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'];
+    if(!data||data.length===0){hist.innerHTML='<div style="text-align:center;color:#aaa;padding:20px;font-size:0.82rem;">Noch keine Einträge diese Woche.</div>';return;}
+    hist.innerHTML=data.map(e=>`
+      <div class="diary-entry-card">
+        <div class="diary-entry-day">${days[e.day_index]}</div>
+        ${e.entry_data.shake?`<div class="diary-entry-row"><span>☕</span><span>${e.entry_data.shake}</span></div>`:''}
+        ${e.entry_data.mittag?`<div class="diary-entry-row"><span>🥗</span><span>${e.entry_data.mittag}</span></div>`:''}
+        ${e.entry_data.abend?`<div class="diary-entry-row"><span>🍽</span><span>${e.entry_data.abend}</span></div>`:''}
+        ${e.entry_data.snack?`<div class="diary-entry-row"><span>🍎</span><span>${e.entry_data.snack}</span></div>`:''}
+        ${e.entry_data.notiz?`<div class="diary-entry-row"><span>💬</span><span>${e.entry_data.notiz}</span></div>`:''}
+      </div>`).join('');
+  } catch(err){hist.innerHTML='';}
+}
+
+// ══════════════════════════════════
+// TABS
+// ══════════════════════════════════
+function showTab(name,el){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  el.classList.add('active');
+}
+
+</script>
+</body>
+</html>
+                              
