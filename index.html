@@ -58,7 +58,7 @@ header p{font-size:0.75rem;opacity:0.85;margin-top:2px;}
 .wnavb:disabled{opacity:0.3;cursor:not-allowed;}
 nav{background:white;border-bottom:2px solid var(--gl);position:sticky;top:0;z-index:100;box-shadow:var(--sh);}
 .tabs{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;}
-.tab{flex:1;min-width:58px;padding:11px 3px;text-align:center;font-size:0.68rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;color:var(--grd);white-space:nowrap;}
+.tab{flex:1;min-width:0;padding:10px 2px;text-align:center;font-size:0.60rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;color:var(--grd);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .tab.active{border-bottom-color:var(--gb);color:var(--gd);background:var(--gl);}
 main{max-width:680px;margin:0 auto;padding:12px 12px 80px;}
 .section{display:none;}.section.active{display:block;}
@@ -242,10 +242,10 @@ main{max-width:680px;margin:0 auto;padding:12px 12px 80px;}
 <nav>
   <div class="tabs">
     <div class="tab active" onclick="showTab('woche',this)">📅 Woche</div>
-    <div class="tab" onclick="showTab('einkauf',this)">🛒 Einkauf</div>
+    <div class="tab" onclick="showTab('einkauf',this)">🛒 Kauf</div>
     <div class="tab" onclick="showTab('rezepte',this)">🍳 Rezepte</div>
-    <div class="tab" onclick="showTab('mealprep',this)">⚡ Mealprep</div>
-    <div class="tab" onclick="showTab('tagebuch',this)">📔 Tagebuch</div>
+    <div class="tab" onclick="showTab('mealprep',this)">⚡ Prep</div>
+    <div class="tab" onclick="showTab('tagebuch',this)">📔 Log</div>
     <div class="tab" onclick="showTab('makros',this)">📊 Makros</div>
     <div class="tab" onclick="showTab('supps',this)">💊 Supps</div>
   </div>
@@ -275,6 +275,11 @@ main{max-width:680px;margin:0 auto;padding:12px 12px 80px;}
     <button class="fbtn" data-cat="fette" onclick="filterCat(this)">🧴 Sonst.</button>
   </div>
   <div id="shop-list"></div>
+  <div style="background:white;border-radius:8px;border:1px solid #e0e0e0;padding:8px 12px;margin-bottom:8px;font-size:0.72rem;color:#666;display:flex;gap:14px;">
+    <span><strong style="color:var(--gm);">✓ Tippen</strong> = gekauft</span>
+    <span><strong style="color:#f9a825;">~ Lang halten</strong> = noch vorhanden</span>
+    <span style="color:#999;">Nur ✓ zählt zum Budget</span>
+  </div>
   <div class="betrow">
     <label>💶 Ausgegeben:</label>
     <input class="betinp" type="number" id="betrag-input" placeholder="0.00" step="0.01" min="0" oninput="saveBetrag()">
@@ -307,7 +312,7 @@ main{max-width:680px;margin:0 auto;padding:12px 12px 80px;}
 
 <div id="tab-tagebuch" class="section">
   <div class="dhead2">
-    <strong style="font-size:0.95rem;">📔 Tagebuch</strong>
+    <strong style="font-size:0.95rem;">📔 Log</strong>
     <div class="dptog">
       <button class="dpbtn sb active" onclick="switchDP('seb',this)">👨 Seb</button>
       <button class="dpbtn fr" onclick="switchDP('fr',this)">👩 Enna</button>
@@ -330,8 +335,9 @@ main{max-width:680px;margin:0 auto;padding:12px 12px 80px;}
         <tr style="background:#fafafa;"><td style="padding:6px 7px;">🥗 Mittag</td><td style="text-align:center;">12–13</td><td style="text-align:center;">~550</td><td style="text-align:center;">~420</td></tr>
         <tr><td style="padding:6px 7px;">🍽 Abend</td><td style="text-align:center;">18:30</td><td style="text-align:center;">~750</td><td style="text-align:center;">~550</td></tr>
         <tr style="background:#fafafa;"><td style="padding:6px 7px;">🍎 Snack (Training)</td><td style="text-align:center;">post</td><td style="text-align:center;">~120</td><td style="text-align:center;">~90</td></tr>
-        <tr style="background:var(--ye);font-weight:700;"><td style="padding:6px 7px;">Ruhetag</td><td></td><td style="text-align:center;">1.670</td><td style="text-align:center;">1.255</td></tr>
-        <tr style="background:var(--bl);font-weight:700;"><td style="padding:6px 7px;">Trainingstag</td><td></td><td style="text-align:center;">1.790</td><td style="text-align:center;">1.345</td></tr>
+        <tr><td style="padding:6px 7px;">☕ Milchkaffee</td><td style="text-align:center;">morgens</td><td style="text-align:center;">~97</td><td style="text-align:center;">—</td></tr>
+        <tr style="background:var(--ye);font-weight:700;"><td style="padding:6px 7px;">Ruhetag gesamt</td><td></td><td style="text-align:center;">2.500</td><td style="text-align:center;">1.837</td></tr>
+        <tr style="background:var(--bl);font-weight:700;"><td style="padding:6px 7px;">Trainingstag gesamt</td><td></td><td style="text-align:center;">2.810</td><td style="text-align:center;">2.057</td></tr>
       </table>
     </div>
   </div>
@@ -555,12 +561,12 @@ function renderWeek(){
     '<div class="srow" style="margin-top:8px;"><button class="btn pr" id="save-reste-btn" onclick="saveReste()">Speichern ✓</button><span class="sstatus" id="reste-status"></span></div></div>'+
     '<div class="wgrid">'+wd.map(d=>{
       const tc=(d.type==='training'||d.type==='both')?'tr':(d.type==='cardio'?'cd':(d.mp?'mp':'rs'));
-      const pills=(d.type==='training'||d.type==='both'?'<span class="pill tr">💪 Training</span>':'')+(d.type==='cardio'?'<span class="pill cd">🚶 Cardio/Aktiv</span>':'')+(d.mp?'<span class="pill mp">⚡ Mealprep</span>':'');
+      const pills=(d.type==='training'||d.type==='both'?'<span class="pill tr">💪 Training</span>':'')+(d.type==='cardio'?'<span class="pill cd">🚶 Cardio/Aktiv</span>':'')+(d.mp?'<span class="pill mp">⚡ Prep</span>':'');
       const slots=[{l:'☕ Shake',v:d.meals.shake},{l:'🥗 Mittag',v:d.meals.mittag},{l:'🍽 Abend',v:d.meals.abend},{l:'🍎 Snack',v:d.meals.snack}];
       return '<div class="dcard"><div class="dhead '+tc+'"><strong>'+d.day+'</strong><div class="dpills">'+pills+'</div></div>'+(d.info?'<div style="background:#fffde7;padding:6px 12px;font-size:0.72rem;color:#e65100;border-bottom:1px solid #ffe082;">'+d.info+'</div>':'')+'<div class="mgrid">'+
         slots.map(s=>{
           const det=findMD(s.v);
-          const kl=det?det.seb.mac.kcal.replace('~','')+' · Enna '+det.fr.mac.kcal.replace('~',''):'Tippen für Details';
+          const kl=det?'S '+det.seb.mac.kcal.replace('~','').replace(' kcal','')+' · E '+det.fr.mac.kcal.replace('~','').replace(' kcal','')+' kcal':'▶ Details';
           return '<div class="mslot" onclick="openMD(\''+s.v.replace(/'/g,"\\'")+'\')">' +
             '<div class="mlabel">'+s.l+' <span style="font-size:0.55rem;color:#bbb;">▶</span></div>'+
             '<div class="mname">'+s.v+'</div><div class="mkcal">'+kl+'</div></div>';
@@ -607,17 +613,31 @@ function renderShop(){
   });
   document.getElementById('shop-list').innerHTML=Object.entries(cats).map(([cat,items])=>
     '<div class="scat"><div class="scath" style="background:'+CC[cat]+'">'+CL[cat]+'</div>'+
-    items.map(item=>'<div class="sitem'+(checkedItems[item.idx]?' chk':'')+'" onclick="toggleItem('+item.idx+')">'+
-      '<div class="schk">'+(checkedItems[item.idx]?'✓':'')+'</div>'+
-      '<div class="sname">'+item.name+(item.note?'<div class="snote">'+item.note+'</div>':'')+'</div>'+
-      '<div class="samt">'+item.amount+'</div></div>').join('')+'</div>'
+    items.map(item=>{
+      const st=checkedItems[item.idx]||0; // 0=nein, 1=gekauft, 2=vorhanden
+      const cls=st===1?' chk':st===2?' vor':'';
+      const chkHtml=st===1?'\u2713':st===2?'~':'';
+      return '<div class="sitem'+cls+'" onclick="toggleItem('+item.idx+')" oncontextmenu="markVorhanden('+item.idx+');return false;" style="user-select:none;">'+
+        '<div class="schk">'+chkHtml+'</div>'+
+        '<div class="sname">'+item.name+(item.note?'<div class="snote">'+item.note+'</div>':'')+'</div>'+
+        '<div class="samt">'+item.amount+'</div></div>';
+    }).join('')+'</div>'
   ).join('');
-  const total=planData.shopData.length,done=Object.values(checkedItems).filter(Boolean).length,pct=total?Math.round(done/total*100):0;
+  const total=planData.shopData.length,done=Object.values(checkedItems).filter(v=>v===1).length,pct=total?Math.round(done/total*100):0;
   document.getElementById('prog-bar').style.width=pct+'%';
   document.getElementById('prog-pct').textContent=pct+'%';
   document.getElementById('prog-count').textContent=done+'/'+total;
 }
-async function toggleItem(idx){checkedItems[idx]=!checkedItems[idx];renderShop();saveChecked();}
+async function toggleItem(idx){
+  const cur=checkedItems[idx]||0;
+  checkedItems[idx]=cur===1?0:1; // tap = toggle gekauft
+  renderShop();saveChecked();
+}
+async function markVorhanden(idx){
+  const cur=checkedItems[idx]||0;
+  checkedItems[idx]=cur===2?0:2; // long-press = toggle vorhanden
+  renderShop();saveChecked();
+}
 async function resetShop(){checkedItems={};renderShop();saveChecked();}
 function filterCat(btn){document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentFilter=btn.dataset.cat;renderShop();}
 async function saveChecked(){
@@ -706,9 +726,16 @@ function switchMP(day,btn){
 // MAKROS
 function renderMakros(){
   document.getElementById('makro-cards').innerHTML=[
-    {name:'👨 Sebastian',color:'var(--bl)',border:'var(--b)',kcalR:'1.670',kcalT:'1.790',p:'155g',kh:'175g',f:'50g',ziel:'Recomp: -0,3 kg/Woche'},
-    {name:'👩 Enna',color:'var(--pl)',border:'var(--pu)',kcalR:'1.255',kcalT:'1.345',p:'100g',kh:'135g',f:'38g',ziel:'Recomp: -0,2 kg/Woche'},
-  ].map(c=>'<div class="mcard" style="border-left:4px solid '+c.border+';background:'+c.color+';"><div class="mcname">'+c.name+'</div><div class="mcziel">'+c.ziel+'</div><div class="mcrow"><span>Ruhetag</span><strong>'+c.kcalR+' kcal</strong></div><div class="mcrow"><span>Trainingstag</span><strong>'+c.kcalT+' kcal</strong></div><div class="mcrow"><span>Protein</span><strong>'+c.p+'</strong></div><div class="mcrow"><span>KH</span><strong>'+c.kh+'</strong></div><div class="mcrow"><span>Fett</span><strong>'+c.f+'</strong></div></div>').join('');
+    {name:'\uD83D\uDC68 Sebastian',color:'var(--bl)',border:'var(--b)',kcalR:'2.500',kcalT:'2.810',p:'198g',khT:'280g',khR:'202g',f:'100g',ziel:'Recomp · -0,3 kg/Wo · 99 kg'},
+    {name:'\uD83D\uDC69 Enna',color:'var(--pl)',border:'var(--pu)',kcalR:'1.837',kcalT:'2.057',p:'112g',khT:'245g',khR:'190g',f:'70g',ziel:'Recomp · -0,2 kg/Wo · 62 kg'},
+  ].map(c=>'<div class="mcard" style="border-left:4px solid '+c.border+';background:'+c.color+';"><div class="mcname">'+c.name+'</div><div class="mcziel">'+c.ziel+'</div>'+
+    '<div class="mcrow"><span>\uD83C\uDFCB Trainingstag</span><strong>'+c.kcalT+' kcal</strong></div>'+
+    '<div class="mcrow"><span>\uD83D\uDECC Ruhetag</span><strong>'+c.kcalR+' kcal</strong></div>'+
+    '<div class="mcrow"><span>Protein</span><strong>'+c.p+'</strong></div>'+
+    '<div class="mcrow"><span>KH Training</span><strong>'+c.khT+'</strong></div>'+
+    '<div class="mcrow"><span>KH Ruhe</span><strong>'+c.khR+'</strong></div>'+
+    '<div class="mcrow"><span>Fett</span><strong>'+c.f+'</strong></div>'+
+    '</div>').join('');
 }
 
 // SUPPS
@@ -724,22 +751,23 @@ function renderSupps(){
 
 // DIARY
 const DQ=[
-  {id:'q1',label:'😋 Essen aufessen können?',sub:'Waren die Portionen passend?',opts:['Zu wenig','Genau richtig','Zu viel']},
-  {id:'q2',label:'🍽 Sättigungsgefühl',sub:'Warst du nach den Mahlzeiten satt?',opts:['Zu hungrig','Gut gesättigt','Zu voll']},
-  {id:'q3',label:'🍫 Heißhunger?',sub:'Gab es Heißhunger zwischen Mahlzeiten?',opts:['Keiner','Leicht','Stark']},
-  {id:'q4',label:'⚡ Energie & Stimmung',sub:'Wie war deine Energie?',opts:['Müde','Okay','Top']},
-  {id:'q5',label:'💪 Training heute?',sub:'Wie war die Leistung?',opts:['Kein Training','Okay','Super']},
+  {id:'q1',label:'\uD83D\uDE0B Essen aufessen?',sub:'Waren die Portionen passend?',opts:['Zu wenig','Genau richtig','Zu viel']},
+  {id:'q2',label:'\uD83C\uDF7D S\u00e4ttigungsgef\u00fchl',sub:'Warst du nach den Mahlzeiten satt?',opts:['Zu hungrig','Gut ges\u00e4ttigt','Zu voll']},
+  {id:'q3',label:'\uD83C\uDF6B Hei\u00dfhunger?',sub:'Gab es Hei\u00dfhunger zwischen Mahlzeiten?',opts:['Keiner','Leicht','Stark']},
+  {id:'q4',label:'\u26A1 Energie & Stimmung',sub:'Wie war deine Energie heute?',opts:['M\u00fcde','Okay','Top']},
+  {id:'q5',label:'\uD83C\uDFCB Training heute?',sub:'Was f\u00fcr ein Tag war es?',opts:['Ruhetag','Cardio/Aktiv','Krafttraining']},
+  {id:'q6',label:'\uD83D\uDCAA Trainingsleistung',sub:'Nur bei Krafttraining: Wie war die Leistung?',opts:['Schlecht','Ok','Stark']},
 ];
 function initDiary(){
   const tabs=document.getElementById('diary-day-tabs');if(!tabs)return;
-  tabs.innerHTML=['Mo','Di','Mi','Do','Fr','Sa','So'].map((d,i)=>'<button class="ddtab'+(i===dpDay?' active':'')+'" onclick="switchDD('+i+',this)">'+d+'</button>').join('');
+  tabs.innerHTML=['So','Mo','Di','Mi','Do','Fr','Sa'].map((d,i)=>'<button class="ddtab'+(i===dpDay?' active':'')+'" onclick="switchDD('+i+',this)">'+d+'</button>').join('');
   dpState={};renderDiaryForm();loadDiaryHistory();
 }
 function switchDP(p,btn){dpPerson=p;document.querySelectorAll('.dpbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');dpState={};renderDiaryForm();loadDiaryHistory();}
 function switchDD(i,btn){dpDay=i;document.querySelectorAll('.ddtab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');dpState={};renderDiaryForm();}
 function setScale(qid,val,btn){dpState[qid]=val;btn.closest('.dscale').querySelectorAll('.dsbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
 function renderDiaryForm(){
-  const days=['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'];
+  const days=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
   const name=dpPerson==='seb'?'Sebastian':'Enna';
   document.getElementById('diary-form').innerHTML=
     '<div class="card"><div class="ch gn">📝 '+days[dpDay]+' — '+name+'</div><div class="cb">'+
@@ -770,7 +798,7 @@ async function loadDiaryHistory(){
 }
 function renderDiaryHistory(data){
   const hist=document.getElementById('diary-history');if(!hist)return;
-  const days=['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'];
+  const days=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
   if(!data||data.length===0){hist.innerHTML='<div style="text-align:center;color:#bbb;padding:20px;font-size:0.82rem;">Noch keine Einträge diese Woche.</div>';return;}
   hist.innerHTML=data.map(e=>'<div class="decard"><div class="deday">'+days[e.day_index]+'</div>'+
     (e.entry_data.q1?'<div class="derow"><span>😋</span><span>Essen: <strong>'+e.entry_data.q1+'</strong></span></div>':'')+
