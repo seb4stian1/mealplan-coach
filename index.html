@@ -112,15 +112,23 @@ main{max-width:680px;margin:0 auto;padding:12px 12px 80px;}
 .fbtn.active{border-color:var(--gm);background:var(--gl);color:var(--gd);}
 .scat{margin-bottom:10px;}
 .scath{font-size:0.78rem;font-weight:700;padding:7px 12px;border-radius:8px 8px 0 0;}
-.sitem{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #f0f0f0;background:white;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.sitem{display:flex;align-items:center;gap:8px;padding:9px 10px;border-bottom:1px solid #f0f0f0;background:white;-webkit-tap-highlight-color:transparent;}
 .sitem:last-child{border-bottom:none;border-radius:0 0 8px 8px;}
 .sitem.chk{opacity:0.5;}
 .sitem.chk .sname{text-decoration:line-through;}
-.schk{width:22px;height:22px;border-radius:6px;border:2px solid #ccc;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;background:white;}
-.sitem.chk .schk{background:var(--gm);border-color:var(--gm);color:white;}
 .sname{flex:1;font-size:0.82rem;font-weight:600;}
 .snote{font-size:0.68rem;color:#888;font-weight:400;}
 .samt{font-size:0.75rem;color:#666;white-space:nowrap;}
+.sitembtns{display:flex;gap:5px;flex-shrink:0;}
+.sbtn{width:34px;height:34px;border-radius:8px;border:2px solid #ddd;background:white;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:background 0.15s,border-color 0.15s;}
+.sbtn:active{opacity:0.7;}
+.sbtn.chk{background:var(--gm);border-color:var(--gm);}
+.sbtn.vor{background:#f9a825;border-color:#f9a825;}
+.sitembtns{display:flex;gap:5px;flex-shrink:0;}
+.sbtn{width:34px;height:34px;border-radius:8px;border:2px solid #ddd;background:white;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:background 0.15s,border-color 0.15s;}
+.sbtn:active{opacity:0.7;}
+.sbtn.chk{background:var(--gm);border-color:var(--gm);}
+.sbtn.vor{background:#f9a825;border-color:#f9a825;}
 .betrow{background:white;border-radius:10px;border:1px solid #e0e0e0;padding:12px;margin-top:10px;display:flex;align-items:center;gap:10px;}
 .betrow label{font-size:0.82rem;font-weight:700;color:var(--gd);white-space:nowrap;}
 .betinp{flex:1;border:2px solid #e0e0e0;border-radius:8px;padding:8px 12px;font-size:0.9rem;font-family:inherit;outline:none;}
@@ -616,11 +624,13 @@ function renderShop(){
     items.map(item=>{
       const st=checkedItems[item.idx]||0; // 0=nein, 1=gekauft, 2=vorhanden
       const cls=st===1?' chk':st===2?' vor':'';
-      const chkHtml=st===1?'\u2713':st===2?'~':'';
-      return '<div class="sitem'+cls+'" onclick="toggleItem('+item.idx+')" oncontextmenu="markVorhanden('+item.idx+');return false;" style="user-select:none;">'+
-        '<div class="schk">'+chkHtml+'</div>'+
+      return '<div class="sitem'+cls+'">'+
         '<div class="sname">'+item.name+(item.note?'<div class="snote">'+item.note+'</div>':'')+'</div>'+
-        '<div class="samt">'+item.amount+'</div></div>';
+        '<div class="samt">'+item.amount+'</div>'+
+        '<div class="sitembtns">'+
+          '<button class="sbtn'+(st===1?' chk':'')+'" onclick="toggleItem('+item.idx+')" title="Gekauft">✓</button>'+
+          '<button class="sbtn'+(st===2?' vor':'')+'" onclick="markVorhanden('+item.idx+')" title="Vorhanden">🏠</button>'+
+        '</div></div>';
     }).join('')+'</div>'
   ).join('');
   const total=planData.shopData.length,done=Object.values(checkedItems).filter(v=>v===1).length,pct=total?Math.round(done/total*100):0;
