@@ -604,7 +604,7 @@ function renderWeek(){
           }
           const det=findMD(s.v);
           const kl=det?'S '+det.seb.mac.kcal.replace('~','').replace(' kcal','')+' · E '+det.fr.mac.kcal.replace('~','').replace(' kcal','')+' kcal':'▶ Details';
-          return '<div class="mslot" onclick="openMD(''+s.v.replace(/'/g,"\'")+'')">' +
+          return '<div class="mslot" data-meal="'+s.v.replace(/"/g,'&quot;')+'" onclick="openMD(this.dataset.meal)">' +
             '<div class="mlabel">'+s.l+' <span style="font-size:0.55rem;color:#bbb;">▶</span></div>'+
             '<div class="mname">'+s.v+'</div><div class="mkcal">'+kl+'</div></div>';
         }).join('')+'</div></div>';
