@@ -763,14 +763,34 @@ function renderMP(){
         // Einkauf / Rohgewichte Gesamtmenge
         '<div style="padding:0 12px 8px;"><div style="font-size:0.72rem;font-weight:700;color:var(--grd);text-transform:uppercase;margin-bottom:6px;">\uD83D\uDECD Gesamt einkaufen (Rohgewichte)</div>'+
         r.zutaten.map(z=>'<div style="display:flex;justify-content:space-between;font-size:0.8rem;padding:4px 0;border-bottom:1px solid #f5f5f5;"><span>'+z[0]+'<span style="font-size:0.65rem;color:#aaa;margin-left:4px;">'+z[2]+'</span></span><strong style="color:var(--gd);">'+z[1]+'</strong></div>').join('')+'</div>'+
-        // Je Box — GEGARTE Mengen aus MD
-        (det?'<div style="background:#f9f9f9;margin:0 12px 12px;border-radius:8px;padding:10px;border:1px solid #e8e8e8;">'+
-          '<div style="font-size:0.72rem;font-weight:700;color:var(--grd);text-transform:uppercase;margin-bottom:8px;">\uD83D\uDCE6 Je Box — abgefüllt (gegart)</div>'+
-          '<div class="mppg">'+
-          '<div class="mppb sb"><div class="mppn">\uD83D\uDC68 Sebastian</div>'+det.seb.ing.map(i=>'<div class="mppr"><span>'+i[0]+'</span><span class="ma">'+i[1]+'</span></div>').join('')+'<div style="margin-top:6px;padding-top:5px;border-top:1px solid rgba(0,0,0,0.1);font-size:0.7rem;font-weight:700;color:var(--b);">'+det.seb.mac.kcal+' \u00B7 '+det.seb.mac.p+'</div></div>'+
-          '<div class="mppb fr"><div class="mppn">\uD83D\uDC69 Enna</div>'+det.fr.ing.map(i=>'<div class="mppr"><span>'+i[0]+'</span><span class="ma">'+i[1]+'</span></div>').join('')+'<div style="margin-top:6px;padding-top:5px;border-top:1px solid rgba(0,0,0,0.1);font-size:0.7rem;font-weight:700;color:var(--or);">'+det.fr.mac.kcal+' \u00B7 '+det.fr.mac.p+'</div></div>'+
-          '</div>'+(det.note?'<div style="font-size:0.72rem;color:#888;margin-top:6px;padding-top:5px;border-top:1px solid #eee;">\uD83D\uDCA1 '+det.note+'</div>':'')+
-          '</div>':'') +
+        // Je Box — erst legacy MD, dann live r.portionen
+        (()=>{
+          if(det){
+            const seb=det.seb, en=det.fr;
+            return '<div style="background:#f9f9f9;margin:0 12px 12px;border-radius:8px;padding:10px;border:1px solid #e8e8e8;">'+
+              '<div style="font-size:0.72rem;font-weight:700;color:var(--grd);text-transform:uppercase;margin-bottom:8px;">\uD83D\uDCE6 Je Box \u2014 abgef\u00FCllt (gegart)</div>'+
+              '<div class="mppg">'+
+              '<div class="mppb sb"><div class="mppn">\uD83D\uDC68 Sebastian</div>'+seb.ing.map(i=>'<div class="mppr"><span>'+i[0]+'</span><span class="ma">'+i[1]+'</span></div>').join('')+'<div style="margin-top:6px;padding-top:5px;border-top:1px solid rgba(0,0,0,0.1);font-size:0.7rem;font-weight:700;color:var(--b);">'+seb.mac.kcal+' \u00B7 '+seb.mac.p+'</div></div>'+
+              '<div class="mppb fr"><div class="mppn">\uD83D\uDC69 Enna</div>'+en.ing.map(i=>'<div class="mppr"><span>'+i[0]+'</span><span class="ma">'+i[1]+'</span></div>').join('')+'<div style="margin-top:6px;padding-top:5px;border-top:1px solid rgba(0,0,0,0.1);font-size:0.7rem;font-weight:700;color:var(--or);">'+en.mac.kcal+' \u00B7 '+en.mac.p+'</div></div>'+
+              '</div>'+(det.note?'<div style="font-size:0.72rem;color:#888;margin-top:6px;padding-top:5px;border-top:1px solid #eee;">\uD83D\uDCA1 '+det.note+'</div>':'')+
+              '</div>';
+          }
+          if(r.portionen){
+            const seb=r.portionen.seb||{}, en=r.portionen.enna||r.portionen.fr||{};
+            const boxes=seb.boxen?seb.boxen+' Box'+( seb.boxen>1?'en':''):'';
+            return '<div style="background:#f9f9f9;margin:0 12px 12px;border-radius:8px;padding:10px;border:1px solid #e8e8e8;">'+
+              '<div style="font-size:0.72rem;font-weight:700;color:var(--grd);text-transform:uppercase;margin-bottom:8px;">\uD83D\uDCE6 Je Box \u2014 abgef\u00FCllt (gegart)</div>'+
+              '<div class="mppg">'+
+              '<div class="mppb sb"><div class="mppn">\uD83D\uDC68 Sebastian'+(boxes?' ('+boxes+')':'')+'</div>'+
+              '<div class="mppr"><span>Portion gegart</span><span class="ma">'+(seb.gram||'—')+'</span></div>'+
+              '<div style="margin-top:6px;padding-top:5px;border-top:1px solid rgba(0,0,0,0.1);font-size:0.7rem;font-weight:700;color:var(--b);">'+(seb.kcal||'—')+' \u00B7 '+(seb.p||'—')+'</div></div>'+
+              '<div class="mppb fr"><div class="mppn">\uD83D\uDC69 Enna</div>'+
+              '<div class="mppr"><span>Portion gegart</span><span class="ma">'+(en.gram||'—')+'</span></div>'+
+              '<div style="margin-top:6px;padding-top:5px;border-top:1px solid rgba(0,0,0,0.1);font-size:0.7rem;font-weight:700;color:var(--or);">'+(en.kcal||'—')+' \u00B7 '+(en.p||'—')+'</div></div>'+
+              '</div></div>';
+          }
+          return '';
+        })() +
         '<div style="padding:0 12px 12px;"><div style="font-size:0.72rem;font-weight:700;color:var(--grd);text-transform:uppercase;margin-bottom:6px;">Zubereitung</div><ol style="padding-left:16px;font-size:0.8rem;line-height:1.8;">'+r.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol></div></div>';
     }).join('')+
     '<div style="background:white;border-radius:10px;border:1px solid #e0e0e0;padding:12px;font-size:0.78rem;"><strong style="color:var(--gd);">\uD83D\uDCE6 Boxen beschriften</strong><br><div style="margin-top:5px;color:#555;">Name + Tag auf jede Box.<br>Haltbarkeit Kühlschrank: <strong>4 Tage</strong>. Einfrieren möglich.</div></div>';
