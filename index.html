@@ -762,7 +762,7 @@ function renderMP(){
         '<div class="mpch"><div class="mpem">'+r.emoji+'</div><div><div class="mptitle">'+r.title+'</div><div class="mpsub">4 Portionen total</div></div></div>'+
         // Einkauf / Rohgewichte Gesamtmenge
         '<div style="padding:0 12px 8px;"><div style="font-size:0.72rem;font-weight:700;color:var(--grd);text-transform:uppercase;margin-bottom:6px;">\uD83D\uDECD Gesamt einkaufen (Rohgewichte)</div>'+
-        r.zutaten.map(z=>'<div style="display:flex;justify-content:space-between;font-size:0.8rem;padding:4px 0;border-bottom:1px solid #f5f5f5;"><span>'+z[0]+'<span style="font-size:0.65rem;color:#aaa;margin-left:4px;">'+z[2]+'</span></span><strong style="color:var(--gd);">'+z[1]+'</strong></div>').join('')+'</div>'+
+        r.zutaten.map(z=>'<div style="display:flex;justify-content:space-between;font-size:0.8rem;padding:4px 0;border-bottom:1px solid #f5f5f5;"><span>'+z[0]+(z[2]?'<span style="font-size:0.65rem;color:#aaa;margin-left:4px;">'+z[2]+'</span>':'')+'</span><strong style="color:var(--gd);">'+z[1]+'</strong></div>').join('')+'</div>'+
         // Je Box — erst legacy MD, dann live r.portionen
         (()=>{
           if(det){
