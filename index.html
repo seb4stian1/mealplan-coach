@@ -489,8 +489,8 @@ function init(){
   planData=FB;
   setBadge('📦 Fallback','or');
   renderAll();
-  // Supabase im Hintergrund
-  loadSupabase();
+  // Supabase im Hintergrund — autoNav=true: neuesten Plan laden
+  loadSupabase(true);
 }
 
 window.addEventListener('load',function(){
