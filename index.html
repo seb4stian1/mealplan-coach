@@ -604,7 +604,7 @@ function renderWeek(){
           }
           const det=findMD(s.v);
           const kl=det?'S '+det.seb.mac.kcal.replace('~','').replace(' kcal','')+' · E '+det.fr.mac.kcal.replace('~','').replace(' kcal','')+' kcal':'▶ Details';
-          return '<div class="mslot" data-meal="'+s.v.replace(/"/g,'&quot;')+'" onclick="openMD(this.dataset.meal)">' +
+          return '<div class="mslot" onclick="openMD(decodeURIComponent(this.dataset.meal))" data-meal="'+encodeURIComponent(s.v)+'">' +
             '<div class="mlabel">'+s.l+' <span style="font-size:0.55rem;color:#bbb;">▶</span></div>'+
             '<div class="mname">'+s.v+'</div><div class="mkcal">'+kl+'</div></div>';
         }).join('')+'</div></div>';
@@ -722,7 +722,7 @@ function openRecipe(i){
     '<div class="shdr"><span style="font-weight:700;">'+r.emoji+' '+r.title+'</span><button class="closeb" onclick="document.getElementById(\'recipe-modal\').style.display=\'none\'">×</button></div>'+
     '<div class="slabel">Abfüllmengen je Box (gegart)</div>'+
     '<div class="pcmp"><div class="pbox sb"><div class="pname">👨 Sebastian</div><div style="font-size:0.82rem;font-weight:700;">'+r.portionen.seb.gram+'</div><div style="font-size:0.7rem;color:#555;margin-top:3px;">'+r.portionen.seb.kcal+' · '+r.portionen.seb.p+'</div></div>'+
-    '<div class="pbox fr"><div class="pname">👩 Enna</div><div style="font-size:0.82rem;font-weight:700;">'+r.portionen.fr.gram+'</div><div style="font-size:0.7rem;color:#555;margin-top:3px;">'+r.portionen.fr.kcal+' · '+r.portionen.fr.p+'</div></div></div>'+
+    '<div class="pbox fr"><div class="pname">👩 Enna</div><div style="font-size:0.82rem;font-weight:700;">'+(r.portionen.enna||r.portionen.fr||{}).gram+'</div><div style="font-size:0.7rem;color:#555;margin-top:3px;">'+(r.portionen.enna||r.portionen.fr||{}).kcal+' · '+(r.portionen.enna||r.portionen.fr||{}).p+'</div></div></div>'+
     '<div class="slabel">Zutaten (4 Portionen gesamt)</div>'+
     '<table class="itab"><tr><th>Zutat</th><th>Menge (roh → Einkauf)</th><th>Ergibt</th></tr>'+r.zutaten.map(z=>'<tr><td>'+z[0]+'</td><td><strong>'+z[1]+'</strong></td><td style="color:#888;font-size:0.72rem;">'+z[2]+'</td></tr>').join('')+'</table>'+
     '<div class="slabel">Zubereitung</div><ol class="steps">'+r.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol>';
@@ -735,7 +735,7 @@ function renderMP(){
   const recipes=mpDay==='so'?planData.recipes.slice(0,2):planData.recipes.slice(2);
   const dayLabel=mpDay==='so'?'Sonntag (reicht So–Mi mittag)':'Mittwoch (reicht Mi-Abend–Sa-Abend)';
   document.getElementById('mealprep-content').innerHTML=
-    '<div class="mptot"><strong>\u26A1 Mealprep '+dayLabel+'</strong><br><span style="font-size:0.75rem;">Je 2 Boxen Sebastian + 2 Boxen Enna</span></div>'+
+    '<div class="mptot"><strong>\u26A1 Mealprep '+dayLabel+'</strong></div>'+
     recipes.map(r=>{
       const det=findMD(r.title);
       return '<div class="mpcard">'+
