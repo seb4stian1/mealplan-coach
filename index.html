@@ -744,7 +744,7 @@ function openRecipe(i){
     '<div class="pcmp"><div class="pbox sb"><div class="pname">👨 Sebastian</div><div style="font-size:0.82rem;font-weight:700;">'+r.portionen.seb.gram+'</div><div style="font-size:0.7rem;color:#555;margin-top:3px;">'+r.portionen.seb.kcal+' · '+r.portionen.seb.p+'</div></div>'+
     '<div class="pbox fr"><div class="pname">👩 Enna</div><div style="font-size:0.82rem;font-weight:700;">'+(r.portionen.enna||r.portionen.fr||{}).gram+'</div><div style="font-size:0.7rem;color:#555;margin-top:3px;">'+(r.portionen.enna||r.portionen.fr||{}).kcal+' · '+(r.portionen.enna||r.portionen.fr||{}).p+'</div></div></div>'+
     '<div class="slabel">Zutaten (4 Portionen gesamt)</div>'+
-    '<table class="itab"><tr><th>Zutat</th><th>Menge (roh → Einkauf)</th><th>Ergibt</th></tr>'+r.zutaten.map(z=>'<tr><td>'+z[0]+'</td><td><strong>'+z[1]+'</strong></td><td style="color:#888;font-size:0.72rem;">'+z[2]+'</td></tr>').join('')+'</table>'+
+    '<table class="itab"><tr><th>Zutat</th><th>Menge (roh → Einkauf)</th><th>Ergibt</th></tr>'+r.zutaten.map(z=>'<tr><td>'+z[0]+'</td><td><strong>'+z[1]+'</strong></td><td style="color:#888;font-size:0.72rem;">'+(z[2]||'')+'</td></tr>').join('')+'</table>'+
     '<div class="slabel">Zubereitung</div><ol class="steps">'+r.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol>';
   document.getElementById('recipe-modal').style.display='flex';
 }
