@@ -554,7 +554,9 @@ async function loadSupabase(autoNav){
 function updateNav(){
   document.getElementById('wlabel').textContent='KW '+viewKW+' / '+viewYear;
   document.getElementById('wsub').textContent=kwRange(viewKW,viewYear);
-  document.getElementById('next-btn').disabled=(viewKW>=getKW()&&viewYear>=getYear());
+  // Erlaubt bis max. eine Woche in die Zukunft (Freitags-Task schreibt nächste KW)
+  const maxKW=getKW()+1, maxYear=getYear();
+  document.getElementById('next-btn').disabled=(viewYear>maxYear||(viewYear===maxYear&&viewKW>=maxKW));
 }
 function changeWeek(d){
   viewKW+=d;if(viewKW<1){viewKW=52;viewYear--;}if(viewKW>52){viewKW=1;viewYear++;}
@@ -821,9 +823,4 @@ function renderDiaryHistory(data){
     (e.entry_data.q3?'<div class="derow"><span>🍫</span><span>Heißhunger: <strong>'+e.entry_data.q3+'</strong></span></div>':'')+
     (e.entry_data.q4?'<div class="derow"><span>⚡</span><span>Energie: <strong>'+e.entry_data.q4+'</strong></span></div>':'')+
     (e.entry_data.q5?'<div class="derow"><span>💪</span><span>Training: <strong>'+e.entry_data.q5+'</strong></span></div>':'')+
-    (e.entry_data.notiz?'<div class="derow"><span>📝</span><span>'+e.entry_data.notiz+'</span></div>':'')+
-    '</div>').join('');
-}
-</script>
-</body>
-</html>
+    (e.entry_d
