@@ -579,12 +579,27 @@ function renderWeek(){
     '<div class="wgrid">'+wd.map(d=>{
       const tc=(d.type==='training'||d.type==='both')?'tr':(d.type==='cardio'?'cd':(d.mp?'mp':'rs'));
       const pills=(d.type==='training'||d.type==='both'?'<span class="pill tr">💪 Training</span>':'')+(d.type==='cardio'?'<span class="pill cd">🚶 Cardio/Aktiv</span>':'')+(d.mp?'<span class="pill mp">⚡ Prep</span>':'');
-      const slots=[{l:'☕ Shake',v:d.meals.shake},{l:'🥗 Mittag',v:d.meals.mittag},{l:'🍽 Abend',v:d.meals.abend},{l:'🍎 Snack',v:d.meals.snack}];
+      const isWeekend=(d.day==='Samstag'||d.day==='Sonntag');
+      const slots=[
+        {l:'☕ Shake',v:d.meals.shake,free:false},
+        isWeekend?{l:'🌅 Frühstück',v:d.meals.fruehstueck||'Frei (~200 kcal)',free:false}:{l:'🥗 Mittag',v:d.meals.mittag,free:false},
+        isWeekend?{l:'🥗 Mittag',v:null,free:true}:{l:'🥗 Mittag',v:d.meals.mittag,free:false},
+        {l:'🍽 Abend',v:d.meals.abend,free:false},
+        {l:'🍎 Snack',v:d.meals.snack,free:false}
+      ].filter((s,i,arr)=>!(i===2&&!isWeekend)); // Sa/So: Frühstück+Frei statt 2× Mittag
       return '<div class="dcard"><div class="dhead '+tc+'"><strong>'+d.day+'</strong><div class="dpills">'+pills+'</div></div>'+(d.info?'<div style="background:#fffde7;padding:6px 12px;font-size:0.72rem;color:#e65100;border-bottom:1px solid #ffe082;">'+d.info+'</div>':'')+'<div class="mgrid">'+
         slots.map(s=>{
+          if(s.free){
+            const kcalSeb=(d.type==='training')?'2.296':(d.type==='cardio'?'2.150':'1.992');
+            const kcalEnna=(d.type==='training')?'1.896':(d.type==='cardio'?'1.780':'1.656');
+            return '<div class="mslot" style="background:#f9f9f9;border:1px dashed #ccc;cursor:default;">'+
+              '<div class="mlabel">🥗 Mittag</div>'+
+              '<div class="mname" style="color:#aaa;font-style:italic;">Frei — kein Prep</div>'+
+              '<div class="mkcal" style="color:#bbb;">S ~'+kcalSeb+' · E ~'+kcalEnna+' kcal Tagesziel</div></div>';
+          }
           const det=findMD(s.v);
           const kl=det?'S '+det.seb.mac.kcal.replace('~','').replace(' kcal','')+' · E '+det.fr.mac.kcal.replace('~','').replace(' kcal','')+' kcal':'▶ Details';
-          return '<div class="mslot" onclick="openMD(\''+s.v.replace(/'/g,"\\'")+'\')">' +
+          return '<div class="mslot" onclick="openMD(''+s.v.replace(/'/g,"\'")+'')">' +
             '<div class="mlabel">'+s.l+' <span style="font-size:0.55rem;color:#bbb;">▶</span></div>'+
             '<div class="mname">'+s.v+'</div><div class="mkcal">'+kl+'</div></div>';
         }).join('')+'</div></div>';
