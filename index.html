@@ -511,13 +511,22 @@ function renderAll(){
   initDiary();
 }
 
-async function loadSupabase(){
+async function loadSupabase(autoNav){
   try{
     const sb=getSB();if(!sb)return;
     const p=new Promise((res,rej)=>setTimeout(()=>rej('timeout'),5000));
-    const q=sb.from('weekly_plan').select('*').eq('week_number',viewKW).eq('year',viewYear).order('created_at',{ascending:false}).limit(1);
+    let q;
+    if(autoNav){
+      // Neuesten Plan laden (für zukünftige KW wie nächste Woche)
+      q=sb.from('weekly_plan').select('*').order('year',{ascending:false}).order('week_number',{ascending:false}).limit(1);
+    } else {
+      q=sb.from('weekly_plan').select('*').eq('week_number',viewKW).eq('year',viewYear).order('created_at',{ascending:false}).limit(1);
+    }
     const{data,error}=await Promise.race([q,p.then(()=>{throw new Error('timeout')})]);
     if(!error&&data&&data.length>0){
+      if(autoNav&&(data[0].week_number!==viewKW||data[0].year!==viewYear)){
+        viewKW=data[0].week_number;viewYear=data[0].year;updateNav();
+      }
       planData=data[0].plan_data;
       setBadge('✅ Live KW'+viewKW,'gn');
       renderWeek();renderShop();renderRecipes();renderMP();
@@ -817,4 +826,4 @@ function renderDiaryHistory(data){
 }
 </script>
 </body>
-</html>                                                                                                                                                                                                                                                                                                                                                                                                                  
+</html>
