@@ -579,13 +579,19 @@ function renderWeek(){
       const tc=(d.type==='training'||d.type==='both')?'tr':(d.type==='cardio'?'cd':(d.mp?'mp':'rs'));
       const pills=(d.type==='training'||d.type==='both'?'<span class="pill tr">💪 Training</span>':'')+(d.type==='cardio'?'<span class="pill cd">🚶 Cardio/Aktiv</span>':'')+(d.mp?'<span class="pill mp">⚡ Prep</span>':'');
       const isWeekend=(d.day==='Samstag'||d.day==='Sonntag');
-      const slots=[
-        {l:'☕ Shake',v:d.meals.shake,free:false},
-        isWeekend?{l:'🌅 Frühstück',v:(d.meals&&d.meals.fruehstueck)||'Kleines Frühstück (~200 kcal)',free:false}:{l:'🥗 Mittag',v:(d.meals&&d.meals.mittag)||'—',free:false},
-        isWeekend?{l:'🥗 Mittag',v:null,free:true}:{l:'🥗 Mittag',v:d.meals.mittag,free:false},
-        {l:'🍽 Abend',v:d.meals.abend,free:false},
-        {l:'🍎 Snack',v:d.meals.snack,free:false}
-      ].filter(s=>s!==null);
+      const m=d.meals||{};
+      const slots=isWeekend?[
+        {l:'☕ Shake',v:m.shake||'Protein Shake',free:false},
+        {l:'🌅 Frühstück',v:m.fruehstueck||'Kleines Frühstück (~200 kcal)',free:false},
+        {l:'🥗 Mittag',v:null,free:true},
+        {l:'🍽 Abend',v:m.abend||'—',free:false},
+        {l:'🍎 Snack',v:m.snack||'Alpro Joghurt',free:false}
+      ]:[
+        {l:'☕ Shake',v:m.shake||'Protein Shake',free:false},
+        {l:'🥗 Mittag',v:m.mittag||'—',free:false},
+        {l:'🍽 Abend',v:m.abend||'—',free:false},
+        {l:'🍎 Snack',v:m.snack||'Alpro Joghurt',free:false}
+      ];
       return '<div class="dcard"><div class="dhead '+tc+'"><strong>'+d.day+'</strong><div class="dpills">'+pills+'</div></div>'+(d.info?'<div style="background:#fffde7;padding:6px 12px;font-size:0.72rem;color:#e65100;border-bottom:1px solid #ffe082;">'+d.info+'</div>':'')+'<div class="mgrid">'+
         slots.map(s=>{
           if(s.free){
