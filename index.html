@@ -375,7 +375,7 @@ let viewKW=getKW(), viewYear=getYear();
 // UTILS
 function getKW(d){d=d||new Date();const j=new Date(d.getFullYear(),0,4);const s=new Date(j);s.setDate(j.getDate()-((j.getDay()||7)-1));return Math.max(1,Math.floor((d-s)/(7*86400000))+1);}
 function getYear(d){return(d||new Date()).getFullYear();}
-function kwRange(kw,y){
+function kwRange(kw,y){if(!kw||!y)return '';
   // Woche = Samstag bis Freitag. Samstag = Montag der ISO-KW minus 2 Tage
   const j=new Date(y,0,4);const mo=new Date(j);mo.setDate(j.getDate()-((j.getDay()||7)-1)+(kw-1)*7);
   const sa=new Date(mo);sa.setDate(mo.getDate()-2);
@@ -554,7 +554,7 @@ async function loadSupabase(autoNav){
 
 // NAV
 function updateNav(){
-  document.getElementById('wlabel').textContent=kwRange(viewKW,viewYear);
+  document.getElementById('wlabel').textContent=viewKW?kwRange(viewKW,viewYear):'Lädt...';
   document.getElementById('wsub').textContent='';
   const maxKW=getKW()+1,maxYear=getYear();
   document.getElementById('next-btn').disabled=(viewYear>maxYear||(viewYear===maxYear&&viewKW>=maxKW));
