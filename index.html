@@ -648,10 +648,10 @@ function openMD(name){
     '<div class="shdr"><div class="shtitle">'+r.emoji+' '+r.title+'</div><button class="closeb" onclick="document.getElementById(\'meal-overlay\').style.display=\'none\'">×</button></div>'+
     '<div class="pcmp">'+
     '<div class="pbox sb"><div class="pname">👨 Sebastian</div>'+
-    '<div class="pingr"><span>Portion gegart</span><span class="amt">'+(seb.gram||'—')+'</span></div>'+
+    (seb.zutaten?seb.zutaten.map(i=>'<div class="pingr"><span>'+i[0]+'</span><span class="amt">'+i[1]+'</span></div>').join(''):'<div class="pingr"><span>Portion gegart</span><span class="amt">'+(seb.gram||'—')+'</span></div>')+
     '<div class="pmacro"><span>'+(seb.kcal||'—')+'</span><span>'+(seb.p||'—')+'</span></div></div>'+
     '<div class="pbox fr"><div class="pname">👩 Enna</div>'+
-    '<div class="pingr"><span>Portion gegart</span><span class="amt">'+(enna.gram||'—')+'</span></div>'+
+    (enna.zutaten?enna.zutaten.map(i=>'<div class="pingr"><span>'+i[0]+'</span><span class="amt">'+i[1]+'</span></div>').join(''):'<div class="pingr"><span>Portion gegart</span><span class="amt">'+(enna.gram||'—')+'</span></div>')+
     '<div class="pmacro"><span>'+(enna.kcal||'—')+'</span><span>'+(enna.p||'—')+'</span></div></div>'+
     '</div>';
   document.getElementById('meal-overlay').style.display='flex';
@@ -782,10 +782,10 @@ function renderMP(){
               '<div style="font-size:0.72rem;font-weight:700;color:var(--grd);text-transform:uppercase;margin-bottom:8px;">\uD83D\uDCE6 Je Box \u2014 abgef\u00FCllt (gegart)</div>'+
               '<div class="mppg">'+
               '<div class="mppb sb"><div class="mppn">\uD83D\uDC68 Sebastian'+(boxes?' ('+boxes+')':'')+'</div>'+
-              '<div class="mppr"><span>Portion gegart</span><span class="ma">'+(seb.gram||'—')+'</span></div>'+
+              (seb.zutaten?seb.zutaten.map(i=>'<div class="mppr"><span>'+i[0]+'</span><span class="ma">'+i[1]+'</span></div>').join(''):'<div class="mppr"><span>Portion gegart</span><span class="ma">'+(seb.gram||'—')+'</span></div>')+
               '<div style="margin-top:6px;padding-top:5px;border-top:1px solid rgba(0,0,0,0.1);font-size:0.7rem;font-weight:700;color:var(--b);">'+(seb.kcal||'—')+' \u00B7 '+(seb.p||'—')+'</div></div>'+
               '<div class="mppb fr"><div class="mppn">\uD83D\uDC69 Enna</div>'+
-              '<div class="mppr"><span>Portion gegart</span><span class="ma">'+(en.gram||'—')+'</span></div>'+
+              (en.zutaten?en.zutaten.map(i=>'<div class="mppr"><span>'+i[0]+'</span><span class="ma">'+i[1]+'</span></div>').join(''):'<div class="mppr"><span>Portion gegart</span><span class="ma">'+(en.gram||'—')+'</span></div>')+
               '<div style="margin-top:6px;padding-top:5px;border-top:1px solid rgba(0,0,0,0.1);font-size:0.7rem;font-weight:700;color:var(--or);">'+(en.kcal||'—')+' \u00B7 '+(en.p||'—')+'</div></div>'+
               '</div></div>';
           }
