@@ -376,11 +376,11 @@ let viewKW=getKW(), viewYear=getYear();
 function getKW(d){d=d||new Date();const j=new Date(d.getFullYear(),0,4);const s=new Date(j);s.setDate(j.getDate()-((j.getDay()||7)-1));return Math.max(1,Math.floor((d-s)/(7*86400000))+1);}
 function getYear(d){return(d||new Date()).getFullYear();}
 function kwRange(kw,y){
-  // Woche = Sonntag–Samstag. ISO-KW beginnt Mo, also: Sonntag ist der Tag DAVOR (kw-1)*7 minus 1 Tag
+  // Woche = Samstag bis Freitag. Samstag = Montag der ISO-KW minus 2 Tage
   const j=new Date(y,0,4);const mo=new Date(j);mo.setDate(j.getDate()-((j.getDay()||7)-1)+(kw-1)*7);
-  const so=new Date(mo);so.setDate(mo.getDate()-1); // Sonntag vor Montag der KW
-  const sa=new Date(so);sa.setDate(so.getDate()+6); // Samstag
-  return 'So '+so.getDate()+'.'+(so.getMonth()+1)+'. – Sa '+sa.getDate()+'.'+(sa.getMonth()+1)+'.'+sa.getFullYear();
+  const sa=new Date(mo);sa.setDate(mo.getDate()-2);
+  const fr=new Date(sa);fr.setDate(sa.getDate()+6);
+  return 'Sa '+sa.getDate()+'.'+(sa.getMonth()+1)+'. – Fr '+fr.getDate()+'.'+(fr.getMonth()+1)+'.'+fr.getFullYear();
 }
 function setBadge(t,c){const b=document.getElementById('sync-badge');b.textContent=t;b.className='badge'+(c?' '+c:'');}
 function showTab(n,el){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById('tab-'+n).classList.add('active');el.classList.add('active');}
