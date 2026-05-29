@@ -627,16 +627,36 @@ async function saveReste(){
 
 // MEAL DETAIL
 function openMD(name){
-  const d=findMD(name);if(!d)return;
+  // 1. Legacy MD lookup (KW22 Fallback)
+  const legacy=findMD(name);
+  if(legacy){
+    document.getElementById('meal-inner').innerHTML=
+      '<div class="shdr"><div class="shtitle">'+legacy.emoji+' '+legacy.title+'</div><button class="closeb" onclick="document.getElementById(\'meal-overlay\').style.display=\'none\'">×</button></div>'+
+      '<div class="pcmp">'+
+      '<div class="pbox sb"><div class="pname">👨 Sebastian</div>'+legacy.seb.ing.map(i=>'<div class="pingr"><span>'+i[0]+'</span><span class="amt">'+i[1]+'</span></div>').join('')+'<div class="pmacro"><span>'+legacy.seb.mac.kcal+'</span><span>'+legacy.seb.mac.p+'</span></div></div>'+
+      '<div class="pbox fr"><div class="pname">👩 Enna</div>'+legacy.fr.ing.map(i=>'<div class="pingr"><span>'+i[0]+'</span><span class="amt">'+i[1]+'</span></div>').join('')+'<div class="pmacro"><span>'+legacy.fr.mac.kcal+'</span><span>'+legacy.fr.mac.p+'</span></div></div>'+
+      '</div>'+(legacy.note?'<div style="background:var(--gl);border-radius:8px;padding:9px 12px;font-size:0.78rem;color:var(--gd);">💡 '+legacy.note+'</div>':'');
+    document.getElementById('meal-overlay').style.display='flex';
+    return;
+  }
+  // 2. Live-Daten aus planData.recipes (KW23+)
+  const r=(planData.recipes||[]).find(x=>name.includes(x.title));
+  if(!r)return;
+  const seb=(r.portionen&&r.portionen.seb)||{};
+  const enna=(r.portionen&&(r.portionen.enna||r.portionen.fr))||{};
   document.getElementById('meal-inner').innerHTML=
-    '<div class="shdr"><div class="shtitle">'+d.emoji+' '+d.title+'</div><button class="closeb" onclick="document.getElementById(\'meal-overlay\').style.display=\'none\'">×</button></div>'+
+    '<div class="shdr"><div class="shtitle">'+r.emoji+' '+r.title+'</div><button class="closeb" onclick="document.getElementById(\'meal-overlay\').style.display=\'none\'">×</button></div>'+
     '<div class="pcmp">'+
-    '<div class="pbox sb"><div class="pname">👨 Sebastian</div>'+d.seb.ing.map(i=>'<div class="pingr"><span>'+i[0]+'</span><span class="amt">'+i[1]+'</span></div>').join('')+'<div class="pmacro"><span>'+d.seb.mac.kcal+'</span><span>'+d.seb.mac.p+'</span><span>'+d.seb.mac.k+'</span><span>'+d.seb.mac.f+'</span></div></div>'+
-    '<div class="pbox fr"><div class="pname">👩 Enna</div>'+d.fr.ing.map(i=>'<div class="pingr"><span>'+i[0]+'</span><span class="amt">'+i[1]+'</span></div>').join('')+'<div class="pmacro"><span>'+d.fr.mac.kcal+'</span><span>'+d.fr.mac.p+'</span><span>'+d.fr.mac.k+'</span><span>'+d.fr.mac.f+'</span></div></div>'+
-    '</div>'+
-    (d.note?'<div style="background:var(--gl);border-radius:8px;padding:9px 12px;font-size:0.78rem;color:var(--gd);">💡 '+d.note+'</div>':'');
+    '<div class="pbox sb"><div class="pname">👨 Sebastian</div>'+
+    '<div class="pingr"><span>Portion gegart</span><span class="amt">'+(seb.gram||'—')+'</span></div>'+
+    '<div class="pmacro"><span>'+(seb.kcal||'—')+'</span><span>'+(seb.p||'—')+'</span></div></div>'+
+    '<div class="pbox fr"><div class="pname">👩 Enna</div>'+
+    '<div class="pingr"><span>Portion gegart</span><span class="amt">'+(enna.gram||'—')+'</span></div>'+
+    '<div class="pmacro"><span>'+(enna.kcal||'—')+'</span><span>'+(enna.p||'—')+'</span></div></div>'+
+    '</div>';
   document.getElementById('meal-overlay').style.display='flex';
 }
+
 
 // SHOP
 const CL={protein:'🥩 Protein',kh:'🌾 KH & Hülsenfrüchte',gemuese:'🥦 Gemüse & Obst',milch:'🥛 Milch & Alternativen',fette:'🧴 Öle & Sonstiges'};
