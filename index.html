@@ -234,7 +234,7 @@ main{max-width:680px;margin:0 auto;padding:12px 12px 80px;}
     <button class="logoutb" onclick="doLogout()">Abmelden</button>
   </div>
   <div class="hmeta">
-    <span class="badge">KW <span id="kw-display">—</span></span>
+    
     <span class="badge or">⚡ So + Mi Mealprep</span>
     <span class="badge" id="sync-badge">⏳ Lädt...</span>
   </div>
@@ -486,7 +486,6 @@ function findMD(name){
 
 // INIT
 function init(){
-  document.getElementById('kw-display').textContent=getKW();
   updateNav();
   // Sofort Fallback rendern
   planData=FB;
@@ -531,7 +530,7 @@ async function loadSupabase(autoNav){
         viewKW=data[0].week_number;viewYear=data[0].year;updateNav();
       }
       planData=data[0].plan_data;
-      setBadge('✅ Live KW'+viewKW,'gn');
+      setBadge('✅ Geladen','gn');
       renderWeek();renderShop();renderRecipes();renderMP();
     }
     // load rest in background
@@ -555,8 +554,8 @@ async function loadSupabase(autoNav){
 
 // NAV
 function updateNav(){
-  document.getElementById('wlabel').textContent='KW '+viewKW+' / '+viewYear;
-  document.getElementById('wsub').textContent=kwRange(viewKW,viewYear);
+  document.getElementById('wlabel').textContent=kwRange(viewKW,viewYear);
+  document.getElementById('wsub').textContent='';
   const maxKW=getKW()+1,maxYear=getYear();
   document.getElementById('next-btn').disabled=(viewYear>maxYear||(viewYear===maxYear&&viewKW>=maxKW));
 }
@@ -702,7 +701,7 @@ function saveShopNotiz(){clearTimeout(notizTimer);notizTimer=setTimeout(async()=
 // RECIPES
 function renderRecipes(){
   document.getElementById('recipe-grid').innerHTML=
-    '<div class="card"><div class="ch gn">🍳 Mealprep-Rezepte — KW '+viewKW+'</div></div>'+
+    '<div class="card"><div class="ch gn">🍳 Mealprep-Rezepte</div></div>'+
     '<div class="rcards">'+planData.recipes.map((r,i)=>
       '<div class="rcard" onclick="openRecipe('+i+')">'+
       '<div class="rthumb" style="background:'+r.color+'">'+r.emoji+'</div>'+
