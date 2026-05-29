@@ -390,10 +390,13 @@ function showTab(n,el){document.querySelectorAll('.section').forEach(s=>s.classL
 // KW22 Ausnahme: Mo+Di haben noch Reste → Start erst Mi-Abend
 const FB={
   weekData:[
-    {day:'Mittwoch',type:'both',meals:{shake:'Protein Shake',mittag:'— Reste (Hähnchen, Paprika, Zucchini)',abend:'Thai-Hähnchen-Bowl (Mealprep)',snack:'Lf. Joghurt'},mp:true,info:'🛒 Einkauf Mi Vormittag · Mealprep Mi Abend'},
-    {day:'Donnerstag',type:'cardio',meals:{shake:'Protein Shake',mittag:'Thai-Hähnchen-Bowl (Mealprep)',abend:'Putenbrust + Linsen-Curry (Mealprep)',snack:'Reiswaffel'},mp:false},
-    {day:'Freitag',type:'training',meals:{shake:'Protein Shake',mittag:'Putenbrust + Linsen-Curry (Mealprep)',abend:'Bolognese + Vollkorn-Pasta',snack:'Lf. Joghurt'},mp:false},
-    {day:'Samstag',type:'training',meals:{shake:'Protein Shake',mittag:'Thai-Hähnchen-Bowl (Mealprep)',abend:'Putenbrust + Linsen-Curry (Mealprep)',snack:'Lf. Joghurt'},mp:false,info:'📅 Fr Abend: Plan für KW23 erstellen'},
+    {day:'Samstag',type:'rest',meals:{shake:'Protein Shake',mittag:null,fruehstueck:'Kleines Frühstück (~200 kcal)',abend:'— (Plan wird geladen)',snack:'Alpro Joghurt (1 Topf 400g)'},mp:false,info:'🛒 Einkauf · 🍳 Frisch kochen Abends'},
+    {day:'Sonntag',type:'cardio',meals:{shake:'Protein Shake',mittag:null,fruehstueck:'Kleines Frühstück (~200 kcal)',abend:'— (Mealprep)',snack:'Alpro Joghurt (1 Topf 400g)'},mp:true,info:'⚡ Mealprep Sonntag Vormittag'},
+    {day:'Montag',type:'training',meals:{shake:'Protein Shake',mittag:'— (Mealprep)',abend:'— (Mealprep)',snack:'Alpro Joghurt (1 Topf 400g)'},mp:false},
+    {day:'Dienstag',type:'training',meals:{shake:'Protein Shake',mittag:'— (Mealprep)',abend:'— (Mealprep)',snack:'Alpro Joghurt (1 Topf 400g)'},mp:false},
+    {day:'Mittwoch',type:'rest',meals:{shake:'Protein Shake',mittag:'— (Mealprep)',abend:'— (Mealprep)',snack:'Alpro Joghurt (1 Topf 400g)'},mp:true,info:'⚡ Mealprep Mittwoch Abend'},
+    {day:'Donnerstag',type:'rest',meals:{shake:'Protein Shake',mittag:'— (Mealprep)',abend:'— (Mealprep)',snack:'Alpro Joghurt (1 Topf 400g)'},mp:false},
+    {day:'Freitag',type:'training',meals:{shake:'Protein Shake',mittag:'— (Mealprep)',abend:'— (Mealprep)',snack:'Alpro Joghurt (1 Topf 400g)'},mp:false,info:'📋 Fr Abend: Plan für nächste Woche wird erstellt'}
   ],
   shopData:[
     {cat:'protein',name:'Hähnchenbrustfilet',amount:'800g roh',note:'Thai-Bowl Mealprep'},
