@@ -751,9 +751,13 @@ function openRecipe(i){
 
 // MEALPREP TAB
 function renderMP(){
-  // mpDay: 'so' = Sonntag-Mealprep (So-Mi), 'mi' = Mittwoch-Mealprep (Mi-Sa)
-  const recipes=mpDay==='so'?planData.recipes.slice(0,2):planData.recipes.slice(2);
-  const dayLabel=mpDay==='so'?'Sonntag (reicht So–Mi mittag)':'Mittwoch (reicht Mi-Abend–Sa-Abend)';
+  // mpDay: 'so' = Sonntag-Mealprep, 'mi' = Mittwoch-Mealprep
+  // Gruppierung nach day-Feld, nicht nach Array-Position
+  const allRecipes=planData.recipes||[];
+  const recipes=mpDay==='so'
+    ? allRecipes.filter(r=>r.day&&(r.day.toLowerCase().includes('sonntag')||r.day.toLowerCase().includes('so–mi')||r.day.toLowerCase().includes('so-mi')))
+    : allRecipes.filter(r=>r.day&&(r.day.toLowerCase().includes('mittwoch')||r.day.toLowerCase().includes('mi–sa')||r.day.toLowerCase().includes('mi-sa')||r.day.toLowerCase().includes('mi-abend')));
+  const dayLabel=mpDay==='so'?'Sonntag (reicht So–Mi mittag)':'Mittwoch (reicht Mi-Abend–Fr-Abend)';
   document.getElementById('mealprep-content').innerHTML=
     '<div class="mptot"><strong>\u26A1 Mealprep '+dayLabel+'</strong></div>'+
     recipes.map(r=>{
