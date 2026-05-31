@@ -762,8 +762,11 @@ function renderMP(){
     '<div class="mptot"><strong>\u26A1 Mealprep '+dayLabel+'</strong></div>'+
     recipes.map(r=>{
       const det=findMD(r.title);
+      const _sebB=(r.portionen&&r.portionen.seb&&r.portionen.seb.boxen)||0;
+      const _enB=(r.portionen&&(r.portionen.enna||r.portionen.fr)&&((r.portionen.enna||r.portionen.fr).boxen))||0;
+      const _ptxt=_sebB&&_enB?_sebB+' Seb + '+_enB+' Enna':(_sebB+_enB>0?(_sebB+_enB)+' Boxen total':'Mealprep');
       return '<div class="mpcard">'+
-        '<div class="mpch"><div class="mpem">'+r.emoji+'</div><div><div class="mptitle">'+r.title+'</div><div class="mpsub">4 Portionen total</div></div></div>'+
+        '<div class="mpch"><div class="mpem">'+r.emoji+'</div><div><div class="mptitle">'+r.title+'</div><div class="mpsub">'+_ptxt+'</div></div></div>'+
         // Einkauf / Rohgewichte Gesamtmenge
         '<div style="padding:0 12px 8px;"><div style="font-size:0.72rem;font-weight:700;color:var(--grd);text-transform:uppercase;margin-bottom:6px;">\uD83D\uDECD Gesamt einkaufen (Rohgewichte)</div>'+
         r.zutaten.map(z=>'<div style="display:flex;justify-content:space-between;font-size:0.8rem;padding:4px 0;border-bottom:1px solid #f5f5f5;"><span>'+z[0]+(z[2]?'<span style="font-size:0.65rem;color:#aaa;margin-left:4px;">'+z[2]+'</span>':'')+'</span><strong style="color:var(--gd);">'+z[1]+'</strong></div>').join('')+'</div>'+
