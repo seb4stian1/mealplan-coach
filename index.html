@@ -387,7 +387,7 @@ function showTab(n,el){document.querySelectorAll('.section').forEach(s=>s.classL
 
 // FALLBACK DATA — KW22 (halbe Woche: Mi-Abend bis Sa-Abend)
 // Wochenrhythmus: So=Mealprep1 (So–Di Abend) | Mi=Mealprep2 (Mi–Fr Abend)
-// Mittag = Joghurt + Müsli (kein warmes Essen), kein Snack-Slot
+// Mittag = Joghurt + Müsli (kalt), kein Snack-Slot
 const FB={
   weekData:[
     {day:'Samstag',type:'rest',meals:{shake:'Protein Shake',mittag:null,fruehstueck:'Kleines Frühstück (~200 kcal)',abend:'— (Plan wird geladen)'},mp:false,info:'🛒 Einkauf · 🍳 Frisch kochen Abends'},
@@ -517,28 +517,22 @@ async function loadSupabase(autoNav){
   setBadge('⏳ Lädt...','');
   try{
     const sb=getSB();
-    if(!sb){setBadge('❌ Offline','re');return;}
-
-    // Haupt-Query: direkt awaiten, kein Promise.race (SDK-Thenables nicht race-kompatibel)
+    if(!sb){setBadge('❌ Offline','re');renderAll();return;}
     let res;
     if(autoNav){
       res=await sb.from('weekly_plan').select('*').order('year',{ascending:false}).order('week_number',{ascending:false}).limit(1);
     } else {
       res=await sb.from('weekly_plan').select('*').eq('week_number',viewKW).eq('year',viewYear).limit(1);
     }
-
     const{data,error}=res;
     if(error){setBadge('❌ DB-Fehler','re');console.error('SB error:',error);renderAll();return;}
     if(!data||data.length===0){setBadge('⚠️ Kein Plan','or');renderAll();return;}
-
     if(autoNav&&(data[0].week_number!==viewKW||data[0].year!==viewYear)){
       viewKW=data[0].week_number;viewYear=data[0].year;updateNav();
     }
     planData=data[0].plan_data;
     setBadge('✅ Geladen','gn');
     renderWeek();renderShop();renderRecipes();renderMP();
-
-    // Hintergrund-Daten
     sb.from('reste').select('*').eq('week_number',viewKW).eq('year',viewYear).limit(1).then(({data})=>{
       if(data&&data.length>0){
         (data[0].items||[]).forEach(v=>{document.querySelectorAll('.rtag').forEach(t=>{if(t.dataset.val===v)t.classList.add('sel');});});
@@ -556,8 +550,8 @@ async function loadSupabase(autoNav){
     sb.from('diary_entries').select('*').eq('week_number',viewKW).eq('year',viewYear).eq('person',dpPerson).order('day_index',{ascending:true}).then(({data})=>{renderDiaryHistory(data);}).catch(()=>{});
   }catch(e){
     setBadge('❌ Fehler','re');
-    console.error('loadSupabase exception:',e);
-    renderAll(); // Fallback rendern statt Spinner stehen lassen
+    console.error('loadSupabase:',e);
+    renderAll();
   }
 }
 
@@ -609,7 +603,6 @@ function renderWeek(){
               '<div class="mname" style="color:#aaa;font-style:italic;">Frei — kein Prep</div>'+
               '<div class="mkcal" style="color:#bbb;">S ~'+kcalSeb+' · E ~'+kcalEnna+' kcal Tagesziel</div></div>';
           }
-          // Joghurt+Müsli Slot — kein Detail-Overlay, eigenes Styling
           if(s.joghurt){
             return '<div class="mslot" style="cursor:default;background:#f0fdf4;border:1px solid #bbf7d0;">'+
               '<div class="mlabel">'+s.l+'</div>'+
@@ -903,4 +896,12 @@ function renderDiaryHistory(data){
   hist.innerHTML=data.map(e=>'<div class="decard"><div class="deday">'+days[e.day_index]+'</div>'+
     (e.entry_data.q1?'<div class="derow"><span>😋</span><span>Essen: <strong>'+e.entry_data.q1+'</strong></span></div>':'')+
     (e.entry_data.q2?'<div class="derow"><span>🍽</span><span>Sättigung: <strong>'+e.entry_data.q2+'</strong></span></div>':'')+
-    (e.entry_data.q3?'<div class="derow"><span>🍫</span><span>Heißhunger: <strong>'+e
+    (e.entry_data.q3?'<div class="derow"><span>🍫</span><span>Heißhunger: <strong>'+e.entry_data.q3+'</strong></span></div>':'')+
+    (e.entry_data.q4?'<div class="derow"><span>⚡</span><span>Energie: <strong>'+e.entry_data.q4+'</strong></span></div>':'')+
+    (e.entry_data.q5?'<div class="derow"><span>💪</span><span>Training: <strong>'+e.entry_data.q5+'</strong></span></div>':'')+
+    (e.entry_data.notiz?'<div class="derow"><span>📝</span><span>'+e.entry_data.notiz+'</span></div>':'')+
+    '</div>').join('');
+}
+</script>
+</body>
+</html>
