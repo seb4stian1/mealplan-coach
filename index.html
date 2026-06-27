@@ -386,17 +386,17 @@ function setBadge(t,c){const b=document.getElementById('sync-badge');b.textConte
 function showTab(n,el){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById('tab-'+n).classList.add('active');el.classList.add('active');}
 
 // FALLBACK DATA — KW22 (halbe Woche: Mi-Abend bis Sa-Abend)
-// Wochenrhythmus: So=Mealprep1 (So–Mi mittag) | Mi=Mealprep2 (Mi-Abend–Sa-Abend)
-// KW22 Ausnahme: Mo+Di haben noch Reste → Start erst Mi-Abend
+// Wochenrhythmus: So=Mealprep1 (So–Di Abend) | Mi=Mealprep2 (Mi–Fr Abend)
+// Mittag = Joghurt + Müsli (kein warmes Essen), kein Snack-Slot
 const FB={
   weekData:[
-    {day:'Samstag',type:'rest',meals:{shake:'Protein Shake',mittag:null,fruehstueck:'Kleines Frühstück (~200 kcal)',abend:'— (Plan wird geladen)',snack:'Alpro Joghurt (1 Topf 400g)'},mp:false,info:'🛒 Einkauf · 🍳 Frisch kochen Abends'},
-    {day:'Sonntag',type:'cardio',meals:{shake:'Protein Shake',mittag:null,fruehstueck:'Kleines Frühstück (~200 kcal)',abend:'— (Mealprep)',snack:'Alpro Joghurt (1 Topf 400g)'},mp:true,info:'⚡ Mealprep Sonntag Vormittag'},
-    {day:'Montag',type:'training',meals:{shake:'Protein Shake',mittag:'— (Mealprep)',abend:'— (Mealprep)',snack:'Alpro Joghurt (1 Topf 400g)'},mp:false},
-    {day:'Dienstag',type:'training',meals:{shake:'Protein Shake',mittag:'— (Mealprep)',abend:'— (Mealprep)',snack:'Alpro Joghurt (1 Topf 400g)'},mp:false},
-    {day:'Mittwoch',type:'rest',meals:{shake:'Protein Shake',mittag:'— (Mealprep)',abend:'— (Mealprep)',snack:'Alpro Joghurt (1 Topf 400g)'},mp:true,info:'⚡ Mealprep Mittwoch Abend'},
-    {day:'Donnerstag',type:'rest',meals:{shake:'Protein Shake',mittag:'— (Mealprep)',abend:'— (Mealprep)',snack:'Alpro Joghurt (1 Topf 400g)'},mp:false},
-    {day:'Freitag',type:'training',meals:{shake:'Protein Shake',mittag:'— (Mealprep)',abend:'— (Mealprep)',snack:'Alpro Joghurt (1 Topf 400g)'},mp:false,info:'📋 Fr Abend: Plan für nächste Woche wird erstellt'}
+    {day:'Samstag',type:'rest',meals:{shake:'Protein Shake',mittag:null,fruehstueck:'Kleines Frühstück (~200 kcal)',abend:'— (Plan wird geladen)'},mp:false,info:'🛒 Einkauf · 🍳 Frisch kochen Abends'},
+    {day:'Sonntag',type:'cardio',meals:{shake:'Protein Shake',mittag:null,fruehstueck:'Kleines Frühstück (~200 kcal)',abend:'— (Mealprep)'},mp:true,info:'⚡ Mealprep Sonntag Vormittag'},
+    {day:'Montag',type:'training',meals:{shake:'Protein Shake',mittag:'Joghurt + Müsli',abend:'— (Mealprep)'},mp:false},
+    {day:'Dienstag',type:'training',meals:{shake:'Protein Shake',mittag:'Joghurt + Müsli',abend:'— (Mealprep)'},mp:false},
+    {day:'Mittwoch',type:'rest',meals:{shake:'Protein Shake',mittag:'Joghurt + Müsli',abend:'— (Mealprep)'},mp:true,info:'⚡ Mealprep Mittwoch Abend'},
+    {day:'Donnerstag',type:'rest',meals:{shake:'Protein Shake',mittag:'Joghurt + Müsli',abend:'— (Mealprep)'},mp:false},
+    {day:'Freitag',type:'training',meals:{shake:'Protein Shake',mittag:'Joghurt + Müsli',abend:'— (Mealprep)'},mp:false,info:'📋 Fr Abend: Plan für nächste Woche wird erstellt'}
   ],
   shopData:[
     {cat:'protein',name:'Hähnchenbrustfilet',amount:'800g roh',note:'Thai-Bowl Mealprep'},
@@ -584,13 +584,11 @@ function renderWeek(){
         {l:'☕ Shake',v:m.shake||'Protein Shake',free:false},
         {l:'🌅 Frühstück',v:m.fruehstueck||'Kleines Frühstück (~200 kcal)',free:false},
         {l:'🥗 Mittag',v:null,free:true},
-        {l:'🍽 Abend',v:m.abend||'—',free:false},
-        {l:'🍎 Snack',v:m.snack||'Alpro Joghurt',free:false}
+        {l:'🍽 Abend',v:m.abend||'—',free:false}
       ]:[
         {l:'☕ Shake',v:m.shake||'Protein Shake',free:false},
-        {l:'🥗 Mittag',v:m.mittag||'—',free:false},
-        {l:'🍽 Abend',v:m.abend||'—',free:false},
-        {l:'🍎 Snack',v:m.snack||'Alpro Joghurt',free:false}
+        {l:'🥗 Mittag',v:m.mittag||'Joghurt + Müsli',free:false,joghurt:true},
+        {l:'🍽 Abend',v:m.abend||'—',free:false}
       ];
       return '<div class="dcard"><div class="dhead '+tc+'"><strong>'+d.day+'</strong><div class="dpills">'+pills+'</div></div>'+(d.info?'<div style="background:#fffde7;padding:6px 12px;font-size:0.72rem;color:#e65100;border-bottom:1px solid #ffe082;">'+d.info+'</div>':'')+'<div class="mgrid">'+
         slots.map(s=>{
@@ -601,6 +599,13 @@ function renderWeek(){
               '<div class="mlabel">🥗 Mittag</div>'+
               '<div class="mname" style="color:#aaa;font-style:italic;">Frei — kein Prep</div>'+
               '<div class="mkcal" style="color:#bbb;">S ~'+kcalSeb+' · E ~'+kcalEnna+' kcal Tagesziel</div></div>';
+          }
+          // Joghurt+Müsli Slot — kein Detail-Overlay, eigenes Styling
+          if(s.joghurt){
+            return '<div class="mslot" style="cursor:default;background:#f0fdf4;border:1px solid #bbf7d0;">'+
+              '<div class="mlabel">'+s.l+'</div>'+
+              '<div class="mname">🥣 '+s.v+'</div>'+
+              '<div class="mkcal" style="color:#16a34a;">~570 kcal · leicht &amp; kalt</div></div>';
           }
           const det=findMD(s.v);
           const kl=det?'S '+det.seb.mac.kcal.replace('~','').replace(' kcal','')+' · E '+det.fr.mac.kcal.replace('~','').replace(' kcal','')+' kcal':'▶ Details';
@@ -755,9 +760,9 @@ function renderMP(){
   // Gruppierung nach day-Feld, nicht nach Array-Position
   const allRecipes=planData.recipes||[];
   const recipes=mpDay==='so'
-    ? allRecipes.filter(r=>r.day&&(r.day.toLowerCase().includes('sonntag')||r.day.toLowerCase().includes('so–mi')||r.day.toLowerCase().includes('so-mi')))
-    : allRecipes.filter(r=>r.day&&(r.day.toLowerCase().includes('mittwoch')||r.day.toLowerCase().includes('mi–sa')||r.day.toLowerCase().includes('mi-sa')||r.day.toLowerCase().includes('mi-abend')));
-  const dayLabel=mpDay==='so'?'Sonntag (reicht So–Mi mittag)':'Mittwoch (reicht Mi-Abend–Fr-Abend)';
+    ? allRecipes.filter(r=>r.day&&(r.day.toLowerCase().includes('sonntag')||r.day.toLowerCase().includes('so–mi')||r.day.toLowerCase().includes('so-mi')||r.day.toLowerCase().includes('so–di')||r.day.toLowerCase().includes('so-di')))
+    : allRecipes.filter(r=>r.day&&(r.day.toLowerCase().includes('mittwoch')||r.day.toLowerCase().includes('mi–sa')||r.day.toLowerCase().includes('mi-sa')||r.day.toLowerCase().includes('mi-abend')||r.day.toLowerCase().includes('mi–fr')||r.day.toLowerCase().includes('mi-fr')));
+  const dayLabel=mpDay==='so'?'Sonntag (So–Di Abend)':'Mittwoch (Mi–Fr Abend)';
   document.getElementById('mealprep-content').innerHTML=
     '<div class="mptot"><strong>\u26A1 Mealprep '+dayLabel+'</strong></div>'+
     recipes.map(r=>{
@@ -800,7 +805,7 @@ function renderMP(){
         })() +
         '<div style="padding:0 12px 12px;"><div style="font-size:0.72rem;font-weight:700;color:var(--grd);text-transform:uppercase;margin-bottom:6px;">Zubereitung</div><ol style="padding-left:16px;font-size:0.8rem;line-height:1.8;">'+r.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol></div></div>';
     }).join('')+
-    '<div style="background:white;border-radius:10px;border:1px solid #e0e0e0;padding:12px;font-size:0.78rem;"><strong style="color:var(--gd);">\uD83D\uDCE6 Boxen beschriften</strong><br><div style="margin-top:5px;color:#555;">Name + Tag auf jede Box.<br>Haltbarkeit Kühlschrank: <strong>4 Tage</strong>. Einfrieren möglich.</div></div>';
+    '<div style="background:white;border-radius:10px;border:1px solid #e0e0e0;padding:12px;font-size:0.78rem;"><strong style="color:var(--gd);">\uD83D\uDCE6 Boxen beschriften</strong><br><div style="margin-top:5px;color:#555;">Name + Tag auf jede Box (3 Boxen je Person).<br>Haltbarkeit Kühlschrank: <strong>3–4 Tage</strong>. Einfrieren möglich.</div></div>';
 }
 function switchMP(day,btn){
   mpDay=day;
@@ -891,10 +896,4 @@ function renderDiaryHistory(data){
     (e.entry_data.q2?'<div class="derow"><span>🍽</span><span>Sättigung: <strong>'+e.entry_data.q2+'</strong></span></div>':'')+
     (e.entry_data.q3?'<div class="derow"><span>🍫</span><span>Heißhunger: <strong>'+e.entry_data.q3+'</strong></span></div>':'')+
     (e.entry_data.q4?'<div class="derow"><span>⚡</span><span>Energie: <strong>'+e.entry_data.q4+'</strong></span></div>':'')+
-    (e.entry_data.q5?'<div class="derow"><span>💪</span><span>Training: <strong>'+e.entry_data.q5+'</strong></span></div>':'')+
-    (e.entry_data.notiz?'<div class="derow"><span>📝</span><span>'+e.entry_data.notiz+'</span></div>':'')+
-    '</div>').join('');
-}
-</script>
-</body>
-</html>
+    (e.entry_data.q5?'<div class="derow"><span>💪</span><span>Training
