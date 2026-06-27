@@ -514,26 +514,31 @@ function renderAll(){
 }
 
 async function loadSupabase(autoNav){
+  setBadge('⏳ Lädt...','');
   try{
-    const sb=getSB();if(!sb)return;
-    const p=new Promise((res,rej)=>setTimeout(()=>rej('timeout'),5000));
-    let q;
+    const sb=getSB();
+    if(!sb){setBadge('❌ Offline','re');return;}
+
+    // Haupt-Query: direkt awaiten, kein Promise.race (SDK-Thenables nicht race-kompatibel)
+    let res;
     if(autoNav){
-      // Neuesten Plan laden (für zukünftige KW wie nächste Woche)
-      q=sb.from('weekly_plan').select('*').order('created_at',{ascending:false}).limit(1);
+      res=await sb.from('weekly_plan').select('*').order('year',{ascending:false}).order('week_number',{ascending:false}).limit(1);
     } else {
-      q=sb.from('weekly_plan').select('*').eq('week_number',viewKW).eq('year',viewYear).order('created_at',{ascending:false}).limit(1);
+      res=await sb.from('weekly_plan').select('*').eq('week_number',viewKW).eq('year',viewYear).limit(1);
     }
-    const{data,error}=await Promise.race([q,p.then(()=>{throw new Error('timeout')})]);
-    if(!error&&data&&data.length>0){
-      if(autoNav&&(data[0].week_number!==viewKW||data[0].year!==viewYear)){
-        viewKW=data[0].week_number;viewYear=data[0].year;updateNav();
-      }
-      planData=data[0].plan_data;
-      setBadge('✅ Geladen','gn');
-      renderWeek();renderShop();renderRecipes();renderMP();
+
+    const{data,error}=res;
+    if(error){setBadge('❌ DB-Fehler','re');console.error('SB error:',error);renderAll();return;}
+    if(!data||data.length===0){setBadge('⚠️ Kein Plan','or');renderAll();return;}
+
+    if(autoNav&&(data[0].week_number!==viewKW||data[0].year!==viewYear)){
+      viewKW=data[0].week_number;viewYear=data[0].year;updateNav();
     }
-    // load rest in background
+    planData=data[0].plan_data;
+    setBadge('✅ Geladen','gn');
+    renderWeek();renderShop();renderRecipes();renderMP();
+
+    // Hintergrund-Daten
     sb.from('reste').select('*').eq('week_number',viewKW).eq('year',viewYear).limit(1).then(({data})=>{
       if(data&&data.length>0){
         (data[0].items||[]).forEach(v=>{document.querySelectorAll('.rtag').forEach(t=>{if(t.dataset.val===v)t.classList.add('sel');});});
@@ -549,7 +554,11 @@ async function loadSupabase(autoNav){
       }
     }).catch(()=>{});
     sb.from('diary_entries').select('*').eq('week_number',viewKW).eq('year',viewYear).eq('person',dpPerson).order('day_index',{ascending:true}).then(({data})=>{renderDiaryHistory(data);}).catch(()=>{});
-  }catch(e){}
+  }catch(e){
+    setBadge('❌ Fehler','re');
+    console.error('loadSupabase exception:',e);
+    renderAll(); // Fallback rendern statt Spinner stehen lassen
+  }
 }
 
 // NAV
@@ -894,6 +903,4 @@ function renderDiaryHistory(data){
   hist.innerHTML=data.map(e=>'<div class="decard"><div class="deday">'+days[e.day_index]+'</div>'+
     (e.entry_data.q1?'<div class="derow"><span>😋</span><span>Essen: <strong>'+e.entry_data.q1+'</strong></span></div>':'')+
     (e.entry_data.q2?'<div class="derow"><span>🍽</span><span>Sättigung: <strong>'+e.entry_data.q2+'</strong></span></div>':'')+
-    (e.entry_data.q3?'<div class="derow"><span>🍫</span><span>Heißhunger: <strong>'+e.entry_data.q3+'</strong></span></div>':'')+
-    (e.entry_data.q4?'<div class="derow"><span>⚡</span><span>Energie: <strong>'+e.entry_data.q4+'</strong></span></div>':'')+
-    (e.entry_data.q5?'<div class="derow"><span>💪</span><span>Training
+    (e.entry_data.q3?'<div class="derow"><span>🍫</span><span>Heißhunger: <strong>'+e
